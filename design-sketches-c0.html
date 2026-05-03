@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Sketches — Opening Graphic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #1a1a2e; color: #e2e8f0; padding: 32px 24px 80px; }
+    h1 { font-size: 20px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: #94a3b8; margin-bottom: 40px; }
+
+    .sketch-wrap { margin-bottom: 56px; }
+    .sketch-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin-bottom: 8px; }
+    .sketch-title { font-size: 22px; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+    .sketch-desc  { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px; max-width: 640px; }
+    .verdict { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; margin-bottom: 20px; }
+    .verdict.good { background: #14532d; color: #86efac; }
+    .verdict.ok   { background: #78350f; color: #fcd34d; }
+
+    /* canvas for each design */
+    .canvas { background: #f5f1e8; border-radius: 16px; padding: 28px 24px; max-width: 720px; }
+
+    /* ── Shared car SVG sizes ── */
+    .car-svg { display: block; }
+
+    /* ══════════════════════════════════════════════════
+       DESIGN A  –  The Wall
+    ══════════════════════════════════════════════════ */
+    .wall-layout { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; align-items: stretch; }
+    .wall-col { padding: 0 8px; }
+    .wall-col-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      text-align: center; padding: 6px 10px; border-radius: 6px; margin-bottom: 14px;
+    }
+    .wall-col-label.seller { background: #dbeafe; color: #1e40af; }
+    .wall-col-label.buyer  { background: #e0e7ff; color: #3730a3; }
+    .wall-divider {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    }
+    .wall-line { flex: 1; width: 2px; background: #c4a574; opacity: 0.5; }
+    .wall-lock { font-size: 18px; }
+    .wall-asym-label {
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+      color: #8b7355; writing-mode: vertical-rl; transform: rotate(180deg);
+    }
+    .wall-car-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px; border-radius: 10px; margin-bottom: 8px; gap: 8px;
+    }
+    .wall-car-row.mint  { background: #fef9e7; border: 1.5px solid #c9a227; }
+    .wall-car-row.good  { background: #f0fdf4; border: 1.5px solid #22c55e; }
+    .wall-car-row.fair  { background: #fff7ed; border: 1.5px solid #f97316; }
+    .wall-car-row.lemon { background: #fef2f2; border: 1.5px solid #dc2626; }
+    .wall-car-row.hidden { background: #f3f4f6; border: 1.5px solid #d1d5db; }
+    .car-info { flex: 1; }
+    .car-tier-name { font-size: 12px; font-weight: 700; line-height: 1; }
+    .car-tier-name.mint  { color: #92400e; }
+    .car-tier-name.good  { color: #15803d; }
+    .car-tier-name.fair  { color: #c2410c; }
+    .car-tier-name.lemon { color: #991b1b; }
+    .car-price { font-size: 13px; font-weight: 800; margin-top: 2px; }
+    .car-price.mint  { color: #92400e; }
+    .car-price.good  { color: #15803d; }
+    .car-price.fair  { color: #c2410c; }
+    .car-price.lemon { color: #991b1b; }
+    .buyer-car-info { flex: 1; }
+    .buyer-qmark { font-size: 22px; color: #9ca3af; font-weight: 800; }
+    .buyer-price-q { font-size: 13px; font-weight: 700; color: #9ca3af; }
+    .buyer-sublabel { font-size: 10px; color: #d1d5db; }
+
+    /* ══════════════════════════════════════════════════
+       DESIGN B  –  Split Cards
+    ══════════════════════════════════════════════════ */
+    .cards-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .split-card { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.10); }
+    .split-card .seller-half {
+      padding: 12px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      border-bottom: 2px dashed rgba(0,0,0,0.12);
+    }
+    .split-card .buyer-half {
+      padding: 10px 10px 12px; display: flex; flex-direction: column; align-items: center; gap: 5px;
+      background: #f3f4f6;
+    }
+    .half-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+    .half-label.seller-lbl { color: white; opacity: 0.85; }
+    .half-label.buyer-lbl  { color: #9ca3af; }
+    .split-tier-name { font-size: 12px; font-weight: 700; color: white; }
+    .split-price { font-size: 15px; font-weight: 800; color: white; }
+    .split-card.mint  .seller-half { background: #d97706; }
+    .split-card.good  .seller-half { background: #16a34a; }
+    .split-card.fair  .seller-half { background: #ea580c; }
+    .split-card.lemon .seller-half { background: #dc2626; }
+    .buyer-half-car { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .buyer-half-qmark { font-size: 18px; font-weight: 800; color: #9ca3af; }
+    .buyer-half-price { font-size: 11px; font-weight: 700; color: #9ca3af; }
+    .avg-banner {
+      margin-top: 14px; background: #00356b; color: white; border-radius: 8px;
+      padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px;
+    }
+    .avg-banner strong { font-size: 16px; font-weight: 800; color: #fbbf24; }
+
+    /* ══════════════════════════════════════════════════
+       DESIGN C  –  Thought Bubbles
+    ══════════════════════════════════════════════════ */
+    .bubble-scene { position: relative; }
+    .sellers-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .seller-unit { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .thought-bubble {
+      position: relative; border-radius: 12px; padding: 8px 10px; text-align: center;
+      font-size: 12px; font-weight: 700; min-width: 72px; margin-bottom: 6px;
+    }
+    .thought-bubble::after {
+      content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+    }
+    .thought-bubble.mint  { background: #fef3c7; color: #92400e; border: 2px solid #c9a227; }
+    .thought-bubble.mint::after  { border-top: 10px solid #c9a227; }
+    .thought-bubble.good  { background: #dcfce7; color: #15803d; border: 2px solid #22c55e; }
+    .thought-bubble.good::after  { border-top: 10px solid #22c55e; }
+    .thought-bubble.fair  { background: #ffedd5; color: #c2410c; border: 2px solid #f97316; }
+    .thought-bubble.fair::after  { border-top: 10px solid #f97316; }
+    .thought-bubble.lemon { background: #fee2e2; color: #991b1b; border: 2px solid #dc2626; }
+    .thought-bubble.lemon::after { border-top: 10px solid #dc2626; }
+    .bubble-tier { font-size: 13px; font-weight: 800; }
+    .bubble-price { font-size: 11px; font-weight: 600; margin-top: 1px; opacity: 0.85; }
+    .seller-icon { font-size: 18px; }
+    .seller-label { font-size: 10px; color: #8b7355; font-weight: 500; }
+
+    .barrier-strip {
+      width: 100%; padding: 7px 14px; border-radius: 8px;
+      background: repeating-linear-gradient(
+        45deg, #c4a574 0px, #c4a574 6px, #e8dcc8 6px, #e8dcc8 12px
+      );
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-bottom: 20px; font-size: 12px; font-weight: 700; color: #5c4d3d;
+    }
+
+    .buyer-section { display: flex; align-items: center; gap: 20px; }
+    .buyer-figure { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+    .buyer-figure .buyer-icon { font-size: 28px; }
+    .buyer-figure .buyer-lbl  { font-size: 11px; font-weight: 600; color: #00356b; }
+    .buyer-thought {
+      flex: 1; background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .buyer-thought .bt-title { font-size: 11px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .buyer-sees-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 10px; }
+    .buyer-sees-car { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .buyer-sees-label { font-size: 10px; color: #9ca3af; font-weight: 500; }
+    .buyer-avg-line { text-align: center; font-size: 13px; color: #1d4ed8; font-weight: 600; }
+    .buyer-avg-line strong { font-size: 16px; font-weight: 800; }
+
+    /* note */
+    .design-note {
+      margin-top: 16px; padding: 10px 14px; background: rgba(255,255,255,0.06);
+      border-radius: 8px; border-left: 3px solid #c9a227;
+      font-size: 13px; color: #94a3b8; line-height: 1.6; max-width: 720px;
+    }
+    .design-note strong { color: #fcd34d; }
+  </style>
+</head>
+<body>
+
+<h1>Design Sketches — Opening Graphic</h1>
+<p class="page-sub">Step c0 · "Meet the Facebook Marketplace" · 4 cars · Seller knowledge vs. buyer knowledge</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     DESIGN A  –  The Wall
+═══════════════════════════════════════════════════════════════ -->
+<div class="sketch-wrap">
+  <div class="sketch-label">Concept A</div>
+  <div class="sketch-title">The Wall</div>
+  <div class="sketch-desc">Left column = seller's reality (colorful, quality + price visible). Right column = buyer's view (all identical gray cars, price unknown). A dividing line + padlock in the middle makes the asymmetry the literal center of the graphic.</div>
+  <span class="verdict good">✓ Strongest for a projected classroom screen</span>
+
+  <div class="canvas">
+    <div class="wall-layout">
+
+      <!-- SELLER SIDE -->
+      <div class="wall-col">
+        <div class="wall-col-label seller">🔓 What each seller knows</div>
+
+        <div class="wall-car-row mint">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#92400e" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#92400e" opacity="0.25"/>
+          </svg>
+          <div class="car-info">
+            <div class="car-tier-name mint">⭐ Mint</div>
+            <div class="car-price mint">$20,000</div>
+          </div>
+        </div>
+
+        <div class="wall-car-row good">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#15803d" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#15803d" opacity="0.25"/>
+          </svg>
+          <div class="car-info">
+            <div class="car-tier-name good">✓ Good</div>
+            <div class="car-price good">$14,000</div>
+          </div>
+        </div>
+
+        <div class="wall-car-row fair">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#c2410c" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#c2410c" opacity="0.25"/>
+          </svg>
+          <div class="car-info">
+            <div class="car-tier-name fair">⚠ Fair</div>
+            <div class="car-price fair">$8,000</div>
+          </div>
+        </div>
+
+        <div class="wall-car-row lemon">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#991b1b" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#991b1b" opacity="0.25"/>
+          </svg>
+          <div class="car-info">
+            <div class="car-tier-name lemon">🍋 Lemon</div>
+            <div class="car-price lemon">$2,000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIVIDER -->
+      <div class="wall-divider">
+        <div class="wall-line"></div>
+        <div class="wall-lock">🔒</div>
+        <div class="wall-asym-label">Information Gap</div>
+        <div class="wall-lock" style="font-size:12px;opacity:0.4;">▲</div>
+        <div class="wall-line"></div>
+      </div>
+
+      <!-- BUYER SIDE -->
+      <div class="wall-col">
+        <div class="wall-col-label buyer">👀 What the buyer sees</div>
+
+        <div class="wall-car-row hidden">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#9ca3af" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#9ca3af" opacity="0.25"/>
+          </svg>
+          <div class="buyer-car-info">
+            <div class="buyer-price-q">Used car</div>
+            <div class="buyer-qmark">?</div>
+          </div>
+        </div>
+
+        <div class="wall-car-row hidden">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#9ca3af" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#9ca3af" opacity="0.25"/>
+          </svg>
+          <div class="buyer-car-info">
+            <div class="buyer-price-q">Used car</div>
+            <div class="buyer-qmark">?</div>
+          </div>
+        </div>
+
+        <div class="wall-car-row hidden">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#9ca3af" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#9ca3af" opacity="0.25"/>
+          </svg>
+          <div class="buyer-car-info">
+            <div class="buyer-price-q">Used car</div>
+            <div class="buyer-qmark">?</div>
+          </div>
+        </div>
+
+        <div class="wall-car-row hidden">
+          <svg viewBox="0 0 64 42" width="52" height="34" class="car-svg">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#9ca3af" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#9ca3af" opacity="0.25"/>
+          </svg>
+          <div class="buyer-car-info">
+            <div class="buyer-price-q">Used car</div>
+            <div class="buyer-qmark">?</div>
+          </div>
+        </div>
+
+        <!-- Avg box -->
+        <div style="margin-top:8px;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:8px 12px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:3px;">Best guess</div>
+          <div style="font-size:15px;font-weight:800;color:#1d4ed8;">Avg ≈ $11,000?</div>
+        </div>
+      </div>
+
+    </div><!-- end wall-layout -->
+  </div>
+
+  <div class="design-note">
+    <strong>Why it works:</strong> The vertical wall is a physical metaphor for an information barrier — teenagers get this immediately. Colors on the left are vivid; the right is deliberately flat and gray. The 1:1 row alignment makes clear that these are the <em>same four cars</em> — just seen differently. The "best guess" box shows that the buyer has to rely on averages.
+    <br><br><strong>Potential issue:</strong> Two-column layout may read as "two separate groups of cars" rather than "the same cars from two perspectives." This could be resolved by adding a subtle connector arrow or matching row heights exactly.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     DESIGN B  –  Split Cards
+═══════════════════════════════════════════════════════════════ -->
+<div class="sketch-wrap">
+  <div class="sketch-label">Concept B</div>
+  <div class="sketch-title">Split Cards</div>
+  <div class="sketch-desc">Each car is a single card split in two. The top half belongs to the seller — color-coded, quality named, true price shown. The bottom half is the buyer's view — same gray car, unknown price. One glance = the entire asymmetry.</div>
+  <span class="verdict ok">◑ Good for small groups; may be too small on projection</span>
+
+  <div class="canvas">
+    <div class="cards-row">
+
+      <!-- MINT CARD -->
+      <div class="split-card mint">
+        <div class="seller-half">
+          <div class="half-label seller-lbl">Seller knows</div>
+          <svg viewBox="0 0 64 42" width="56" height="37">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#c9a227" stroke="#78350f" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#c9a227" stroke="#78350f" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#78350f" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#78350f" stroke-width="1.5"/>
+          </svg>
+          <div class="split-tier-name">⭐ Mint</div>
+          <div class="split-price">$20K</div>
+        </div>
+        <div class="buyer-half">
+          <div class="half-label buyer-lbl">Buyer sees</div>
+          <div class="buyer-half-car">
+            <svg viewBox="0 0 64 42" width="52" height="34">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+            <div class="buyer-half-qmark">?</div>
+            <div class="buyer-half-price">price unknown</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOOD CARD -->
+      <div class="split-card good">
+        <div class="seller-half">
+          <div class="half-label seller-lbl">Seller knows</div>
+          <svg viewBox="0 0 64 42" width="56" height="37">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#22c55e" stroke="#14532d" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#22c55e" stroke="#14532d" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#14532d" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#14532d" stroke-width="1.5"/>
+          </svg>
+          <div class="split-tier-name">✓ Good</div>
+          <div class="split-price">$14K</div>
+        </div>
+        <div class="buyer-half">
+          <div class="half-label buyer-lbl">Buyer sees</div>
+          <div class="buyer-half-car">
+            <svg viewBox="0 0 64 42" width="52" height="34">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+            <div class="buyer-half-qmark">?</div>
+            <div class="buyer-half-price">price unknown</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAIR CARD -->
+      <div class="split-card fair">
+        <div class="seller-half">
+          <div class="half-label seller-lbl">Seller knows</div>
+          <svg viewBox="0 0 64 42" width="56" height="37">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#f97316" stroke="#7c2d12" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#f97316" stroke="#7c2d12" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#7c2d12" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#7c2d12" stroke-width="1.5"/>
+          </svg>
+          <div class="split-tier-name">⚠ Fair</div>
+          <div class="split-price">$8K</div>
+        </div>
+        <div class="buyer-half">
+          <div class="half-label buyer-lbl">Buyer sees</div>
+          <div class="buyer-half-car">
+            <svg viewBox="0 0 64 42" width="52" height="34">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+            <div class="buyer-half-qmark">?</div>
+            <div class="buyer-half-price">price unknown</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEMON CARD -->
+      <div class="split-card lemon">
+        <div class="seller-half">
+          <div class="half-label seller-lbl">Seller knows</div>
+          <svg viewBox="0 0 64 42" width="56" height="37">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#7f1d1d" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#7f1d1d" stroke-width="1.5"/>
+          </svg>
+          <div class="split-tier-name">🍋 Lemon</div>
+          <div class="split-price">$2K</div>
+        </div>
+        <div class="buyer-half">
+          <div class="half-label buyer-lbl">Buyer sees</div>
+          <div class="buyer-half-car">
+            <svg viewBox="0 0 64 42" width="52" height="34">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+            <div class="buyer-half-qmark">?</div>
+            <div class="buyer-half-price">price unknown</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- cards-row -->
+
+    <div class="avg-banner">
+      <span>Buyer's best guess after seeing 4 identical-looking cars:</span>
+      <strong>Avg = $11,000</strong>
+    </div>
+  </div>
+
+  <div class="design-note">
+    <strong>Why it works:</strong> The physical dashed line cutting each card in half is a powerful metaphor — same object, two realities. The color/gray contrast is immediate. Works well in small-group or laptop viewing where you're close to the screen.
+    <br><br><strong>Potential issue:</strong> Each card is narrow (~160px wide at full size). The buyer's half has a lot squeezed in. On projection at 15+ feet the bottom half labels ("price unknown") may be unreadable. The four-across layout also means this fails on a narrow screen.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     DESIGN C  –  Thought Bubbles
+═══════════════════════════════════════════════════════════════ -->
+<div class="sketch-wrap">
+  <div class="sketch-label">Concept C</div>
+  <div class="sketch-title">Thought Bubbles</div>
+  <div class="sketch-desc">Four seller-car pairs at the top, each with a thought bubble showing what they privately know. A hazard-stripe barrier in the middle. One buyer at the bottom who can only see gray cars and guess an average. Most narrative of the three — tells a story.</div>
+  <span class="verdict ok">◑ Most engaging; works if you have vertical space</span>
+
+  <div class="canvas">
+    <div class="bubble-scene">
+
+      <!-- SELLERS ROW -->
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#8b7355;margin-bottom:12px;text-align:center;">Each seller privately knows:</div>
+      <div class="sellers-row">
+
+        <div class="seller-unit">
+          <div class="thought-bubble mint">
+            <div class="bubble-tier">⭐ Mint</div>
+            <div class="bubble-price">Worth $20,000</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="60" height="39">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#92400e" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#92400e" opacity="0.25"/>
+          </svg>
+          <div class="seller-icon">🧑</div>
+          <div class="seller-label">Seller A</div>
+        </div>
+
+        <div class="seller-unit">
+          <div class="thought-bubble good">
+            <div class="bubble-tier">✓ Good</div>
+            <div class="bubble-price">Worth $14,000</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="60" height="39">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#15803d" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#15803d" opacity="0.25"/>
+          </svg>
+          <div class="seller-icon">👩</div>
+          <div class="seller-label">Seller B</div>
+        </div>
+
+        <div class="seller-unit">
+          <div class="thought-bubble fair">
+            <div class="bubble-tier">⚠ Fair</div>
+            <div class="bubble-price">Worth $8,000</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="60" height="39">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#c2410c" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#c2410c" opacity="0.25"/>
+          </svg>
+          <div class="seller-icon">🧑</div>
+          <div class="seller-label">Seller C</div>
+        </div>
+
+        <div class="seller-unit">
+          <div class="thought-bubble lemon">
+            <div class="bubble-tier">🍋 Lemon</div>
+            <div class="bubble-price">Worth $2,000</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="60" height="39">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+            <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#991b1b" opacity="0.25"/>
+            <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#991b1b" opacity="0.25"/>
+          </svg>
+          <div class="seller-icon">👩</div>
+          <div class="seller-label">Seller D</div>
+        </div>
+
+      </div>
+
+      <!-- BARRIER -->
+      <div class="barrier-strip">
+        🔒 &nbsp; Information barrier — sellers keep this to themselves &nbsp; 🔒
+      </div>
+
+      <!-- BUYER -->
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#8b7355;margin-bottom:12px;text-align:center;">The buyer sees only:</div>
+      <div class="buyer-section">
+        <div class="buyer-figure">
+          <div class="buyer-icon">🛒</div>
+          <div class="buyer-lbl">You (buyer)</div>
+        </div>
+        <div class="buyer-thought">
+          <div class="bt-title">What I can see from the listings:</div>
+          <div class="buyer-sees-row">
+            <div class="buyer-sees-car">
+              <svg viewBox="0 0 64 42" width="46" height="30">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <div class="buyer-sees-label">Car A — ?</div>
+            </div>
+            <div class="buyer-sees-car">
+              <svg viewBox="0 0 64 42" width="46" height="30">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <div class="buyer-sees-label">Car B — ?</div>
+            </div>
+            <div class="buyer-sees-car">
+              <svg viewBox="0 0 64 42" width="46" height="30">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <div class="buyer-sees-label">Car C — ?</div>
+            </div>
+            <div class="buyer-sees-car">
+              <svg viewBox="0 0 64 42" width="46" height="30">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <div class="buyer-sees-label">Car D — ?</div>
+            </div>
+          </div>
+          <div class="buyer-avg-line">They all look the same to me… best offer: <strong>~$11,000</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="design-note">
+    <strong>Why it works:</strong> Thought bubbles are a universally understood visual language. The hazard-stripe barrier is visceral. Most importantly, the layout <em>tells the story spatially</em> — information flows down from sellers, hits a wall, and what reaches the buyer is degraded. Matches how Rick will narrate it.
+    <br><br><strong>Potential issue:</strong> Tallest of the three designs — requires significant vertical space. The seller figures (emoji people) are optional; they personalize the story but add height. The buyer section might need to be condensed for mobile/narrow screens.
+  </div>
+</div>
+
+<p style="font-size:12px;color:#475569;text-align:center;margin-top:16px;">Sketches generated May 2, 2026 &nbsp;·&nbsp; Seeds of Fortune talk prep &nbsp;·&nbsp; For Rick Antle's review</p>
+
+</body>
+</html>

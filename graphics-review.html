@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphics Review — akerlof-lemons.html</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f5f1e8; color: #2d2d2d; padding: 32px 20px 64px; }
+    h1 { font-size: 24px; font-weight: 700; color: #00356b; margin-bottom: 6px; }
+    .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
+    .card { background: white; border-radius: 14px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); max-width: 820px; }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .card-title { font-size: 18px; font-weight: 700; color: #00356b; }
+    .card-role { font-size: 12px; font-weight: 500; color: #6b7280; margin-top: 3px; }
+    .scores { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .score { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 64px; }
+    .score-label { font-size: 10px; color: #9ca3af; font-weight: 500; text-align: center; line-height: 1.2; }
+    .score-pill { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 99px; text-align: center; width: 100%; }
+    .good  { background: #d1fae5; color: #065f46; }
+    .ok    { background: #fef3c7; color: #92400e; }
+    .weak  { background: #fee2e2; color: #991b1b; }
+    .section { margin-bottom: 14px; }
+    .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 6px; }
+    .section-body { font-size: 14px; line-height: 1.65; color: #374151; }
+    .issue { background: #fef9e7; border-left: 3px solid #c9a227; border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 10px; font-size: 13px; color: #5c4d3d; line-height: 1.6; }
+    .issue strong { color: #92400e; }
+    .fix { background: #f0fdf4; border-left: 3px solid #22c55e; border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 8px; font-size: 13px; color: #166534; line-height: 1.6; }
+    .fix strong { color: #065f46; }
+    .preview { border-radius: 10px; overflow: hidden; background: #e8dcc8; padding: 14px; margin-bottom: 18px; }
+    .preview-label { font-size: 10px; font-weight: 600; color: #8b7355; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    /* --- mini token grid --- */
+    .mini-grid { display: flex; flex-direction: column; gap: 8px; }
+    .mini-row { display: flex; align-items: center; gap: 8px; }
+    .tier-label { font-size: 10px; font-weight: 600; width: 44px; text-align: right; flex-shrink: 0; }
+    .tokens { display: flex; gap: 6px; flex: 1; }
+    .token-car { width: 40px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .token-badge { font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; color: white; margin-left: 2px; }
+    /* --- mini calc table --- */
+    .mini-table { width: 100%; font-size: 12px; border-collapse: collapse; color: #5c4d3d; }
+    .mini-table th { text-align: left; padding-bottom: 6px; font-weight: 600; border-bottom: 1px solid #d4c4a8; font-size: 11px; color: #8b7355; }
+    .mini-table th:not(:first-child) { text-align: right; }
+    .mini-table td { padding: 4px 0; }
+    .mini-table td:not(:first-child) { text-align: right; }
+    .mini-table .faded td { opacity: 0.3; }
+    .mini-table tfoot td { font-weight: 700; border-top: 2px solid #c4a574; padding-top: 6px; color: #00356b; }
+    .offer-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; padding-top: 8px; margin-top: 8px; border-top: 1px solid #d4c4a8; }
+    /* --- mini escalation --- */
+    .esc-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; background: #f5f1e8; border-radius: 7px; margin-bottom: 6px; font-size: 13px; }
+    .esc-cost { font-weight: 700; margin-left: auto; white-space: nowrap; }
+    /* --- mini fix card --- */
+    .fix-card { background: #f0fdf4; border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; }
+    .fix-card-header { background: #dcfce7; padding: 7px 12px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #14532d; }
+    .fix-card-body { padding: 10px 12px; font-size: 12px; color: #166534; line-height: 1.6; }
+    /* --- mode bar --- */
+    .mode-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+    .mode-pill { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 500; }
+    .mode-active { font-weight: 700; }
+    /* --- spiral badge --- */
+    .spiral-badge { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 8px; background: #fef2f2; border-left: 4px solid #dc2626; }
+    /* --- capstone --- */
+    .capstone-row { display: flex; gap: 10px; padding: 8px; border-radius: 6px; background: #f5f1e8; margin-bottom: 6px; font-size: 12px; }
+    .capstone-topic { font-weight: 700; color: #00356b; min-width: 80px; flex-shrink: 0; line-height: 1.4; }
+    /* --- summary --- */
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 820px; margin-bottom: 32px; }
+    @media (max-width: 520px) { .summary-grid { grid-template-columns: 1fr; } .scores { justify-content: flex-start; } }
+    .summary-card { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .summary-card h3 { font-size: 13px; font-weight: 700; color: #00356b; margin-bottom: 10px; }
+    .summary-card ul { font-size: 13px; color: #374151; line-height: 1.7; list-style: none; }
+    .summary-card li::before { margin-right: 6px; }
+    .summary-card.strengths li::before { content: "✅"; }
+    .summary-card.concerns  li::before { content: "⚠️"; }
+    hr { border: none; border-top: 1px solid #e8dcc8; margin: 24px 0; }
+  </style>
+</head>
+<body>
+
+  <h1>Graphics Review — <code>akerlof-lemons.html</code></h1>
+  <p class="subtitle">Audience lens: very intelligent 16-year-old girls &nbsp;·&nbsp; Presenter tool, projected screen &nbsp;·&nbsp; May 4, 2026</p>
+
+  <!-- ── Summary ───────────────────────────────────────────────── -->
+  <div class="summary-grid">
+    <div class="summary-card strengths">
+      <h3>What's Working</h3>
+      <ul>
+        <li>Fix Cards — clean signal hierarchy, cost color coding is smart</li>
+        <li>Death Spiral Badge — immediate emotional punch</li>
+        <li>Closing Coda — punchy, memorable final frame</li>
+        <li>Mode Bar — correctly tracks the information state through the story</li>
+        <li>Capstone Connections — ties the framework to their actual work</li>
+      </ul>
+    </div>
+    <div class="summary-card concerns">
+      <h3>Needs Attention</h3>
+      <ul>
+        <li>Token Grid — tier color coding fights intuition (blue ≠ "best")</li>
+        <li>Token Grid — 9px value labels are invisible from 10 feet away</li>
+        <li>Token Grid — gray "?" tokens are visually indistinct at distance</li>
+        <li>Cost Escalation — the 2,500× cost jump looks visually identical to the others</li>
+        <li>Calculation Table — too dense for a projected screen</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- 1. TOKEN GRID                                               -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">1 · Token Grid</div>
+        <div class="card-role">Core visual — appears on 12 of 14 steps. Car / phone / building SVGs arranged in tier rows, fading on exit.</div>
+      </div>
+      <div class="scores">
+        <div class="score"><div class="score-label">Illustrates point</div><div class="score-pill ok">Mostly</div></div>
+        <div class="score"><div class="score-label">Simple to digest</div><div class="score-pill ok">Partly</div></div>
+        <div class="score"><div class="score-label">Visually appealing</div><div class="score-pill weak">Weak</div></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">As rendered (step c4 — Mint + Good exited)</div>
+      <div class="mini-grid">
+        <div class="mini-row">
+          <span class="tier-label" style="color:#9ca3af;"></span>
+          <div class="tokens">
+            <div class="token-car" style="background:#d1d5db;opacity:0.18;border-radius:5px;">🚗</div>
+            <div class="token-car" style="background:#d1d5db;opacity:0.18;border-radius:5px;">🚗</div>
+          </div><span style="font-size:10px;color:#9ca3af;">x2</span>
+        </div>
+        <div class="mini-row">
+          <span class="tier-label" style="color:#9ca3af;"></span>
+          <div class="tokens">
+            <div class="token-car" style="background:#d1d5db;opacity:0.18;border-radius:5px;">🚗</div>
+            <div class="token-car" style="background:#d1d5db;opacity:0.18;border-radius:5px;">🚗</div>
+            <div class="token-car" style="background:#d1d5db;opacity:0.18;border-radius:5px;">🚗</div>
+          </div><span style="font-size:10px;color:#9ca3af;">x3</span>
+        </div>
+        <div class="mini-row">
+          <span class="tier-label" style="color:#c2410c;">Fair</span>
+          <div class="tokens">
+            <div class="token-car" style="background:#f97316;border-radius:5px;">🚗</div>
+            <div class="token-car" style="background:#f97316;border-radius:5px;">🚗</div>
+            <div class="token-car" style="background:#f97316;border-radius:5px;">🚗</div>
+          </div><span style="font-size:10px;color:#c2410c;">x3</span>
+        </div>
+        <div class="mini-row">
+          <span class="tier-label" style="color:#713f12;">Lemon</span>
+          <div class="tokens">
+            <div class="token-car" style="background:#eab308;border-radius:5px;">🍋</div>
+            <div class="token-car" style="background:#eab308;border-radius:5px;">🍋</div>
+          </div><span style="font-size:10px;color:#713f12;">x2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Does it illustrate the point?</div>
+      <div class="section-body">Yes — the fading mechanic (exited sellers go to 18% opacity) is conceptually correct and the progressive disappearance of quality tiers is the core idea. The badge ("⭐", "✓", "⚠", "🍋") adds a quick-read quality signal.</div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <div class="section-label">Issue 1 — Color coding fights intuition</div>
+      <div class="issue"><strong>Problem:</strong> Mint = blue, Good = green, Fair = orange, Lemon = yellow. Blue doesn't mean "best" to most people — gold/amber does. And yellow for "lemon" is visually correct (lemon = yellow), but blue for premium feels arbitrary, not earned. A 16-year-old will have to consciously decode this instead of reading it at a glance.</div>
+      <div class="fix"><strong>Fix:</strong> Mint → gold/amber (#c9a227 — you already have this as your accent color!), Good → green (keep), Fair → orange (keep), Lemon → red. This maps to a stop-light / traffic-light mental model that is instantly readable.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Issue 2 — 9px value labels are invisible on projection</div>
+      <div class="issue"><strong>Problem:</strong> The per-token price labels (e.g., "$20K", "$14K") are rendered at <code>font-size: 9px</code>. On a 1080p projector at 15 feet, these are physically smaller than 2mm. Anyone past the third row cannot read them. These labels are doing important conceptual work — they show why the $20K seller refuses the $11K offer.</div>
+      <div class="fix"><strong>Fix:</strong> Move the value label inside or directly below the vehicle body at ≥13px. Or display the tier value once per row in the left-side label column instead of repeating it on every token.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Issue 3 — "?" gray tokens are indistinct</div>
+      <div class="issue"><strong>Problem:</strong> In "No Info" and "Symmetric" modes, all tokens render as the same flat gray (#9ca3af) with a "?" badge. On a projected screen they look like a uniform gray blob — no tier structure is visible. The point (everyone sees the same thing) is correct, but visually there's nothing to distinguish 10 identical gray cars from one another.</div>
+      <div class="fix"><strong>Fix:</strong> Keep the gray bodies but give each tier row a slightly different gray shade, or use a subtle outline in the eventual tier color (so the structure is hinted at, even when hidden). This lets the reveal feel more dramatic when the asymmetric colors appear.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- 2. LOT CALCULATION TABLE                                    -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">2 · Market Calculation Table</div>
+        <div class="card-role">Appears on 7 steps. Shows Quality / Count / Value / Total per tier, computes average, highlights buyer's offer.</div>
+      </div>
+      <div class="scores">
+        <div class="score"><div class="score-label">Illustrates point</div><div class="score-pill good">Strong</div></div>
+        <div class="score"><div class="score-label">Simple to digest</div><div class="score-pill ok">Mostly</div></div>
+        <div class="score"><div class="score-label">Visually appealing</div><div class="score-pill weak">Weak</div></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">As rendered (step c4 — only Fair + Lemon remain)</div>
+      <div style="background:white;border-radius:8px;padding:12px;">
+        <table class="mini-table">
+          <thead><tr><th>Quality</th><th>Count</th><th>Value</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr class="faded"><td>⭐ Mint</td><td>0</td><td>$20K</td><td>$0</td></tr>
+            <tr class="faded"><td>✓ Good</td><td>0</td><td>$14K</td><td>$0</td></tr>
+            <tr><td>⚠ Fair</td><td>3</td><td>$8K</td><td>$24K</td></tr>
+            <tr><td>🍋 Lemon</td><td>2</td><td>$2K</td><td>$4K</td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="2">Average</td><td colspan="2" style="text-align:right;">$5.6K</td></tr></tfoot>
+        </table>
+        <div class="offer-row"><span>Buyer's offer</span><span style="color:#f59e0b;">$5,600</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Does it illustrate the point?</div>
+      <div class="section-body">Yes — the faded rows (exited sellers) are the strongest element here. Watching the table shrink step by step makes the math undeniable. The buyer's offer row at the bottom lands the "this is what the rational buyer would pay" point cleanly.</div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <div class="section-label">Issue — Too dense for a projected classroom screen</div>
+      <div class="issue"><strong>Problem:</strong> Four columns, six rows, 12px body text, 3px row padding. This table is sized for reading at arm's length on a laptop, not for projecting in a classroom. The "Total" column adds precision but may just add clutter — students already grasp "$8K × 3 = $24K" if you say it aloud.</div>
+      <div class="fix"><strong>Fix:</strong> Increase row padding to ≥10px and bump body font to 14–15px. Consider dropping the "Total" column to simplify to Quality / Count / Value. The average row (the key number) should be visually larger than the data rows — not just bold.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- 3. COST ESCALATION PANEL                                    -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">3 · Cost Escalation Panel</div>
+        <div class="card-role">Appears on 2 steps (i2 + z0). Three rows: Used Car ~$40 / Used iPhone Free / Capital Markets $100K–$10M+/yr.</div>
+      </div>
+      <div class="scores">
+        <div class="score"><div class="score-label">Illustrates point</div><div class="score-pill ok">Mostly</div></div>
+        <div class="score"><div class="score-label">Simple to digest</div><div class="score-pill good">Good</div></div>
+        <div class="score"><div class="score-label">Visually appealing</div><div class="score-pill ok">Partly</div></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">As rendered</div>
+      <div class="esc-row"><span style="font-size:18px;">🚗</span><div><div style="font-size:13px;font-weight:600;color:#5c4d3d;">Used Car</div><div style="font-size:11px;color:#8b7355;">Commercial solution (Carfax)</div></div><span class="esc-cost" style="color:#22c55e;">~$40</span></div>
+      <div class="esc-row"><span style="font-size:18px;">📱</span><div><div style="font-size:13px;font-weight:600;color:#5c4d3d;">Used iPhone</div><div style="font-size:11px;color:#8b7355;">But buyer must seek it (Battery Health)</div></div><span class="esc-cost" style="color:#2563eb;">Free</span></div>
+      <div class="esc-row"><span style="font-size:18px;">🏢</span><div><div style="font-size:13px;font-weight:600;color:#5c4d3d;">Capital Markets</div><div style="font-size:11px;color:#8b7355;">Mandatory institutional infrastructure (SEC/Audit)</div></div><span class="esc-cost" style="color:#dc2626;">$100K–$10M+/yr</span></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Does it illustrate the point?</div>
+      <div class="section-body">Partly. The three-row format is clean and the color-coded cost figures (green / blue / red) create a gradient of severity. But the visual doesn't communicate the <em>magnitude</em> of the jump — $40 → $100K is 2,500× more expensive, yet all three rows are the same height and visual weight. The most important data point in the panel (the scale of the disparity) is essentially hidden.</div>
+      <div class="issue"><strong>The core problem:</strong> This is the "aha" moment of the entire talk — that information costs scale with stakes. But visually, a $40 fix and a $10M/yr fix look identical on screen. A teenager looking at this panel would need to calculate the difference mentally rather than feel it.</div>
+      <div class="fix"><strong>Fix:</strong> Add a simple horizontal bar behind each cost figure, scaled logarithmically. Even a rough bar (e.g., 4px for $40, 12px for Free-but-effortful, 80px for $10M+) makes the scale visible at a glance. Or use dramatically different font sizes for the cost figures — 14px for $40, 22px for $100K–$10M+.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- 4. FIX CARDS                                                -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">4 · Fix Cards</div>
+        <div class="card-role">Three variants (Carfax / Battery Health / SEC). Each shows title, cost, body text, outcome sentence.</div>
+      </div>
+      <div class="scores">
+        <div class="score"><div class="score-label">Illustrates point</div><div class="score-pill good">Strong</div></div>
+        <div class="score"><div class="score-label">Simple to digest</div><div class="score-pill good">Strong</div></div>
+        <div class="score"><div class="score-label">Visually appealing</div><div class="score-pill good">Good</div></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">As rendered (Carfax variant)</div>
+      <div class="fix-card">
+        <div class="fix-card-header"><span>✅ The Fix: Carfax</span><span style="color:#22c55e;">~$40 per report</span></div>
+        <div class="fix-card-body">
+          <p style="margin-bottom:8px;">In 1984, R.L. Polk created a vehicle history database. For about $40, any buyer can pull a full report: accidents, ownership history, mileage, service records. Sellers of good cars can now prove it.</p>
+          <p style="font-weight:600;">The information gap closes. Good cars return to market. Buyers pay fair prices; sellers of quality cars get fair value.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Assessment</div>
+      <div class="section-body">These are the best-executed graphics in the tool. The green color signals "solved" at a glance. The cost displayed in the header (and color-coded differently for each variant) creates the cost-escalation thread before the summary panel appears. The bold outcome sentence at the bottom gives students a quotable takeaway. No significant changes needed.</div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <div class="section-label">Minor note</div>
+      <div class="issue"><strong>Minor:</strong> On the SEC fix card, the cost "$100K–$10M+/yr" appears in red (error color), which is correct to signal "expensive." But this is a <em>solution</em> card — the red might subconsciously signal "this fix is bad" rather than "this fix is costly." Consider a deep orange or purple instead of error-red for the cost on this card only.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- 5. DEATH SPIRAL BADGE                                       -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">5 · Death Spiral Badge</div>
+        <div class="card-role">Appears on 4 steps (c5, c6, i1). Red-accented banner: "Death Spiral / Quality exits → average falls → more quality exits → …"</div>
+      </div>
+      <div class="scores">
+        <div class="score"><div class="score-label">Illustrates point</div><div class="score-pill good">Strong</div></div>
+        <div class="score"><div class="score-label">Simple to digest</div><div class="score-pill good">Strong</div></div>
+        <div class="score"><div class="score-label">Visually appealing</div><div class="score-pill good">Good</div></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">As rendered</div>
+      <div class="spiral-badge">
+        <span style="font-size:22px;">📉</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#dc2626;">Death Spiral</div>
+          <div style="font-size:11px;color:#991b1b;">Quality exits → average falls → more quality exits → …</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Assessment</div>
+      <div class="section-body">Works very well. Red background + left border + 📉 creates immediate emotional register (danger, collapse). The recursive "→ … →" formula is quotable and memorable — exactly the kind of phrase a 16-year-old will repeat to a friend later. The compact size means it doesn't dominate the screen when other elements are present. No changes needed.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- 6. CAPSTONE CONNECTIONS                                     -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">6 · Capstone Connections</div>
+        <div class="card-role">Appears on final step only (z0). Four rows linking IPOs / Fintech / Housing Finance / Credit Markets to information asymmetry.</div>
+      </div>
+      <div class="scores">
+        <div class="score"><div class="score-label">Illustrates point</div><div class="score-label"></div><div class="score-pill good">Strong</div></div>
+        <div class="score"><div class="score-label">Simple to digest</div><div class="score-pill ok">Mostly</div></div>
+        <div class="score"><div class="score-label">Visually appealing</div><div class="score-pill ok">Partly</div></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">As rendered</div>
+      <div style="border-radius:8px;border:2px solid #00356b;overflow:hidden;background:white;">
+        <div style="background:#00356b;color:white;padding:7px 12px;font-size:12px;font-weight:700;">Information in Your Capstone Topics</div>
+        <div style="padding:10px;">
+          <div class="capstone-row"><span class="capstone-topic">IPOs</span><span style="color:#5c4d3d;">Roadshow = company disclosing info to investors before pricing shares. S-1 filing = mandatory disclosure.</span></div>
+          <div class="capstone-row"><span class="capstone-topic">Fintech</span><span style="color:#5c4d3d;">Robinhood democratized market data access — information that was expensive and institutional, now free to retail investors.</span></div>
+          <div class="capstone-row"><span class="capstone-topic">Housing Finance</span><span style="color:#5c4d3d;">Mortgage underwriting is information gathering: income verification, credit check, appraisal.</span></div>
+          <div class="capstone-row"><span class="capstone-topic">Credit Markets</span><span style="color:#5c4d3d;">Credit scores solved the personal lending lemons problem — standardized information that allows lending to scale.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Does it illustrate the point?</div>
+      <div class="section-body">Yes — this is the payoff slide for the students who are about to work on these exact topics. The Yale blue header signals importance and the topic names are immediately recognizable. Each row's connection is crisp enough to spark a "oh, that's what that is" moment.</div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <div class="section-label">Issue — Visually flat; all rows look equally important</div>
+      <div class="issue"><strong>Problem:</strong> Four identical beige rows with identical formatting. Students likely care more about their own topic than the others — but there's no visual hierarchy to help them locate it fast. When this appears on screen, a student working on Housing Finance has to read all four rows to find hers.</div>
+      <div class="fix"><strong>Fix:</strong> Add a tiny topic icon before each row (🏛 IPOs, 📲 Fintech, 🏠 Housing, 💳 Credit) — not for decoration, but to make rows scannable at distance. Optionally, on the projected version Rick could click each row to highlight it during discussion. But even just the icons would make this much more readable from the back of a classroom.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- 7. MODE BAR                                                 -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">7 · Information Mode Bar</div>
+        <div class="card-role">Appears on 13 of 14 steps. Four pill states: No Info · Symmetric · Asymmetric · Fixed ✓ — one highlighted as active.</div>
+      </div>
+      <div class="scores">
+        <div class="score"><div class="score-label">Illustrates point</div><div class="score-pill good">Strong</div></div>
+        <div class="score"><div class="score-label">Simple to digest</div><div class="score-pill ok">Mostly</div></div>
+        <div class="score"><div class="score-label">Visually appealing</div><div class="score-pill good">Good</div></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-label">As rendered (Asymmetric active)</div>
+      <div class="mode-bar">
+        <div class="mode-pill" style="background:#f9fafb;color:#9ca3af;border:1.5px solid #e5e7eb;">No Info</div>
+        <div class="mode-pill" style="background:#f9fafb;color:#9ca3af;border:1.5px solid #e5e7eb;">Symmetric</div>
+        <div class="mode-pill mode-active" style="background:#fff7ed;color:#c2410c;border:1.5px solid #fed7aa;">Asymmetric</div>
+        <div class="mode-pill" style="background:#f9fafb;color:#9ca3af;border:1.5px solid #e5e7eb;">Fixed ✓</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Assessment</div>
+      <div class="section-body">Strong. Functions like a chapter indicator — students can always see where in the information story they are. The active state is clear. The sequence reads left-to-right as a natural progression.</div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <div class="section-label">Minor note</div>
+      <div class="issue"><strong>Minor:</strong> "Asymmetric" is economics jargon. A 16-year-old hearing this word for the first time might not connect "Asymmetric" on the bar to "sellers know more than buyers" in the narrative. A small parenthetical in the pill — e.g., "Asymmetric (seller knows)" — would anchor it without adding much clutter.</div>
+    </div>
+  </div>
+
+  <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:32px;">Review generated May 2, 2026 &nbsp;·&nbsp; Seeds of Fortune talk prep</p>
+
+</body>
+</html>

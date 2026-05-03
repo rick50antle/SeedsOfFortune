@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opening Graphic — Sketches v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; padding: 32px 24px 80px; }
+
+    h1  { font-size: 20px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+    .pg { font-size: 13px; color: #64748b; margin-bottom: 44px; }
+
+    .sketch      { margin-bottom: 60px; }
+    .sk-tag      { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #475569; margin-bottom: 5px; }
+    .sk-title    { font-size: 22px; font-weight: 800; color: #f1f5f9; margin-bottom: 5px; }
+    .sk-desc     { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 18px; max-width: 680px; }
+
+    .canvas { background: #f5f1e8; border-radius: 16px; padding: 26px 22px; max-width: 760px; }
+
+    .note { margin-top: 14px; padding: 12px 16px; background: rgba(255,255,255,.05); border-radius: 8px;
+            border-left: 3px solid #c9a227; font-size: 13px; color: #94a3b8; line-height: 1.6; max-width: 760px; }
+    .note strong { color: #fcd34d; }
+
+    /* ── car svg ── */
+    .car { display: block; }
+
+    /* ── speech bubble pointing LEFT  (tail on left  → emoji is left of bubble) ── */
+    .bub-r {
+      position: relative; border-radius: 10px; padding: 7px 11px;
+      line-height: 1.35; white-space: nowrap;
+    }
+    .bub-r::before {
+      content: ''; position: absolute; left: -9px; top: 50%; transform: translateY(-50%);
+      border: 8px solid transparent; border-right-width: 9px;
+    }
+
+    /* ── speech bubble pointing RIGHT (tail on right → emoji is right of bubble) ── */
+    .bub-l {
+      position: relative; border-radius: 10px; padding: 7px 11px;
+      line-height: 1.35;
+    }
+    .bub-l::before {
+      content: ''; position: absolute; right: -9px; top: 50%; transform: translateY(-50%);
+      border: 8px solid transparent; border-left-width: 9px;
+    }
+
+    /* tier colours */
+    .mint-bub  { background: #fef3c7; border: 1.5px solid #c9a227; color: #78350f; }
+    .mint-bub::before  { border-right-color: #c9a227; }
+
+    .good-bub  { background: #dcfce7; border: 1.5px solid #22c55e; color: #14532d; }
+    .good-bub::before  { border-right-color: #22c55e; }
+
+    .fair-bub  { background: #ffedd5; border: 1.5px solid #f97316; color: #7c2d12; }
+    .fair-bub::before  { border-right-color: #f97316; }
+
+    .lemon-bub { background: #fee2e2; border: 1.5px solid #dc2626; color: #7f1d1d; }
+    .lemon-bub::before { border-right-color: #dc2626; }
+
+    /* buyer bubble pointing right */
+    .buyer-bub { background: #eff6ff; border: 1.5px solid #93c5fd; color: #1e40af; }
+    .buyer-bub::before { border-left-color: #93c5fd; }
+
+    .bub-tier  { font-size: 12px; font-weight: 800; }
+    .bub-val   { font-size: 12px; font-weight: 600; margin-top: 1px; }
+    .bub-small { font-size: 11px; font-weight: 500; }
+
+    .emoji-fig { font-size: 26px; line-height: 1; }
+    .fig-lbl   { font-size: 10px; font-weight: 600; color: #8b7355; margin-top: 2px; text-align: center; }
+
+  </style>
+</head>
+<body>
+
+<h1>Opening Graphic — Layout Sketches</h1>
+<p class="pg">Sellers left · Cars center · Buyer right · Emoji people · Thought bubbles · Zoom viewing</p>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     VARIATION 1 — Straight Rows
+═══════════════════════════════════════════════════════════════ -->
+<div class="sketch">
+  <div class="sk-tag">Variation 1</div>
+  <div class="sk-title">Straight Rows</div>
+  <div class="sk-desc">Each seller sits in their own row with their car. The buyer gets one column on the right: four gray versions of those same cars, all looking identical. Cleanest to read at a glance.</div>
+
+  <div class="canvas">
+
+    <!-- column header row -->
+    <div style="display:grid; grid-template-columns:180px 1fr 200px; gap:0; margin-bottom:14px; align-items:center;">
+      <div style="text-align:center; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8b7355; padding:5px 10px; background:#e8dcc8; border-radius:6px;">Sellers</div>
+      <div style="text-align:center; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8b7355; padding:5px 10px;">The Cars</div>
+      <div style="text-align:center; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8b7355; padding:5px 10px; background:#e8dcc8; border-radius:6px;">Buyer</div>
+    </div>
+
+    <!-- data rows -->
+    <div style="display:grid; grid-template-columns:180px 1fr 200px; gap:0; align-items:center;">
+
+      <!-- ── row 1 — Mint ── -->
+      <!-- seller -->
+      <div style="display:flex; align-items:center; gap:8px; padding:8px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div class="emoji-fig">👩</div>
+          <div class="fig-lbl">Seller A</div>
+        </div>
+        <div class="bub-r mint-bub">
+          <div class="bub-tier">⭐ Mint</div>
+          <div class="bub-val">Worth $20,000</div>
+        </div>
+      </div>
+      <!-- car -->
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="80" height="52" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#92400e" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#92400e" opacity=".3"/>
+        </svg>
+      </div>
+      <!-- buyer sees: row 1 -->
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="68" height="44" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#9ca3af" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#9ca3af" opacity=".3"/>
+          <text x="32" y="16" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="700">?</text>
+        </svg>
+      </div>
+
+      <!-- ── row 2 — Good ── -->
+      <div style="display:flex; align-items:center; gap:8px; padding:8px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div class="emoji-fig">🧑</div>
+          <div class="fig-lbl">Seller B</div>
+        </div>
+        <div class="bub-r good-bub">
+          <div class="bub-tier">✓ Good</div>
+          <div class="bub-val">Worth $14,000</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="80" height="52" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#15803d" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#15803d" opacity=".3"/>
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="68" height="44" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <text x="32" y="16" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="700">?</text>
+        </svg>
+      </div>
+
+      <!-- ── row 3 — Fair ── -->
+      <div style="display:flex; align-items:center; gap:8px; padding:8px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div class="emoji-fig">👨</div>
+          <div class="fig-lbl">Seller C</div>
+        </div>
+        <div class="bub-r fair-bub">
+          <div class="bub-tier">⚠ Fair</div>
+          <div class="bub-val">Worth $8,000</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="80" height="52" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#c2410c" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#c2410c" opacity=".3"/>
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="68" height="44" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <text x="32" y="16" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="700">?</text>
+        </svg>
+      </div>
+
+      <!-- ── row 4 — Lemon ── -->
+      <div style="display:flex; align-items:center; gap:8px; padding:8px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div class="emoji-fig">👩</div>
+          <div class="fig-lbl">Seller D</div>
+        </div>
+        <div class="bub-r lemon-bub">
+          <div class="bub-tier">🍋 Lemon</div>
+          <div class="bub-val">Worth $2,000</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="80" height="52" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#991b1b" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#991b1b" opacity=".3"/>
+        </svg>
+      </div>
+      <div style="display:flex; justify-content:center; align-items:center; padding:8px 0;">
+        <svg viewBox="0 0 64 42" width="68" height="44" class="car">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+          <text x="32" y="16" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="700">?</text>
+        </svg>
+      </div>
+
+    </div><!-- end grid -->
+
+    <!-- buyer row at bottom -->
+    <div style="margin-top:14px; border-top:1.5px solid #d4c4a8; padding-top:14px; display:flex; align-items:center; justify-content:flex-end; gap:12px;">
+      <div class="bub-l buyer-bub" style="max-width:340px;">
+        <div style="font-size:12px; font-weight:700; color:#1e40af; margin-bottom:4px;">All I can see: 4 used cars, all look the same</div>
+        <div style="font-size:12px; color:#1d4ed8; font-weight:600;">Best guess → offer the average: <strong>$11,000</strong></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+        <div class="emoji-fig">🛒</div>
+        <div class="fig-lbl">Buyer</div>
+      </div>
+    </div>
+
+  </div><!-- canvas -->
+
+  <div class="note">
+    <strong>What works:</strong> Row-by-row alignment makes it crystal clear which seller owns which car. The gray cars in the right column mirror the colored cars one-for-one — same shape, same position, just stripped of information. The buyer's summary sits at the bottom right, naturally where the eye lands last.
+    <br><br><strong>One decision:</strong> The buyer column currently shows 4 separate gray cars. Alternative: collapse them into one car image with a "×4" label, emphasizing that to the buyer they're indistinguishable.
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     VARIATION 2 — Big Bubble
+═══════════════════════════════════════════════════════════════ -->
+<div class="sketch">
+  <div class="sk-tag">Variation 2</div>
+  <div class="sk-title">Big Bubble</div>
+  <div class="sk-desc">Sellers and their colorful cars on the left half. Buyer on the right with one large thought bubble containing all four gray cars — visually expressing that to the buyer, these cars are a single undifferentiated category.</div>
+
+  <div class="canvas">
+    <div style="display:grid; grid-template-columns:1fr 2px 1fr; gap:16px; align-items:center;">
+
+      <!-- LEFT HALF — sellers + colored cars -->
+      <div>
+        <div style="text-align:center; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8b7355; margin-bottom:12px;">Each seller's private knowledge</div>
+
+        <!-- mint -->
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <span style="font-size:22px;">👩</span>
+            <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller A</span>
+          </div>
+          <div class="bub-r mint-bub" style="flex-shrink:0;">
+            <div class="bub-tier">⭐ Mint — $20K</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="64" height="42">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <!-- good -->
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <span style="font-size:22px;">🧑</span>
+            <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller B</span>
+          </div>
+          <div class="bub-r good-bub" style="flex-shrink:0;">
+            <div class="bub-tier">✓ Good — $14K</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="64" height="42">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <!-- fair -->
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <span style="font-size:22px;">👨</span>
+            <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller C</span>
+          </div>
+          <div class="bub-r fair-bub" style="flex-shrink:0;">
+            <div class="bub-tier">⚠ Fair — $8K</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="64" height="42">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <!-- lemon -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+            <span style="font-size:22px;">👩</span>
+            <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller D</span>
+          </div>
+          <div class="bub-r lemon-bub" style="flex-shrink:0;">
+            <div class="bub-tier">🍋 Lemon — $2K</div>
+          </div>
+          <svg viewBox="0 0 64 42" width="64" height="42">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- DIVIDER -->
+      <div style="background:#c4a574; align-self:stretch; opacity:.4;"></div>
+
+      <!-- RIGHT HALF — buyer + big bubble -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+        <div style="text-align:center; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8b7355;">What the buyer sees</div>
+
+        <!-- big thought bubble -->
+        <div style="background:#eff6ff; border:2px solid #93c5fd; border-radius:16px; padding:16px 18px; width:100%; position:relative;">
+          <!-- cloud dots indicating thought bubble -->
+          <div style="position:absolute; bottom:-10px; right:40px; display:flex; gap:3px; align-items:flex-end;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#93c5fd;"></div>
+            <div style="width:5px;height:5px;border-radius:50%;background:#93c5fd;"></div>
+            <div style="width:3px;height:3px;border-radius:50%;background:#93c5fd;"></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+            <!-- 4 identical gray cars -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+              <svg viewBox="0 0 64 42" width="58" height="38">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <span style="font-size:10px;color:#6b7280;font-weight:600;">Car A — ?</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+              <svg viewBox="0 0 64 42" width="58" height="38">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <span style="font-size:10px;color:#6b7280;font-weight:600;">Car B — ?</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+              <svg viewBox="0 0 64 42" width="58" height="38">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <span style="font-size:10px;color:#6b7280;font-weight:600;">Car C — ?</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+              <svg viewBox="0 0 64 42" width="58" height="38">
+                <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+                <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+                <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              </svg>
+              <span style="font-size:10px;color:#6b7280;font-weight:600;">Car D — ?</span>
+            </div>
+          </div>
+          <div style="background:#dbeafe; border-radius:8px; padding:8px 10px; text-align:center;">
+            <div style="font-size:11px; color:#1e40af; font-weight:600;">They all look the same to me…</div>
+            <div style="font-size:14px; font-weight:800; color:#1e3a8a; margin-top:2px;">Best offer: $11,000</div>
+          </div>
+        </div>
+
+        <!-- buyer figure below the bubble -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <span style="font-size:32px;">🛒</span>
+          <span style="font-size:11px;font-weight:700;color:#1e40af;">Buyer</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>What works:</strong> The big bubble on the right creates a strong visual contrast with the left side — colorful and differentiated vs. gray and uniform. The cloud dots (thought bubble convention) make it feel more casual and teen-friendly. The 2×2 grid inside the bubble emphasizes "these all look the same" more than a column would.
+    <br><br><strong>One decision:</strong> The dividing line is subtle here. Could add a lock icon on it, or label it "Information barrier."
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     VARIATION 3 — Connected by Arrows
+═══════════════════════════════════════════════════════════════ -->
+<div class="sketch">
+  <div class="sk-tag">Variation 3</div>
+  <div class="sk-title">Connected by Arrows</div>
+  <div class="sk-desc">Same seller-car-buyer layout, but light arrows run from each seller to their car, and from the cars to the buyer. The arrows going to the buyer all converge on a single question-mark bubble — visually showing that information flows freely from seller to car, but gets blocked before it reaches the buyer.</div>
+
+  <div class="canvas">
+    <div style="display:flex; align-items:stretch; gap:0;">
+
+      <!-- SELLERS COLUMN -->
+      <div style="display:flex; flex-direction:column; justify-content:space-around; gap:0; padding-right:4px;">
+        <!-- seller A -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0;">
+          <span style="font-size:24px;">👩</span>
+          <div class="bub-r mint-bub" style="margin-left:4px;">
+            <div style="font-size:11px;font-weight:800;">⭐ $20K</div>
+          </div>
+          <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller A</span>
+        </div>
+        <!-- seller B -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0;">
+          <span style="font-size:24px;">🧑</span>
+          <div class="bub-r good-bub" style="margin-left:4px;">
+            <div style="font-size:11px;font-weight:800;">✓ $14K</div>
+          </div>
+          <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller B</span>
+        </div>
+        <!-- seller C -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0;">
+          <span style="font-size:24px;">👨</span>
+          <div class="bub-r fair-bub" style="margin-left:4px;">
+            <div style="font-size:11px;font-weight:800;">⚠ $8K</div>
+          </div>
+          <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller C</span>
+        </div>
+        <!-- seller D -->
+        <div style="display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0;">
+          <span style="font-size:24px;">👩</span>
+          <div class="bub-r lemon-bub" style="margin-left:4px;">
+            <div style="font-size:11px;font-weight:800;">🍋 $2K</div>
+          </div>
+          <span style="font-size:9px;color:#8b7355;font-weight:600;">Seller D</span>
+        </div>
+      </div>
+
+      <!-- ARROWS LEFT → CARS -->
+      <div style="display:flex; flex-direction:column; justify-content:space-around; align-items:center; padding:0 6px;">
+        <div style="font-size:16px; color:#c4a574; padding:12px 0;">→</div>
+        <div style="font-size:16px; color:#c4a574; padding:12px 0;">→</div>
+        <div style="font-size:16px; color:#c4a574; padding:12px 0;">→</div>
+        <div style="font-size:16px; color:#c4a574; padding:12px 0;">→</div>
+      </div>
+
+      <!-- CARS COLUMN -->
+      <div style="display:flex; flex-direction:column; justify-content:space-around; align-items:center; gap:0; padding:0 8px;">
+        <div style="padding:8px 0;">
+          <svg viewBox="0 0 64 42" width="72" height="47">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div style="padding:8px 0;">
+          <svg viewBox="0 0 64 42" width="72" height="47">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div style="padding:8px 0;">
+          <svg viewBox="0 0 64 42" width="72" height="47">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div style="padding:8px 0;">
+          <svg viewBox="0 0 64 42" width="72" height="47">
+            <rect x="4" y="20" width="56" height="17" rx="3" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <circle cx="17" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+            <circle cx="47" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- BLOCKED ARROWS + LOCK -->
+      <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding:0 4px; gap:4px; position:relative;">
+        <!-- vertical dashed barrier -->
+        <div style="position:absolute; top:0; bottom:0; left:50%; width:2px;
+                    background: repeating-linear-gradient(to bottom, #c4a574 0, #c4a574 6px, transparent 6px, transparent 12px);"></div>
+        <div style="z-index:1; background:#f5f1e8; padding:4px;">
+          <div style="font-size:18px;">🔒</div>
+        </div>
+        <div style="z-index:1; background:#f5f1e8; padding:2px;">
+          <div style="writing-mode:vertical-rl; transform:rotate(180deg); font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8b7355; white-space:nowrap;">Info barrier</div>
+        </div>
+        <!-- blocked X marks -->
+        <div style="z-index:1; background:#f5f1e8; padding:2px; font-size:13px; color:#dc2626; font-weight:800; display:flex; flex-direction:column; gap:14px; margin-top:4px;">
+          <span>✕</span><span>✕</span><span>✕</span><span>✕</span>
+        </div>
+      </div>
+
+      <!-- BUYER COLUMN -->
+      <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px; padding-left:8px; flex:1;">
+        <div style="text-align:center; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#8b7355; margin-bottom:4px;">What gets through</div>
+
+        <!-- buyer thought bubble — all look same -->
+        <div style="background:#eff6ff; border:2px solid #93c5fd; border-radius:14px; padding:14px; width:100%; position:relative;">
+          <div style="position:absolute; left:-10px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:3px; align-items:flex-end;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#93c5fd;"></div>
+            <div style="width:4px;height:4px;border-radius:50%;background:#93c5fd;"></div>
+            <div style="width:2px;height:2px;border-radius:50%;background:#93c5fd;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-around; margin-bottom:10px; gap:4px;">
+            <svg viewBox="0 0 64 42" width="48" height="32">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+            <svg viewBox="0 0 64 42" width="48" height="32">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div style="display:flex; justify-content:space-around; margin-bottom:10px; gap:4px;">
+            <svg viewBox="0 0 64 42" width="48" height="32">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+            <svg viewBox="0 0 64 42" width="48" height="32">
+              <rect x="4" y="20" width="56" height="17" rx="3" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="2"/>
+              <circle cx="17" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+              <circle cx="47" cy="37" r="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div style="background:#dbeafe; border-radius:6px; padding:6px 8px; text-align:center; font-size:12px; font-weight:700; color:#1e3a8a;">
+            All identical to me → $11,000?
+          </div>
+        </div>
+
+        <!-- buyer emoji -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <span style="font-size:28px;">🛒</span>
+          <span style="font-size:11px;font-weight:700;color:#1e40af;">Buyer</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>What works:</strong> The red ✕ marks on the barrier make it visceral and clear that information is being actively blocked, not just absent. The dashed vertical line is a classic "wall" convention. The cloud dots on the left side of the buyer bubble indicate the thought is coming from the buyer, not from the cars.
+    <br><br><strong>One decision:</strong> The ✕ marks next to each blocked arrow could instead be 🔇 or 🚫 icons for more personality. Also, the arrows from sellers → cars could have the tier color (gold, green, orange, red) to reinforce that the cars carry known information — it just doesn't pass the wall.
+  </div>
+</div>
+
+<p style="font-size:12px;color:#475569;text-align:center;margin-top:8px;">Design sketches v2 · May 2, 2026 · Seeds of Fortune</p>
+
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook Marketplace — Seeds of Fortune</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f1e8;
+      padding: 32px 24px 64px;
+    }
+
+    .scene { max-width: 660px; margin: 0 auto; }
+
+    /* ── Title ── */
+    .title    { text-align:center; font-size:22px; font-weight:800; color:#00356b; margin-bottom:4px; }
+    .subtitle { text-align:center; font-size:13px; color:#8b7355; margin-bottom:28px; }
+
+    /* ── Two columns ── */
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .col { display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+    .col-label {
+      font-size:11px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:#8b7355; background:#e8dcc8;
+      padding:5px 14px; border-radius:6px; text-align:center; white-space:nowrap;
+    }
+
+    /* ── Seller deck stack ── */
+    /*  Card: 230 × 186. Stack container adds 24px to each dim for shadow layers. */
+    .stack { position:relative; width:254px; height:212px; }
+
+    .sh {
+      position:absolute; width:230px; height:186px;
+      border-radius:14px; background:#d4c4a8; border:2px solid #c4a574;
+      transition:opacity .4s;
+    }
+    .sh.z1 { top:16px; left:24px; z-index:1; }
+    .sh.z2 { top:8px;  left:16px; z-index:2; }
+    .sh.z3 { top:0;    left:8px;  z-index:3; }
+
+    .card-wrap {
+      position:absolute; top:24px; left:0;
+      width:230px; height:186px; z-index:4; perspective:900px;
+      cursor:pointer;
+    }
+
+    .card {
+      width:100%; height:100%; border-radius:14px; overflow:hidden;
+      box-shadow:0 6px 22px rgba(0,0,0,.14);
+      transition:transform .26s cubic-bezier(.55,0,.45,1);
+      transform-origin:center; backface-visibility:hidden;
+    }
+    .card.flipping { transform:rotateY(90deg); }
+
+    .card-body {
+      width:100%; height:100%;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:space-between;
+      padding:12px 14px 11px;
+    }
+
+    .c-who   { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+    .c-badge { font-size:13px; font-weight:700; padding:3px 11px; border-radius:99px; }
+    .c-price { font-size:26px; font-weight:800; line-height:1; }
+
+    .s-counter { font-size:12px; font-weight:600; color:#a8977c; }
+
+    /* ── Right column: Your listings ── */
+    .your-listings {
+      background:#e8dcc8; border-radius:12px; padding:14px 12px;
+      width:230px;
+    }
+    .yl-label {
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.07em; color:#8b7355; margin-bottom:10px; text-align:center;
+    }
+    .yl-cars { display:flex; gap:8px; justify-content:center; margin-bottom:10px; }
+    .yl-note {
+      font-size:12px; font-weight:600; color:#5c4d3d;
+      text-align:center; line-height:1.5;
+      padding:8px; background:#d4c4a8; border-radius:8px;
+    }
+
+    /* ── Offer simulation ── */
+    .sim {
+      background:white; border-radius:14px;
+      border:2px solid #e8dcc8; padding:20px 22px;
+    }
+
+    .sim-headline {
+      font-size:16px; font-weight:800; color:#00356b;
+      margin-bottom:4px;
+    }
+    .sim-sub {
+      font-size:13px; color:#5c4d3d; margin-bottom:18px; line-height:1.5;
+    }
+
+    /* Offer + result side by side */
+    .sim-row {
+      display:grid; grid-template-columns:1fr 1fr; gap:16px;
+      align-items:start;
+    }
+
+    /* Offer button area */
+    .offer-area { display:flex; flex-direction:column; align-items:center; gap:12px; }
+
+    .offer-btn {
+      background:#00356b; color:white; border:none;
+      border-radius:10px; padding:14px 0; width:100%;
+      font-size:15px; font-weight:700; cursor:pointer;
+      font-family:'Inter',sans-serif;
+      transition:background .15s, transform .1s;
+    }
+    .offer-btn:hover  { background:#002a55; }
+    .offer-btn:active { transform:scale(.97); }
+    .offer-btn:disabled { background:#9ca3af; cursor:default; }
+
+    /* Result card */
+    .result-area {
+      min-height:170px; border-radius:12px;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:8px; padding:14px 12px;
+      transition:background .3s, border-color .3s;
+    }
+    .result-area.empty { background:#f9fafb; border:2px dashed #d1d5db; }
+    .result-area.spinning { background:#f0f9ff; border:2px solid #bae6fd; }
+
+    .result-tag {
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .result-tier  { font-size:15px; font-weight:800; }
+    .result-worth { font-size:13px; font-weight:600; }
+    .result-verdict {
+      font-size:13px; font-weight:700; text-align:center;
+      padding:6px 10px; border-radius:8px; line-height:1.4;
+    }
+
+    /* Record strip */
+    .record {
+      margin-top:16px; padding:12px 16px;
+      background:#f5f1e8; border-radius:10px;
+      display:flex; align-items:center; gap:0; flex-wrap:wrap;
+    }
+    .record-item {
+      flex:1; min-width:80px; text-align:center;
+      padding:0 8px;
+    }
+    .record-item + .record-item { border-left:1.5px solid #d4c4a8; }
+    .rec-num   { font-size:22px; font-weight:800; color:#00356b; line-height:1; }
+    .rec-label { font-size:10px; font-weight:600; color:#8b7355; margin-top:2px; text-transform:uppercase; letter-spacing:.05em; }
+
+    /* Reset btn */
+    .reset-wrap { text-align:center; margin-top:12px; }
+    .reset-btn {
+      background:none; border:1.5px solid #c4a574; color:#8b7355;
+      border-radius:8px; padding:7px 18px; font-size:12px; font-weight:600;
+      cursor:pointer; font-family:'Inter',sans-serif;
+    }
+    .reset-btn:hover { background:#e8dcc8; }
+  </style>
+</head>
+<body>
+<div class="scene">
+
+  <div class="title">Meet the Facebook Marketplace</div>
+  <div class="subtitle">Four used cars. Four sellers. You want to buy one.</div>
+
+  <!-- ── TOP: two decks ── -->
+  <div class="columns">
+
+    <!-- LEFT: seller deck -->
+    <div class="col">
+      <div class="col-label">What each seller privately knows</div>
+      <div class="stack">
+        <div class="sh z1" id="ss1"></div>
+        <div class="sh z2" id="ss2"></div>
+        <div class="sh z3" id="ss3"></div>
+        <div class="card-wrap" onclick="flipSeller()">
+          <div class="card" id="sCard"></div>
+        </div>
+      </div>
+      <div class="s-counter" id="sCtr">Card 1 of 4 — click to flip</div>
+    </div>
+
+    <!-- RIGHT: your view -->
+    <div class="col">
+      <div class="col-label">What you see</div>
+      <div class="your-listings">
+        <div class="yl-label">Your 4 listings</div>
+        <div class="yl-cars" id="yourCars"></div>
+        <div class="yl-note">All four look identical to you.<br>You can't tell them apart.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── BOTTOM: simulation ── -->
+  <div class="sim">
+    <div class="sim-headline">Your turn</div>
+    <div class="sim-sub">
+      You could offer <strong>$20,000</strong> — any seller will accept at that price.
+      But which car will you actually get?
+    </div>
+
+    <div class="sim-row">
+
+      <!-- Offer button + record -->
+      <div class="offer-area">
+        <button class="offer-btn" id="offerBtn">Offer $20,000 →</button>
+        <div class="record" id="record">
+          <div class="record-item">
+            <div class="rec-num" id="recTotal">0</div>
+            <div class="rec-label">Offers</div>
+          </div>
+          <div class="record-item">
+            <div class="rec-num" style="color:#22c55e;" id="recFair">0</div>
+            <div class="rec-label">Fair deal</div>
+          </div>
+          <div class="record-item">
+            <div class="rec-num" style="color:#dc2626;" id="recBurned">0</div>
+            <div class="rec-label">Overpaid</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result card -->
+      <div class="result-area empty" id="resultArea">
+        <div style="font-size:28px; color:#d1d5db;">?</div>
+        <div style="font-size:12px; color:#9ca3af; font-weight:600;">
+          Make an offer to find out
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="reset-wrap">
+    <button class="reset-btn" onclick="resetAll()">↺ Start over</button>
+  </div>
+
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────
+const TIERS = [
+  { bg:'#fef3c7', border:'#c9a227', txt:'#78350f',
+    carFill:'#c9a227', carStroke:'#92400e',
+    badge:'⭐ Mint',  price:'$20,000', worth:20000, who:'Seller A' },
+  { bg:'#dcfce7', border:'#22c55e', txt:'#14532d',
+    carFill:'#22c55e', carStroke:'#15803d',
+    badge:'✓ Good',  price:'$14,000', worth:14000, who:'Seller B' },
+  { bg:'#ffedd5', border:'#f97316', txt:'#7c2d12',
+    carFill:'#f97316', carStroke:'#c2410c',
+    badge:'⚠ Fair',  price:'$8,000',  worth:8000,  who:'Seller C' },
+  { bg:'#fee2e2', border:'#dc2626', txt:'#7f1d1d',
+    carFill:'#dc2626', carStroke:'#991b1b',
+    badge:'🍋 Lemon', price:'$2,000',  worth:2000,  who:'Seller D' },
+];
+
+// ── SVG helpers ───────────────────────────────────────────────
+function carSVG(fill, stroke, w, h) {
+  return `<svg viewBox="0 0 64 42" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="20" width="56" height="17" rx="3" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+    <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+    <circle cx="17" cy="37" r="5" fill="#374151" stroke="${stroke}" stroke-width="1.5"/>
+    <circle cx="47" cy="37" r="5" fill="#374151" stroke="${stroke}" stroke-width="1.5"/>
+    <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="${stroke}" opacity=".3"/>
+    <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="${stroke}" opacity=".3"/>
+  </svg>`;
+}
+
+// ── Seller deck state ─────────────────────────────────────────
+let sellerIdx  = 0;
+let sellerBusy = false;
+
+function refreshShadows() {
+  const behind = 3 - sellerIdx;
+  const ops = [0, 0.70, 0.50, 0.28];
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('ss'+i).style.opacity = (i <= behind) ? ops[i] : '0';
+  }
+}
+
+function paintSellerCard(i) {
+  const s = TIERS[i];
+  const card = document.getElementById('sCard');
+  card.style.cssText = `background:${s.bg}; border:2.5px solid ${s.border};`;
+  card.innerHTML = `<div class="card-body">
+    <div class="c-who" style="color:${s.txt};">${s.who}</div>
+    ${carSVG(s.carFill, s.carStroke, 116, 76)}
+    <div class="c-badge" style="background:${s.border}18; color:${s.txt}; border:1.5px solid ${s.border};">
+      ${s.badge}
+    </div>
+    <div class="c-price" style="color:${s.txt};">${s.price}</div>
+  </div>`;
+}
+
+function flipSeller() {
+  if (sellerBusy) return;
+  sellerBusy = true;
+  const card = document.getElementById('sCard');
+  card.classList.add('flipping');
+  setTimeout(() => {
+    sellerIdx = (sellerIdx + 1) % 4;
+    paintSellerCard(sellerIdx);
+    refreshShadows();
+    const ctr = document.getElementById('sCtr');
+    ctr.textContent = `Card ${sellerIdx + 1} of 4 — click to flip`;
+    card.classList.remove('flipping');
+    sellerBusy = false;
+  }, 260);
+}
+
+// ── Your listings (static) ────────────────────────────────────
+function buildYourCars() {
+  const wrap = document.getElementById('yourCars');
+  wrap.innerHTML = [0,1,2,3].map(() =>
+    `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+      ${carSVG('#d1d5db','#9ca3af',52,34)}
+      <span style="font-size:10px;color:#9ca3af;font-weight:700;">?</span>
+    </div>`
+  ).join('');
+}
+
+// ── Simulation state ──────────────────────────────────────────
+let simBusy  = false;
+let totals   = 0;
+let fairCt   = 0;
+let burnedCt = 0;
+
+function updateRecord() {
+  document.getElementById('recTotal').textContent  = totals;
+  document.getElementById('recFair').textContent   = fairCt;
+  document.getElementById('recBurned').textContent = burnedCt;
+}
+
+// Spin animation: flicker through tier colors, land on result
+function spin(finalIdx, callback) {
+  const area = document.getElementById('resultArea');
+  area.className = 'result-area spinning';
+
+  const flashes = 7;
+  let count = 0;
+
+  // Intervals get slightly longer to give a "slowing down" feel
+  const delays = [80, 80, 90, 100, 120, 150, 200];
+
+  function flash(i) {
+    if (i >= flashes) { callback(finalIdx); return; }
+    const t = TIERS[i % 4];
+    area.style.background = t.bg;
+    area.style.borderColor = t.border;
+    area.innerHTML = `
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:${t.txt};opacity:.6;">
+        drawing...
+      </div>
+      ${carSVG(t.carFill, t.carStroke, 90, 59)}`;
+    setTimeout(() => flash(i + 1), delays[i]);
+  }
+
+  flash(0);
+}
+
+function showResult(idx) {
+  const t   = TIERS[idx];
+  const area = document.getElementById('resultArea');
+  const overpaid = 20000 - t.worth;
+  const isFair   = overpaid === 0;
+  const isBad    = overpaid >= 10000;
+
+  let verdictBg, verdictColor, verdictText;
+  if (isFair) {
+    verdictBg    = '#f0fdf4';
+    verdictColor = '#15803d';
+    verdictText  = '✓ Fair deal — worth every dollar';
+  } else if (overpaid <= 6000) {
+    verdictBg    = '#fffbeb';
+    verdictColor = '#b45309';
+    verdictText  = `⚠ You overpaid by $${overpaid.toLocaleString()}`;
+  } else {
+    verdictBg    = '#fef2f2';
+    verdictColor = '#991b1b';
+    verdictText  = `✕ You overpaid by $${overpaid.toLocaleString()}`;
+  }
+
+  area.className   = 'result-area';
+  area.style.cssText = `
+    background:${t.bg}; border:2.5px solid ${t.border};
+    min-height:170px; border-radius:12px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:8px; padding:14px 12px;
+  `;
+
+  area.innerHTML = `
+    <div class="result-tag" style="color:${t.txt};">${t.who} accepted</div>
+    ${carSVG(t.carFill, t.carStroke, 100, 65)}
+    <div class="result-tier" style="color:${t.txt};">${t.badge}</div>
+    <div class="result-worth" style="color:${t.txt};">
+      Actually worth <strong>${t.price}</strong>
+    </div>
+    <div class="result-verdict" style="background:${verdictBg}; color:${verdictColor};">
+      ${verdictText}
+    </div>`;
+
+  simBusy = false;
+  document.getElementById('offerBtn').disabled = false;
+}
+
+function makeOffer() {
+  if (simBusy) return;
+  simBusy = true;
+  document.getElementById('offerBtn').disabled = true;
+
+  // Random draw — equal probability across 4 tiers
+  const draw = Math.floor(Math.random() * 4);
+
+  totals++;
+  if (TIERS[draw].worth === 20000) { fairCt++; }
+  else                              { burnedCt++; }
+  updateRecord();
+
+  spin(draw, showResult);
+}
+
+// ── Reset ─────────────────────────────────────────────────────
+function resetAll() {
+  // Seller deck
+  sellerIdx = 0; sellerBusy = false;
+  paintSellerCard(0);
+  refreshShadows();
+  document.getElementById('sCtr').textContent = 'Card 1 of 4 — click to flip';
+
+  // Simulation
+  simBusy = false; totals = 0; fairCt = 0; burnedCt = 0;
+  updateRecord();
+  document.getElementById('offerBtn').disabled = false;
+
+  const area = document.getElementById('resultArea');
+  area.className   = 'result-area empty';
+  area.style.cssText = '';
+  area.innerHTML   = `
+    <div style="font-size:28px;color:#d1d5db;">?</div>
+    <div style="font-size:12px;color:#9ca3af;font-weight:600;">Make an offer to find out</div>`;
+}
+
+// ── Init ──────────────────────────────────────────────────────
+paintSellerCard(0);
+refreshShadows();
+buildYourCars();
+updateRecord();
+
+document.getElementById('offerBtn').addEventListener('click', makeOffer);
+document.getElementById('sCard').parentElement.addEventListener('click', flipSeller);
+</script>
+</body>
+</html>

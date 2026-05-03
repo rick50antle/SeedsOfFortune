@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markets &amp; Information — Seeds of Fortune</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/**
+ * Markets & Information — Interactive Presenter Tool
+ * Seeds of Fortune Talk · Yale · May 4, 2026
+ *
+ * @version 2.0
+ * @date 2026-05-02
+ * @description 3-section arc: used cars -> iPhones -> investment capital.
+ *   Demonstrates information asymmetry, the death spiral, and the
+ *   escalating cost of the information fix.
+ */
+
+// ── Colors ────────────────────────────────────────────────────────────────────
+const colors = {
+  primary:    '#00356b',
+  sand:       '#f5f1e8',
+  earth:      '#8b7355',
+  earthLight: '#d4c4a8',
+  earthDark:  '#5c4d3d',
+  accent:     '#c9a227',
+  clay:       '#c4a574',
+  clayLight:  '#e8dcc8',
+  clayDark:   '#a08050',
+  success:    '#22c55e',
+  successBg:  '#f0fdf4',
+  warning:    '#f59e0b',
+  warningBg:  '#fffbeb',
+  error:      '#dc2626',
+  errorBg:    '#fef2f2',
+};
+
+// ── Sound ─────────────────────────────────────────────────────────────────────
+let audioCtx = null;
+const getAudio = () => {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+};
+const tone = (freq, type, dur, vol) => {
+  vol = vol || 0.25;
+  try {
+    const ctx = getAudio();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e) {}
+};
+const playContinueClick = () => tone(440, 'sine', 0.12, 0.18);
+
+// ── Tier Data ─────────────────────────────────────────────────────────────────
+const CAR_TIERS = [
+  { value: 20000, count: 2, label: 'Mint',        emoji: '⭐' },
+  { value: 14000, count: 3, label: 'Good',        emoji: '✓'  },
+  { value:  8000, count: 3, label: 'Fair',        emoji: '⚠'  },
+  { value:  2000, count: 2, label: 'Lemon',       emoji: '🍋' },
+];
+const PHONE_TIERS = [
+  { value:  800, count: 2, label: 'Mint',         emoji: '⭐' },
+  { value:  500, count: 3, label: 'Good',         emoji: '✓'  },
+  { value:  300, count: 3, label: 'Fair',         emoji: '⚠'  },
+  { value:  100, count: 2, label: 'Lemon',        emoji: '🍋' },
+];
+const INV_TIERS = [
+  { value: 20, count: 2, label: 'Strong',         emoji: '📈' },
+  { value: 14, count: 3, label: 'Solid',          emoji: '✓'  },
+  { value:  8, count: 3, label: 'Struggling',     emoji: '⚠'  },
+  { value:  2, count: 2, label: 'Distressed',     emoji: '📉' },
+];
+const TIER_STYLES = [
+  { body: '#3b82f6', text: '#1e40af' },
+  { body: '#22c55e', text: '#15803d' },
+  { body: '#f97316', text: '#c2410c' },
+  { body: '#eab308', text: '#713f12' },
+];
+const SECTION_TIERS = { car: CAR_TIERS, phone: PHONE_TIERS, investment: INV_TIERS };
+
+// ── Step Data ─────────────────────────────────────────────────────────────────
+const STEPS = [
+  {
+    id: 'c0', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'Meet the Facebook Marketplace',
+    narrative: 'Ten private sellers, each offering a used car. They have driven these cars — they know the quirks, the service history, what has been repaired and what has not. Buyers are browsing photos online.',
+    insight: null,
+    activeTiers: [0,1,2,3], infoMode: 'none',
+    offer: null, showCalc: false, showFix: false,
+  },
+  {
+    id: 'c1', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'What if nobody knew the quality?',
+    narrative: 'Imagine a thought experiment: sellers are as clueless as buyers. Nobody knows which cars are mint, which are fair, which are lemons. In this world, the expected value is $11K — and the market works fine.',
+    insight: 'With symmetric ignorance — when nobody knows — buyers can fairly offer the average. Sellers cannot demand more because they do not know they have a better car. The problem has not appeared yet.',
+    activeTiers: [0,1,2,3], infoMode: 'symmetric',
+    offer: 11000, showCalc: true, showFix: false,
+  },
+  {
+    id: 'c2', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'Back to reality: sellers know their cars',
+    narrative: 'Here is what actually happens. Sellers know exactly which tier they are in — they have lived with these cars. Buyers still cannot tell from photos. This gap is information asymmetry.',
+    insight: 'The seller acquired this knowledge as a byproduct of ownership. It is not deceptive — it is just the nature of private sales. But it changes everything about how the market works.',
+    activeTiers: [0,1,2,3], infoMode: 'seller',
+    offer: null, showCalc: false, showFix: false,
+  },
+  {
+    id: 'c3', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'Offer the average: $11,000',
+    narrative: 'A buyer calculates the market average and offers $11K — the exact right price if all cars were available. But the $20K and $14K sellers both know their cars are worth more. They refuse.',
+    insight: null,
+    activeTiers: [0,1,2,3], infoMode: 'seller',
+    offer: 11000, showCalc: true, showFix: false,
+  },
+  {
+    id: 'c4', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'Quality exits — the math changes',
+    narrative: 'Mint and Good car sellers leave the market. They will not accept less than their car is worth. Only Fair and Lemon sellers remain. Recalculate: the new average is $5,600.',
+    insight: 'Adverse selection: the best options disproportionately exit. The buyer\'s "fair" offer was rational — but it selects against quality.',
+    activeTiers: [2,3], infoMode: 'seller',
+    offer: 5600, showCalc: true, showFix: false,
+  },
+  {
+    id: 'c5', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'The spiral continues',
+    narrative: 'Fair sellers ($8K cars) also refuse $5,600. They know their cars are worth more. They leave too. The offer chases quality out of the market, step by step.',
+    insight: null,
+    activeTiers: [3], infoMode: 'seller',
+    offer: 2000, showCalc: true, showFix: false, showSpiral: true,
+  },
+  {
+    id: 'c6', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'Market failure: only lemons remain',
+    narrative: 'A buyer willing to pay $11K for a decent car can only find $2K lemons. Good cars exist — but sellers will not part with them at the price a rational buyer can offer. George Akerlof called this "The Market for Lemons" (1970).',
+    insight: 'The market does not just produce bad outcomes — it fails entirely. Trades that would benefit both parties never happen. The information gap destroys value.',
+    activeTiers: [3], infoMode: 'seller',
+    offer: 2000, showCalc: false, showFix: false, showSpiral: true,
+  },
+  {
+    id: 'c7', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'The fix: Carfax (~$40)',
+    narrative: 'In 1984, vehicle history reports made private seller information verifiable. For about $40, a buyer can pull a full history: accidents, ownership, mileage, service records. The information gap closes.',
+    insight: 'The information problem was solved by creating a commercial market for information itself. Cheap, fast, and highly effective. But is this always possible?',
+    activeTiers: [0,1,2,3], infoMode: 'fixed',
+    offer: null, showCalc: false, showFix: true,
+  },
+  {
+    id: 'p0', section: 'phone', sectionLabel: '📱 Used iPhones',
+    headline: 'Could the same thing happen with iPhones?',
+    narrative: 'Used iPhones on Marketplace. A seller\'s phone has 42% battery health — nearly dead. They know. You cannot tell from photos. The average market value "should" be $420. Sound familiar?',
+    insight: 'Same structure: private sellers with private knowledge (battery health, water damage, repaired screens) and buyers who cannot verify without buying first.',
+    activeTiers: [0,1,2,3], infoMode: 'seller',
+    offer: 420, showCalc: true, showFix: false,
+  },
+  {
+    id: 'p1', section: 'phone', sectionLabel: '📱 Used iPhones',
+    headline: 'The fix — free, but you must seek it',
+    narrative: 'iOS has a built-in Battery Health screen. A buyer can ask: "Show me Settings > Battery > Battery Health." The seller cannot fake it in real time. The information problem is solved — but only if the buyer knows to ask.',
+    insight: 'This is the bridge insight: Carfax costs $40 but is instant. Battery Health costs nothing but demands effort and knowledge. What happens when the stakes are much higher and verification is far more expensive?',
+    activeTiers: [0,1,2,3], infoMode: 'fixed',
+    offer: null, showCalc: false, showFix: true,
+  },
+  {
+    id: 'i0', section: 'investment', sectionLabel: '🏢 Raising Capital',
+    headline: 'Now the stakes are $20 million',
+    narrative: 'Ten companies are seeking investment capital. Management knows their true financial prospects. Investors see the pitch deck — not the real books. The average "fair" offer is $11M.',
+    insight: null,
+    activeTiers: [0,1,2,3], infoMode: 'seller',
+    offer: 11, showCalc: true, showFix: false,
+  },
+  {
+    id: 'i1', section: 'investment', sectionLabel: '🏢 Raising Capital',
+    headline: 'Strong companies will not accept weak terms',
+    narrative: 'A $20M company will not accept $11M in investment at a valuation that undervalues them. They walk. The $14M companies walk too. The market spirals to the bottom — only distressed companies remain.',
+    insight: 'Without reliable information, capital markets cannot function. Investors either refuse to invest (market failure) or overpay for the worst companies (wealth destruction). This is why securities regulation exists.',
+    activeTiers: [3], infoMode: 'seller',
+    offer: 2, showCalc: true, showFix: false, showSpiral: true,
+  },
+  {
+    id: 'i2', section: 'investment', sectionLabel: '🏢 Raising Capital',
+    headline: 'The fix: SEC mandatory disclosure (1934)',
+    narrative: 'The Securities Exchange Act of 1934 mandated that public companies file audited financial statements, following GAAP, reviewed by independent CPAs. Information became standardized, mandatory, and verifiable.',
+    insight: 'The fix works — but notice the cost. A public company spends $100K to $10M+ per year on audit and compliance. Unlike a $40 Carfax report, the information infrastructure for capital markets reflects the scale of what is at stake.',
+    activeTiers: [0,1,2,3], infoMode: 'fixed',
+    offer: null, showCalc: false, showFix: true, showEscalation: true,
+  },
+  {
+    id: 'z0', section: 'closing', sectionLabel: '💡 The Pattern',
+    headline: 'Information is the invisible infrastructure of markets',
+    narrative: 'Three markets. The same underlying problem each time. The fix was different — not because the economics changed, but because the cost of verification scaled with the stakes. Markets do not fail randomly. They fail predictably, along information fault lines.',
+    insight: 'Wherever you see a market working well, someone already solved the information problem — commercially, voluntarily, or by mandate. That is where the real economics lives.',
+    activeTiers: [0,1,2,3], infoMode: 'fixed',
+    offer: null, showCalc: false, showFix: false, showCapstone: true,
+  },
+];
+
+// ── SVG Shapes ────────────────────────────────────────────────────────────────
+const CarSVG = ({ fill, stroke }) => (
+  React.createElement('svg', { viewBox: '0 0 64 42', width: 64, height: 42, xmlns: 'http://www.w3.org/2000/svg' },
+    React.createElement('rect', { x: 4, y: 20, width: 56, height: 17, rx: 3, fill, stroke, strokeWidth: 2 }),
+    React.createElement('path', { d: 'M15 20 L21 7 L43 7 L49 20 Z', fill, stroke, strokeWidth: 2 }),
+    React.createElement('circle', { cx: 17, cy: 37, r: 5, fill: '#374151', stroke, strokeWidth: 1.5 }),
+    React.createElement('circle', { cx: 47, cy: 37, r: 5, fill: '#374151', stroke, strokeWidth: 1.5 }),
+    React.createElement('path', { d: 'M23 9 L21 17 L32 17 L32 9 Z', fill: stroke, opacity: 0.25 }),
+    React.createElement('path', { d: 'M34 9 L34 17 L43 17 L41 9 Z', fill: stroke, opacity: 0.25 })
+  )
+);
+
+const PhoneSVG = ({ fill, stroke }) => (
+  React.createElement('svg', { viewBox: '0 0 38 58', width: 34, height: 52, xmlns: 'http://www.w3.org/2000/svg' },
+    React.createElement('rect', { x: 3, y: 2, width: 32, height: 54, rx: 5, fill, stroke, strokeWidth: 2 }),
+    React.createElement('rect', { x: 6, y: 9, width: 26, height: 36, rx: 2, fill: stroke, opacity: 0.18 }),
+    React.createElement('circle', { cx: 19, cy: 51, r: 3, fill: stroke, opacity: 0.4 }),
+    React.createElement('rect', { x: 14, y: 4.5, width: 10, height: 2, rx: 1, fill: stroke, opacity: 0.4 })
+  )
+);
+
+const BuildingSVG = ({ fill, stroke }) => (
+  React.createElement('svg', { viewBox: '0 0 52 60', width: 46, height: 54, xmlns: 'http://www.w3.org/2000/svg' },
+    React.createElement('rect', { x: 6, y: 12, width: 40, height: 46, rx: 2, fill, stroke, strokeWidth: 2 }),
+    React.createElement('rect', { x: 12, y: 4, width: 28, height: 10, rx: 1, fill, stroke, strokeWidth: 2 }),
+    React.createElement('rect', { x: 11, y: 18, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 23, y: 18, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 35, y: 18, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 11, y: 30, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 23, y: 30, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 35, y: 30, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 20, y: 44, width: 12, height: 14, rx: 1, fill: stroke, opacity: 0.38 })
+  )
+);
+
+// ── Token ─────────────────────────────────────────────────────────────────────
+const Token = ({ section, tierIndex, infoMode, active }) => {
+  const tier = SECTION_TIERS[section][tierIndex];
+  const style = TIER_STYLES[tierIndex];
+  const faded   = !active;
+  const fixed   = infoMode === 'fixed'  && active;
+  const seller  = infoMode === 'seller' && active;
+  const neutral = (infoMode === 'none' || infoMode === 'symmetric') && active;
+
+  let bodyColor, strokeColor, badge;
+  if (faded)        { bodyColor = '#d1d5db'; strokeColor = '#9ca3af'; badge = null; }
+  else if (neutral) { bodyColor = '#9ca3af'; strokeColor = '#6b7280'; badge = '?'; }
+  else if (fixed)   { bodyColor = '#22c55e'; strokeColor = '#15803d'; badge = tier.emoji; }
+  else              { bodyColor = style.body; strokeColor = style.text; badge = tier.emoji; }
+
+  const svgProps = { fill: bodyColor, stroke: strokeColor };
+  const valueLabel = section === 'investment'
+    ? ('$' + tier.value + 'M')
+    : tier.value >= 1000 ? ('$' + (tier.value / 1000) + 'K') : ('$' + tier.value);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, opacity: faded ? 0.18 : 1, transition: 'opacity 0.5s' }}>
+      <div style={{
+        width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+        backgroundColor: faded ? '#d1d5db' : neutral ? '#6b7280' : fixed ? '#15803d' : style.text,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: badge === '?' ? 13 : 11, color: 'white', fontWeight: 700,
+      }}>{badge}</div>
+      {section === 'car'        && React.createElement(CarSVG,      svgProps)}
+      {section === 'phone'      && React.createElement(PhoneSVG,    svgProps)}
+      {section === 'investment' && React.createElement(BuildingSVG, svgProps)}
+      {(seller || fixed) && (
+        <div style={{
+          fontSize: 9, fontWeight: 700, color: 'white',
+          backgroundColor: fixed ? '#15803d' : style.text,
+          padding: '1px 5px', borderRadius: 4,
+        }}>{valueLabel}</div>
+      )}
+    </div>
+  );
+};
+
+// ── Token Grid ────────────────────────────────────────────────────────────────
+const TokenGrid = ({ section, activeTiers, infoMode }) => {
+  const tiers = SECTION_TIERS[section];
+  if (!tiers) return null;
+  const showLabels = infoMode === 'seller' || infoMode === 'fixed';
+
+  return (
+    <div style={{ backgroundColor: colors.clayLight, borderRadius: 10, padding: 16, marginBottom: 12 }}>
+      {tiers.map((tier, ti) => {
+        const s = TIER_STYLES[ti];
+        const isActive = activeTiers.includes(ti);
+        return (
+          <div key={ti} style={{ display: 'flex', alignItems: 'center', marginBottom: 12, gap: 10 }}>
+            <div style={{ width: 56, textAlign: 'right', fontSize: 11, fontWeight: 600, flexShrink: 0,
+              color: showLabels && isActive ? s.text : '#9ca3af' }}>
+              {showLabels ? tier.label : ''}
+            </div>
+            <div style={{ display: 'flex', flex: 1, justifyContent: 'center', gap: 10 }}>
+              {Array.from({ length: tier.count }, (_, i) => (
+                React.createElement(Token, { key: i, section, tierIndex: ti, infoMode, active: isActive })
+              ))}
+            </div>
+            <div style={{ width: 56, fontSize: 11, color: '#9ca3af', flexShrink: 0 }}>
+              {showLabels && isActive ? ('x' + tier.count) : ''}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ── Mode Bar ──────────────────────────────────────────────────────────────────
+const ModeBar = ({ infoMode }) => {
+  const modes = [
+    { key: 'none',      label: 'No Info',    bg: '#f3f4f6', text: '#6b7280', border: '#d1d5db' },
+    { key: 'symmetric', label: 'Symmetric',  bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+    { key: 'seller',    label: 'Asymmetric', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+    { key: 'fixed',     label: 'Fixed ✓', bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
+  ];
+  return (
+    <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
+      {modes.map(m => {
+        const active = m.key === infoMode;
+        return (
+          <div key={m.key} style={{
+            padding: '3px 10px', borderRadius: 99, fontSize: 11,
+            fontWeight: active ? 700 : 400,
+            backgroundColor: active ? m.bg : '#f9fafb',
+            color: active ? m.text : '#9ca3af',
+            border: '1.5px solid ' + (active ? m.border : '#e5e7eb'),
+            transition: 'all 0.25s',
+          }}>{m.label}</div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ── Lot Calculation ───────────────────────────────────────────────────────────
+const LotCalculation = ({ section, activeTiers, offer }) => {
+  const tiers = SECTION_TIERS[section];
+  if (!tiers) return null;
+  const activeTierObjs = tiers.filter((_, i) => activeTiers.includes(i));
+  const totalCount = activeTierObjs.reduce((s, t) => s + t.count, 0);
+  const totalValue = activeTierObjs.reduce((s, t) => s + t.value * t.count, 0);
+  const avg = totalCount > 0 ? Math.round(totalValue / totalCount) : 0;
+
+  const fmt = v => section === 'investment'
+    ? ('$' + v + 'M')
+    : v >= 1000 ? ('$' + (v / 1000).toFixed(1) + 'K') : ('$' + v);
+
+  return (
+    <div style={{ borderRadius: 10, border: '2px solid ' + colors.clayDark, overflow: 'hidden', marginBottom: 12, backgroundColor: colors.clayLight }}>
+      <div style={{ padding: '6px 12px', fontSize: 12, fontWeight: 700, backgroundColor: colors.clay, color: colors.earthDark }}>
+        Market Calculation
+      </div>
+      <div style={{ padding: 12 }}>
+        <table style={{ width: '100%', fontSize: 12, color: colors.earthDark, borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid ' + colors.earthLight }}>
+              <th style={{ textAlign: 'left',   paddingBottom: 4 }}>Quality</th>
+              <th style={{ textAlign: 'center', paddingBottom: 4 }}>Count</th>
+              <th style={{ textAlign: 'right',  paddingBottom: 4 }}>Value</th>
+              <th style={{ textAlign: 'right',  paddingBottom: 4 }}>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tiers.map((tier, i) => {
+              const isActive = activeTiers.includes(i);
+              return (
+                <tr key={i} style={{ opacity: isActive ? 1 : 0.3 }}>
+                  <td style={{ padding: '3px 0' }}>{tier.emoji} {tier.label}</td>
+                  <td style={{ textAlign: 'center', padding: '3px 0' }}>{isActive ? tier.count : 0}</td>
+                  <td style={{ textAlign: 'right',  padding: '3px 0' }}>{fmt(tier.value)}</td>
+                  <td style={{ textAlign: 'right',  padding: '3px 0' }}>{isActive ? fmt(tier.value * tier.count) : fmt(0)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr style={{ borderTop: '2px solid ' + colors.clay }}>
+              <td colSpan={2} style={{ fontWeight: 700, paddingTop: 5 }}>Average</td>
+              <td colSpan={2} style={{ textAlign: 'right', fontWeight: 700, paddingTop: 5, color: colors.primary }}>{fmt(avg)}</td>
+            </tr>
+          </tfoot>
+        </table>
+        {offer !== null && offer !== undefined && (
+          <div style={{
+            marginTop: 8, paddingTop: 8, borderTop: '1px solid ' + colors.earthLight,
+            display: 'flex', justifyContent: 'space-between',
+            fontSize: 13, fontWeight: 700, color: colors.primary,
+          }}>
+            <span>Buyer's offer</span>
+            <span style={{ color: fmt(offer) === fmt(avg) ? colors.success : colors.warning }}>{fmt(offer)}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── Fix Cards ─────────────────────────────────────────────────────────────────
+const FIX_DATA = {
+  car: {
+    title: '✅ The Fix: Carfax',
+    cost: '~$40 per report',
+    costColor: colors.success,
+    body: 'In 1984, R.L. Polk created a vehicle history database. For about $40, any buyer can pull a full report: accidents, ownership history, mileage, service records. Sellers of good cars can now prove it.',
+    outcome: 'The information gap closes. Good cars return to market. Buyers pay fair prices; sellers of quality cars get fair value.',
+  },
+  phone: {
+    title: '✅ The Fix: Battery Health',
+    cost: 'Free — but effortful',
+    costColor: '#2563eb',
+    body: 'iOS Settings > Battery > Battery Health & Charging shows the real battery percentage. A buyer can ask the seller to display this screen in person. It cannot be faked in real time.',
+    outcome: 'Information is freely available — but only to buyers who know to ask and do the work. The fix works, but it is not automatic.',
+  },
+  investment: {
+    title: '✅ The Fix: SEC Mandatory Disclosure',
+    cost: '$100K–$10M+ per year',
+    costColor: colors.error,
+    body: 'The Securities Exchange Act of 1934 required public companies to file audited financial statements following GAAP, reviewed by independent CPAs. Standardized, mandatory, verifiable.',
+    outcome: 'Capital markets can now price securities accurately. But the infrastructure is expensive — reflecting the scale of what is at stake.',
+  },
+};
+
+const FixCard = ({ section }) => {
+  const d = FIX_DATA[section];
+  if (!d) return null;
+  return (
+    <div style={{ borderRadius: 10, border: '2px solid ' + colors.success, overflow: 'hidden', marginBottom: 12, backgroundColor: colors.successBg }}>
+      <div style={{ padding: '8px 12px', backgroundColor: '#dcfce7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#14532d' }}>{d.title}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: d.costColor }}>{d.cost}</span>
+      </div>
+      <div style={{ padding: 12, fontSize: 13, color: '#166534', lineHeight: 1.6 }}>
+        <p style={{ marginBottom: 8 }}>{d.body}</p>
+        <p style={{ fontWeight: 600 }}>{d.outcome}</p>
+      </div>
+    </div>
+  );
+};
+
+// ── Cost Escalation ───────────────────────────────────────────────────────────
+const CostEscalation = () => (
+  <div style={{ borderRadius: 10, border: '2px solid ' + colors.earthLight, overflow: 'hidden', marginBottom: 12, backgroundColor: 'white' }}>
+    <div style={{ padding: '6px 12px', fontSize: 12, fontWeight: 700, backgroundColor: colors.clayLight, color: colors.earthDark }}>
+      The Escalating Cost of the Information Fix
+    </div>
+    <div style={{ padding: 12 }}>
+      {[
+        { icon: '🚗', label: 'Used Car',       cost: '~$40',           note: 'Commercial solution (Carfax)',                        color: colors.success },
+        { icon: '📱', label: 'Used iPhone',    cost: 'Free',           note: 'But buyer must seek it (Battery Health)',              color: '#2563eb'      },
+        { icon: '🏢', label: 'Capital Markets', cost: '$100K–$10M+/yr', note: 'Mandatory institutional infrastructure (SEC/Audit)', color: colors.error  },
+      ].map((row, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 10, borderRadius: 8, backgroundColor: colors.sand, marginBottom: i < 2 ? 8 : 0 }}>
+          <span style={{ fontSize: 20 }}>{row.icon}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: colors.earthDark }}>{row.label}</div>
+            <div style={{ fontSize: 11, color: colors.earth }}>{row.note}</div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: row.color, whiteSpace: 'nowrap' }}>{row.cost}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// ── Capstone Connections ──────────────────────────────────────────────────────
+const CapstoneConnections = () => (
+  <div style={{ borderRadius: 10, border: '2px solid ' + colors.primary, overflow: 'hidden', marginBottom: 12, backgroundColor: 'white' }}>
+    <div style={{ padding: '6px 12px', fontSize: 12, fontWeight: 700, backgroundColor: colors.primary, color: 'white' }}>
+      Information in Your Capstone Topics
+    </div>
+    <div style={{ padding: 12 }}>
+      {[
+        { topic: 'IPOs',            info: 'Roadshow = company disclosing info to investors before pricing shares. S-1 filing = mandatory disclosure.' },
+        { topic: 'Fintech',         info: 'Robinhood democratized market data access — information that was expensive and institutional, now free to retail investors.' },
+        { topic: 'Housing Finance', info: 'Mortgage underwriting is information gathering: income verification, credit check, appraisal. Each step closes an information gap.' },
+        { topic: 'Credit Markets',  info: 'Credit scores solved the personal lending lemons problem — standardized information that allows lending to scale.' },
+      ].map((row, i) => (
+        <div key={i} style={{ display: 'flex', gap: 10, padding: 8, borderRadius: 8, backgroundColor: colors.sand, marginBottom: i < 3 ? 8 : 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: colors.primary, minWidth: 88, flexShrink: 0, lineHeight: 1.4 }}>{row.topic}</span>
+          <span style={{ fontSize: 12, color: colors.earthDark, lineHeight: 1.5 }}>{row.info}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// ── Spiral Badge ──────────────────────────────────────────────────────────────
+const SpiralBadge = () => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, borderRadius: 10, marginBottom: 12, backgroundColor: colors.errorBg, borderLeft: '4px solid ' + colors.error }}>
+    <span style={{ fontSize: 22 }}>📉</span>
+    <div>
+      <div style={{ fontSize: 13, fontWeight: 700, color: colors.error }}>Death Spiral</div>
+      <div style={{ fontSize: 11, color: '#991b1b' }}>Quality exits → average falls → more quality exits → …</div>
+    </div>
+  </div>
+);
+
+// ── Main App ──────────────────────────────────────────────────────────────────
+const TutorialApp = () => {
+  const [idx, setIdx]               = useState(0);
+  const [devMode, setDevMode]       = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+
+  const step    = STEPS[idx];
+  const isFirst = idx === 0;
+  const isLast  = idx === STEPS.length - 1;
+  const progress = Math.round((idx / (STEPS.length - 1)) * 100);
+
+  const go = (i) => { playContinueClick(); setIdx(i); window.scrollTo(0, 0); };
+  const next    = () => { if (!isLast)  go(idx + 1); };
+  const prev    = () => { if (!isFirst) go(idx - 1); };
+  const restart = () => { playContinueClick(); setIdx(0); window.scrollTo(0, 0); };
+
+  const headerClick = () => {
+    const n = clickCount + 1;
+    setClickCount(n);
+    if (n >= 3) { setDevMode(d => !d); setClickCount(0); }
+  };
+
+  const SECTION_COLORS = {
+    car:        { bg: '#dbeafe', text: '#1e40af' },
+    phone:      { bg: '#fce7f3', text: '#9d174d' },
+    investment: { bg: '#d1fae5', text: '#065f46' },
+    closing:    { bg: '#fef3c7', text: '#92400e' },
+  };
+  const sc = SECTION_COLORS[step.section] || SECTION_COLORS.closing;
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: colors.sand }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', padding: '16px 16px 48px' }}>
+
+        {/* Header */}
+        <div style={{ borderRadius: 12, padding: 16, marginBottom: 16, backgroundColor: colors.primary }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div onClick={headerClick} style={{ cursor: 'pointer' }}>
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: 'white', lineHeight: 1.3, margin: 0 }}>
+                Markets &amp; Information
+              </h1>
+              <p style={{ fontSize: 13, marginTop: 3, color: colors.earthLight, margin: '3px 0 0' }}>
+                Seeds of Fortune &middot; Yale &middot; May 4, 2026
+              </p>
+            </div>
+            <button onClick={restart} title="Restart" aria-label="Restart"
+              style={{ fontSize: 20, color: 'white', background: 'none', border: 'none', cursor: 'pointer', padding: 6, lineHeight: 1 }}>
+              &#8635;
+            </button>
+          </div>
+
+          <div style={{ marginTop: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'rgba(255,255,255,0.65)', marginBottom: 4 }}>
+              <span>Step {idx + 1} of {STEPS.length}</span>
+              <span>{progress}%</span>
+            </div>
+            <div style={{ height: 7, borderRadius: 99, backgroundColor: 'rgba(255,255,255,0.2)' }}
+              role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+              <div style={{ height: '100%', borderRadius: 99, backgroundColor: colors.accent, width: progress + '%', transition: 'width 0.4s' }} />
+            </div>
+          </div>
+
+          {devMode && (
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>Dev: jump to step</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {STEPS.map((s, i) => (
+                  <button key={i} onClick={() => go(i)}
+                    style={{
+                      padding: '2px 8px', borderRadius: 4, fontSize: 11, border: 'none', cursor: 'pointer',
+                      backgroundColor: i === idx ? 'white' : 'rgba(255,255,255,0.2)',
+                      color: i === idx ? colors.primary : 'white',
+                    }}>{s.id}</button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Section label */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <span style={{ padding: '4px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600, backgroundColor: sc.bg, color: sc.text }}>
+            {step.sectionLabel}
+          </span>
+          <span style={{ fontSize: 11, color: colors.earth }}>{idx + 1} / {STEPS.length}</span>
+        </div>
+
+        {/* Headline */}
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.primary, marginBottom: 14, lineHeight: 1.3 }}>
+          {step.headline}
+        </h2>
+
+        {/* Token Grid */}
+        {step.section !== 'closing' && (
+          React.createElement(TokenGrid, { section: step.section, activeTiers: step.activeTiers, infoMode: step.infoMode })
+        )}
+
+        {/* Mode Bar */}
+        {step.section !== 'closing' && React.createElement(ModeBar, { infoMode: step.infoMode })}
+
+        {/* Spiral */}
+        {step.showSpiral && React.createElement(SpiralBadge)}
+
+        {/* Calculation */}
+        {step.showCalc && step.section !== 'closing' && (
+          React.createElement(LotCalculation, { section: step.section, activeTiers: step.activeTiers, offer: step.offer })
+        )}
+
+        {/* Fix Card */}
+        {step.showFix && step.section !== 'closing' && React.createElement(FixCard, { section: step.section })}
+
+        {/* Cost Escalation */}
+        {(step.showEscalation || step.showCapstone) && React.createElement(CostEscalation)}
+
+        {/* Capstone */}
+        {step.showCapstone && React.createElement(CapstoneConnections)}
+
+        {/* Narrative */}
+        <div style={{
+          padding: 16, borderRadius: 10, marginBottom: 12,
+          backgroundColor: colors.sand, borderLeft: '4px solid ' + colors.accent,
+          fontStyle: 'italic', fontSize: 14, color: '#374151', lineHeight: 1.65,
+        }}>
+          {step.narrative}
+        </div>
+
+        {/* Insight */}
+        {step.insight && (
+          <div style={{
+            padding: 14, borderRadius: 10, border: '2px solid ' + colors.accent,
+            backgroundColor: '#fef9e7', marginBottom: 12,
+            display: 'flex', gap: 12, alignItems: 'flex-start',
+          }}>
+            <span style={{ fontSize: 18, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+            <div style={{ fontSize: 13, color: colors.earthDark, lineHeight: 1.6 }}>{step.insight}</div>
+          </div>
+        )}
+
+        {/* Closing coda */}
+        {step.section === 'closing' && (
+          <div style={{ padding: 20, borderRadius: 10, textAlign: 'center', backgroundColor: colors.primary, marginBottom: 12 }}>
+            <p style={{ color: 'white', fontWeight: 700, fontSize: 16, margin: 0 }}>
+              The invisible thread in every market
+            </p>
+            <p style={{ color: colors.earthLight, fontSize: 13, marginTop: 8, margin: '8px 0 0' }}>
+              is the cost of knowing what you are actually buying.
+            </p>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
+          <button onClick={prev} disabled={isFirst} aria-label="Previous step"
+            style={{
+              flex: 1, padding: '14px 0', borderRadius: 10, fontWeight: 700, fontSize: 15,
+              backgroundColor: isFirst ? '#e5e7eb' : 'white',
+              color: isFirst ? '#9ca3af' : colors.primary,
+              border: '2px solid ' + (isFirst ? '#e5e7eb' : colors.primary),
+              cursor: isFirst ? 'not-allowed' : 'pointer',
+            }}>← Back</button>
+          <button onClick={next} disabled={isLast} aria-label="Next step"
+            style={{
+              flex: 1, padding: '14px 0', borderRadius: 10, fontWeight: 700, fontSize: 15,
+              backgroundColor: isLast ? '#e5e7eb' : colors.primary,
+              color: isLast ? '#9ca3af' : 'white',
+              border: 'none', cursor: isLast ? 'not-allowed' : 'pointer',
+            }}>{isLast ? '✓ Complete' : 'Next →'}</button>
+        </div>
+
+        {/* Step dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginTop: 16, flexWrap: 'wrap' }}>
+          {STEPS.map((s, i) => {
+            const dotColors = { car: '#3b82f6', phone: '#ec4899', investment: '#22c55e', closing: '#c9a227' };
+            const active = i === idx;
+            const past   = i < idx;
+            return (
+              <button key={i} onClick={() => go(i)} aria-label={'Step ' + (i + 1) + ': ' + s.headline}
+                style={{
+                  width: active ? 14 : 9, height: active ? 14 : 9,
+                  borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
+                  backgroundColor: active ? dotColors[s.section] : past ? colors.earthLight : '#e5e7eb',
+                  transition: 'all 0.2s',
+                }} />
+            );
+          })}
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(TutorialApp));
+</script>
+</body>
+</html>

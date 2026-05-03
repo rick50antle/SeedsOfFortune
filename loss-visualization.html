@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The $20,000 Offer — What You Could Lose</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f1e8;
+      min-height: 100vh;
+      padding: 36px 24px 64px;
+    }
+
+    .scene { max-width: 660px; margin: 0 auto; }
+
+    /* ── Title ── */
+    .title    { font-size: 22px; font-weight: 800; color: #00356b; margin-bottom: 5px; }
+    .subtitle { font-size: 14px; color: #8b7355; margin-bottom: 28px; line-height: 1.5; }
+
+    /* ── Offer badge ── */
+    .offer-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #00356b; color: white;
+      font-size: 14px; font-weight: 700;
+      padding: 8px 16px; border-radius: 99px;
+      margin-bottom: 24px;
+    }
+
+    /* ── Outcome rows ── */
+    .outcomes { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+
+    .row {
+      background: white; border-radius: 14px;
+      padding: 14px 16px 16px;
+      border: 2px solid #e8dcc8;
+      transition: box-shadow .2s;
+    }
+    .row:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+
+    /* top line: car + tier + probability */
+    .row-top {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .tier-badge {
+      font-size: 13px; font-weight: 700;
+      padding: 3px 11px; border-radius: 99px;
+      flex-shrink: 0;
+    }
+    .prob-chip {
+      margin-left: auto; flex-shrink: 0;
+      font-size: 11px; font-weight: 600; color: #8b7355;
+      background: #e8dcc8; padding: 3px 9px; border-radius: 99px;
+    }
+
+    /* bar track */
+    .bar-track {
+      height: 32px; border-radius: 8px;
+      background: #f3f4f6; overflow: hidden;
+      display: flex; position: relative;
+      margin-bottom: 8px;
+    }
+
+    /* value segment (left) */
+    .seg-value {
+      height: 100%; border-radius: 8px 0 0 8px;
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 8px; overflow: hidden;
+      transition: width 1s cubic-bezier(.4,0,.2,1);
+    }
+    .seg-value.full { border-radius: 8px; } /* when loss = 0 */
+    .seg-val-label {
+      font-size: 11px; font-weight: 700; color: white;
+      white-space: nowrap;
+    }
+
+    /* loss segment (right) */
+    .seg-loss {
+      height: 100%; background: #dc2626; border-radius: 0 8px 8px 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      transition: width 1s cubic-bezier(.4,0,.2,1);
+    }
+    .seg-loss-label {
+      font-size: 11px; font-weight: 700; color: white;
+      white-space: nowrap; padding: 0 6px;
+    }
+
+    /* row bottom: value vs loss numbers */
+    .row-nums {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .num-value  { font-size: 12px; font-weight: 600; color: #6b7280; }
+    .num-loss   { font-size: 15px; font-weight: 800; }
+    .num-loss.zero  { color: #15803d; }
+    .num-loss.small { color: #b45309; }
+    .num-loss.big   { color: #991b1b; }
+
+    /* verdict pill */
+    .verdict {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 9px; border-radius: 99px;
+    }
+    .verdict.fair   { background: #dcfce7; color: #15803d; }
+    .verdict.mild   { background: #fef3c7; color: #92400e; }
+    .verdict.bad    { background: #fee2e2; color: #991b1b; }
+
+    /* ── Summary ── */
+    .summary {
+      background: #00356b; border-radius: 14px;
+      padding: 20px 22px; color: white; margin-bottom: 24px;
+    }
+    .summary-title {
+      font-size: 13px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: rgba(255,255,255,.65); margin-bottom: 14px;
+    }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+    .sum-item { text-align: center; padding: 0 12px; }
+    .sum-item + .sum-item { border-left: 1px solid rgba(255,255,255,.2); }
+    .sum-num  { font-size: 32px; font-weight: 800; line-height: 1; }
+    .sum-num.good { color: #86efac; }
+    .sum-num.bad  { color: #fca5a5; }
+    .sum-num.gold { color: #fcd34d; }
+    .sum-label {
+      font-size: 11px; font-weight: 600; margin-top: 4px;
+      color: rgba(255,255,255,.65); line-height: 1.3;
+    }
+
+    /* ── Expected-loss bar ── */
+    .el-section { margin-bottom: 8px; }
+    .el-label {
+      font-size: 12px; font-weight: 600; color: #8b7355;
+      margin-bottom: 6px;
+    }
+    .el-track {
+      height: 20px; background: #f3f4f6; border-radius: 99px; overflow: hidden;
+    }
+    .el-fill {
+      height: 100%; background: linear-gradient(90deg, #fca5a5 0%, #dc2626 100%);
+      border-radius: 99px;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+      display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+    }
+    .el-fill-label { font-size: 11px; font-weight: 700; color: white; white-space: nowrap; }
+
+    /* ── Insight box ── */
+    .insight {
+      background: #fef9e7; border: 2px solid #c9a227; border-radius: 12px;
+      padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .insight-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .insight-text { font-size: 13px; color: #5c4d3d; line-height: 1.6; }
+
+    /* ── Animated bar startup ── */
+    .seg-value, .seg-loss, .el-fill { width: 0; }
+    .animated .seg-value { width: var(--vw); }
+    .animated .seg-loss  { width: var(--lw); }
+    .animated .el-fill   { width: var(--ew); }
+  </style>
+</head>
+<body>
+<div class="scene">
+
+  <div class="title">The $20,000 Offer</div>
+  <div class="subtitle">
+    Any seller will say yes. But each outcome is equally likely.
+    Here's what could happen to your money.
+  </div>
+
+  <div class="offer-badge">
+    💸 You offer: $20,000
+  </div>
+
+  <!-- ── Outcome rows ── -->
+  <div class="outcomes" id="outcomes">
+
+    <!-- Mint -->
+    <div class="row">
+      <div class="row-top">
+        <!-- car SVG -->
+        <svg viewBox="0 0 64 42" width="62" height="41" style="flex-shrink:0;">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#c9a227" stroke="#92400e" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#92400e" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#92400e" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#92400e" opacity=".3"/>
+        </svg>
+        <div class="tier-badge" style="background:#fef3c7; color:#78350f; border:1.5px solid #c9a227;">⭐ Mint</div>
+        <div class="prob-chip">1 in 4</div>
+      </div>
+      <div class="bar-track">
+        <div class="seg-value full" style="background:#16a34a; --vw:100%;">
+          <span class="seg-val-label">$20,000 — full value</span>
+        </div>
+        <div class="seg-loss" style="--lw:0%;"></div>
+      </div>
+      <div class="row-nums">
+        <span class="num-value">Car actually worth $20,000</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="num-loss zero">$0 lost</span>
+          <span class="verdict fair">✓ Fair deal</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Good -->
+    <div class="row">
+      <div class="row-top">
+        <svg viewBox="0 0 64 42" width="62" height="41" style="flex-shrink:0;">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#22c55e" stroke="#15803d" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#15803d" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#15803d" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#15803d" opacity=".3"/>
+        </svg>
+        <div class="tier-badge" style="background:#dcfce7; color:#14532d; border:1.5px solid #22c55e;">✓ Good</div>
+        <div class="prob-chip">1 in 4</div>
+      </div>
+      <div class="bar-track">
+        <div class="seg-value" style="background:#22c55e; --vw:70%;">
+          <span class="seg-val-label">$14,000</span>
+        </div>
+        <div class="seg-loss" style="--lw:30%;">
+          <span class="seg-loss-label">$6,000 burned</span>
+        </div>
+      </div>
+      <div class="row-nums">
+        <span class="num-value">Car actually worth $14,000</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="num-loss small">−$6,000</span>
+          <span class="verdict mild">⚠ Overpaid</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fair -->
+    <div class="row">
+      <div class="row-top">
+        <svg viewBox="0 0 64 42" width="62" height="41" style="flex-shrink:0;">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#f97316" stroke="#c2410c" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#c2410c" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#c2410c" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#c2410c" opacity=".3"/>
+        </svg>
+        <div class="tier-badge" style="background:#ffedd5; color:#7c2d12; border:1.5px solid #f97316;">⚠ Fair</div>
+        <div class="prob-chip">1 in 4</div>
+      </div>
+      <div class="bar-track">
+        <div class="seg-value" style="background:#f97316; --vw:40%;">
+          <span class="seg-val-label">$8,000</span>
+        </div>
+        <div class="seg-loss" style="--lw:60%;">
+          <span class="seg-loss-label">$12,000 burned</span>
+        </div>
+      </div>
+      <div class="row-nums">
+        <span class="num-value">Car actually worth $8,000</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="num-loss big">−$12,000</span>
+          <span class="verdict bad">✕ Overpaid</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lemon -->
+    <div class="row">
+      <div class="row-top">
+        <svg viewBox="0 0 64 42" width="62" height="41" style="flex-shrink:0;">
+          <rect x="4" y="20" width="56" height="17" rx="3" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+          <path d="M15 20 L21 7 L43 7 L49 20 Z" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+          <circle cx="17" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+          <circle cx="47" cy="37" r="5" fill="#374151" stroke="#991b1b" stroke-width="1.5"/>
+          <path d="M23 9 L21 17 L32 17 L32 9 Z" fill="#991b1b" opacity=".3"/>
+          <path d="M34 9 L34 17 L43 17 L41 9 Z" fill="#991b1b" opacity=".3"/>
+        </svg>
+        <div class="tier-badge" style="background:#fee2e2; color:#7f1d1d; border:1.5px solid #dc2626;">🍋 Lemon</div>
+        <div class="prob-chip">1 in 4</div>
+      </div>
+      <div class="bar-track">
+        <div class="seg-value" style="background:#dc2626; filter:brightness(1.3); --vw:10%;">
+          <!-- too narrow for label — shown in row-nums -->
+        </div>
+        <div class="seg-loss" style="--lw:90%;">
+          <span class="seg-loss-label">$18,000 burned</span>
+        </div>
+      </div>
+      <div class="row-nums">
+        <span class="num-value">Car actually worth $2,000</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="num-loss big" style="font-size:17px;">−$18,000</span>
+          <span class="verdict bad">✕ Big loss</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- outcomes -->
+
+  <!-- ── Summary ── -->
+  <div class="summary">
+    <div class="summary-title">What this means on average</div>
+    <div class="summary-grid">
+      <div class="sum-item">
+        <div class="sum-num bad">3 in 4</div>
+        <div class="sum-label">chances you overpay</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-num good">1 in 4</div>
+        <div class="sum-label">chances of a fair deal</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-num gold">$9,000</div>
+        <div class="sum-label">average loss per offer</div>
+      </div>
+    </div>
+
+    <!-- expected loss bar -->
+    <div style="margin-top:18px; padding-top:16px; border-top:1px solid rgba(255,255,255,.15);">
+      <div style="font-size:11px; font-weight:600; color:rgba(255,255,255,.6); margin-bottom:6px;">
+        Expected value of your $20,000 offer
+      </div>
+      <div style="height:24px; background:rgba(255,255,255,.12); border-radius:99px; overflow:hidden;">
+        <!-- $11K kept out of $20K = 55% -->
+        <div id="evBar" style="height:100%; width:0; background:linear-gradient(90deg,#86efac,#4ade80);
+             border-radius:99px; display:flex; align-items:center; padding:0 10px;
+             transition: width 1.4s cubic-bezier(.4,0,.2,1);">
+          <span style="font-size:11px; font-weight:700; color:#14532d; white-space:nowrap;">
+            $11,000 average value received
+          </span>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:10px; color:rgba(255,255,255,.45); font-weight:600;">
+        <span>$0</span>
+        <span>$20,000 you paid</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Insight ── -->
+  <div class="insight">
+    <span class="insight-icon" style="color:#c9a227;">💡</span>
+    <div class="insight-text">
+      <strong>The $20K offer isn't naive — it's rational.</strong>
+      You're willing to pay a fair price. The problem is you can't tell which car you're getting.
+      Sellers know. You don't. That gap is costing you $9,000 on average.
+    </div>
+  </div>
+
+</div><!-- scene -->
+
+<script>
+  // Trigger bar animations after a short delay so the page has rendered
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('outcomes').classList.add('animated');
+      // EV bar: $11K / $20K = 55%
+      document.getElementById('evBar').style.width = '55%';
+    }, 150);
+  });
+</script>
+</body>
+</html>
