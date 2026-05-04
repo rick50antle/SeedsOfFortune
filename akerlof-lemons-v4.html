@@ -1,0 +1,3756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markets &amp; Information v4.2 — Seeds of Fortune</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/**
+ * Markets & Information — Interactive Presenter Tool
+ * Seeds of Fortune Talk · Yale · May 4, 2026 (Zoom)
+ *
+ * @version 4.6.0
+ * @date 2026-05-04
+ * @changelog v4.6.0 (Session-11 pass-7 — Productive Efficiency concept):
+ *   • NEW step `prod` + ProductiveEfficiencyCard component between c10 and
+ *     growth. Concept slide parallel to c10 (Allocational Efficiency): same
+ *     purple ConceptCard chrome, same definition-then-three-states layout.
+ *     Three states: ✓ shared full info → strong project funded → built;
+ *     ✓ shared ignorance → average projects funded → some built; ✕ asymmetric
+ *     → investor can't tell, walks → strong project never built. Reuses
+ *     BuildingSVG to stay close to i0's vocabulary. Closes with footer:
+ *     "Same wedge as allocational. Different consequence: not 'wrong hands'
+ *     — 'never made.'" Definition is the softened-for-HS version (slight
+ *     mismatch with strict textbook PPF usage; no econ professor in the
+ *     audience would object). Per Rick's Session-11 pass-7 design vote:
+ *     definition (A), structure parallel to c10, placement between c10 and
+ *     growth (a), reuse BuildingSVG. STEPS count now 20.
+ *
+ * @changelog v4.5.5 (Session-11 polish pass-6 — small cleanup):
+ *   • c7 headline: "What if you offer $5K?" → "Reduce your offer." More
+ *     direct; the question framing was rhetorical and the new beat 5
+ *     (offer drops to $2K) makes the original headline only half-true.
+ *   • UnraveledMarketView (p0/i0): at beat 3 (when the "trades that don't"
+ *     panel reveals), the three better tiers in the population grid fade
+ *     out so it's visually obvious they walked. Only the Lemon remains
+ *     active. Header text shifts: "The four phones on the table" → "Only
+ *     the Lemon stays in the market." Mirrors the cars cascade in c6.
+ *
+ * @changelog v4.5.4 (Session-11 polish pass-5 — small cleanup):
+ *   • ModeBar removed from c3. The "No info / Symmetric / Asymmetric / Fixed"
+ *     pill row at the bottom of c3 was clutter — c3's job is to show the
+ *     symmetric-ignorance baseline, the pills add nothing the audience needs.
+ *     c3 is the only step that falls into the default render branch (every
+ *     other step has a `kind`), so safe to delete outright.
+ *   • invFix beat 4 header relabeled. "Same toolbox in other markets" →
+ *     "Ways this effect is eased in other markets." Better matches the
+ *     pedagogy: these aren't *the same toolbox*, they're a family of
+ *     answers to the same kind of problem.
+ *
+ * @changelog v4.5.3 (Session-11 polish pass-4 — thread the scale insight):
+ *   • invFix beat 7 closing — reworked to land the scale → trust → crisis
+ *     arc. Was: "When something breaks at scale, look for the asymmetry."
+ *     Now: "Markets that have scaled past shared experience run on TRUST.
+ *     When trust breaks down, the asymmetry comes back — and it's always
+ *     the same kind of gap: between what one side knows and what the
+ *     other side has to trust."
+ *   • z1 closing coda reworked. Was: "Wherever you find an information
+ *     problem, you've found a potential business — and a place where
+ *     allocational efficiency can be rebuilt." Now: "Wherever a market
+ *     has outgrown shared experience, you'll find an information problem —
+ *     and a place where TRUST can be rebuilt." The scale-conditional
+ *     framing ties the talk's final beat back to the `more` slide insight
+ *     and the trust through-line.
+ *
+ * @changelog v4.5.2 (Session-11 polish pass-3 — Rick's 3 third-pass notes):
+ *   • c7 (CascadeRevisionSlide) — added beat 5: offer drops to $2K, Lemon
+ *     accepts at $2K, market settled. The $2K equilibrium is the punchline
+ *     and bridges directly into c8 (FrozenMarketView). Spiral + insight move
+ *     from beat 4 to beat 5. TOTAL_BEATS = 5.
+ *   • `more` slide (MorePlacesSlide) — beat 3 rewritten. Dropped the
+ *     regulatory fix-family panel (Carfax/Apple are out of place there;
+ *     the fix conversation hasn't started yet). Replaced with the SCALE
+ *     INSIGHT: adverse selection is the failure mode of anonymous markets.
+ *     "In a small town, you know the seller. When markets grow past the
+ *     community where shared experience does the work — strangers selling
+ *     to strangers, no repeat play, no shared trusted info — adverse
+ *     selection becomes the default."
+ *   • invFix (InvestmentFixesSlide) — NEW beat 4 inserted between SEC
+ *     FixCard and the eases insight: a compact "Same toolbox in other
+ *     markets" panel listing the regulatory fixes for the markets shown
+ *     on the `more` slide (insurance → ACA, housing → inspectors, labor →
+ *     degrees/licenses). Per Rick: "sneak in a box on fixes in the other
+ *     markets we introduced; no need for separate page for each fix."
+ *     Beat 5 (eases insight) rewritten to cover all four fixes (SEC + ACA
+ *     + inspectors + licenses). TOTAL_BEATS = 7.
+ *
+ * @changelog v4.5.1 (Session-11 polish pass-2 — Rick's 4 second-pass notes):
+ *   • combFix Apple body — "no one would buy them" was overclaim; replaced
+ *     with the actual adverse-selection outcome ("owners of anything better
+ *     than a Lemon couldn't get a fair deal"). "Was actually a new-iPhone-
+ *     pricing problem" → declarative "had bad effects on the market for new
+ *     iPhones too." Reads cleaner; matches the lesson the deck just taught.
+ *   • UnraveledMarketView gets key={step.id} on its dispatcher entry. p0 and
+ *     i0 both render the same component, so without a key React was reusing
+ *     the instance and the `beat` state from p0 (which the user clicked to 4)
+ *     was carrying into i0 — making the whole i0 slide appear at once. With
+ *     the key, every step change forces a remount and beat resets to 1. i0
+ *     now requires click-through every time, just like p0. (Same fix applied
+ *     to MorePlacesSlide for symmetry.)
+ *   • NEW step `more` + MorePlacesSlide between synth and c10. Text-only
+ *     "same pattern, more places" slide. 3 beats: insurance pair (car +
+ *     health) → labor + housing pair → regulatory fix-family note (ACA,
+ *     building inspectors, degrees). Lets the audience recognize the
+ *     adverse-selection pattern in markets they actually inhabit, before
+ *     c10 puts a name on it. Also introduces the regulatory-fix family —
+ *     a third toolbox alongside Carfax (info aggregation) and Apple
+ *     (built-in feature). 19 steps total.
+ *
+ * @changelog v4.5.0 (Session-11 polish pass — Rick's 13 click-through notes):
+ *   • STEPS reorder: c5 (exposition) now comes BEFORE c4 (live simulation).
+ *     Audience sees the four possible outcomes deterministically first; then
+ *     experiences the variance.
+ *   • c7 caption + speaker narrative — "You're not stupid" dropped; "to a
+ *     pool worth an average of $5K" added. Less performative, more concrete.
+ *   • c8 insight rewritten — "the GOOD market has frozen" replaced with the
+ *     two-sided framing: "Anyone who owns a car that isn't a lemon can't get
+ *     a fair deal. And anyone who buys ends up with a lemon."
+ *   • UnraveledMarketView (p0/i0) — now beat-driven. 4 beats: population grid
+ *     (what each item is worth, sellers know) → trade-that-happens panel →
+ *     trades-that-don't panel → click-revealed conclusion lightbulb. Rick's
+ *     instinct to "wait a beat" on the conclusion now builds in.
+ *   • c12 (AbstractionSlide) RETIRED — redundant with synth.
+ *   • NEW step 'growth' + GrowthWedgeSlide after c10. Production-inefficiency
+ *     wedge: a problem in one market spills into another. "If buyers can't
+ *     TRUST the used market, they pay less for new cars too. Fewer cars built.
+ *     Slower growth. Information asymmetry doesn't just misallocate what
+ *     already exists — it changes what gets made." 5 beats. Headline
+ *     suppressed (typographic slide).
+ *   • combFix Apple body restructured per Rick's #9 — problem (used iPhones
+ *     can't be trusted → new iPhone prices fall) precedes the fix (Battery
+ *     Health). Reads as cause → mechanism → outcome.
+ *   • invFix beat 2 — "even with perfect information" → "even with the best
+ *     information you could possibly get." Less overclaim.
+ *   • invFix FIX_DATA.investment.body rewritten — explicit contrast with
+ *     Carfax (collecting existing information) and Apple (building a feature
+ *     into the product). With investments, the relevant info is FUTURE; no
+ *     website knows that. The only fix is to build TRUST in disclosure.
+ *   • "Stack" wording removed from all user-visible text. Replaced with
+ *     "trust system" / "trust layers." Rick's note: stack is an IT word; not
+ *     a high-school-junior word. CRISIS_DATA bodies updated to match.
+ *   • TRUST surfaced as the through-line for every fix — featured on the new
+ *     growth wedge slide, in the rewritten Apple body, in invFix beat 4
+ *     insight, and in the rewritten investment body.
+ *
+ * @changelog v4.4.0 (Pass C of Session-10 batch — structural restructure):
+ *   • STEPS reordered: c0..c8 → p0 → i0 → synth → c10 → c12 → combFix →
+ *     invFix → z1. All three problems land back-to-back before any synthesis;
+ *     fixes are introduced as solutions to a problem the audience now feels.
+ *   • c11 (the standalone Carfax application slide) RETIRED. Its content
+ *     folds into the new combinedFixes slide alongside Battery Health.
+ *   • NEW kind 'synthesis' + SynthesisSlide — typographic 5-beat reveal.
+ *     "Different markets, same problem. Information. Not the lack of it,
+ *     the distribution of it. Adverse selection."
+ *   • NEW kind 'combinedFixes' + CombinedFixesSlide — Carfax + Apple Battery
+ *     Health side-by-side cards on a single slide. 4 beats: headline → Carfax
+ *     card → Battery card → tying insight.
+ *   • NEW kind 'investmentFixes' + InvestmentFixesSlide — investments framed
+ *     as the harder case (risk irreducible). 6 beats: pivot → risk caveat →
+ *     SEC stack → "ease, don't fix" → multi-crisis list → closing insight.
+ *   • NEW CRISIS_DATA — Great Depression (bank runs), Enron (accounting fraud),
+ *     2008 (MBS — spelled out as "investments built from bundles of mortgage
+ *     payments" per Rick's framing), FTX (customer funds). Each crisis is a
+ *     1–2-sentence info-asymmetry story: who knew, who didn't, what happened.
+ *   • Headline-suppression check + narrative-suppression check both extended
+ *     to include 'synthesis' kind (the slide IS the slide, like c12 and c5b).
+ *   • CrisisCallout component preserved in code but no longer rendered (it
+ *     was attached to old i0; the new InvestmentFixesSlide carries the
+ *     expanded multi-crisis content inline).
+ *
+ * @changelog v4.4.0 (Pass B of Session-10 batch — structural rework):
+ *   • c12 (AbstractionSlide) rebuilt as 4-beat reveal modeled on RuleChangeSlide.
+ *     Headline "It wasn't about the lemons." → "It wasn't about the cars."
+ *     Punchline lands on "It was about the INFORMATION." Carfax mention dropped
+ *     (the fix isn't introduced yet at this point in the deck post-restructure).
+ *     Narrative also reflows to drop Carfax + the "fix was: making knowledge
+ *     shared" line.
+ *   • New `kind: 'unraveled'` and UnraveledMarketView component — section-
+ *     parameterized end-state snapshot mirroring FrozenMarketView. Used by p0
+ *     and i0 to show the unraveled-market state without re-running a cascade.
+ *     Renders ✓ trade-that-happens (lowest tier) + ✕ trades-that-don't (top 3
+ *     tiers), with shapes from renderShape() and per-section labels. Optional
+ *     `step.preamble` for setup text above the visual.
+ *   • p0 (iPhones) is now problem-only: kind='unraveled', preamble introduces
+ *     the asymmetry, no FixCard, no LotCalculation. Battery Health fix moves
+ *     to the new combined fixes slide later in the deck.
+ *   • i0 (Capital) is now problem-only with expanded setup per Rick's item-7
+ *     wording (Strong/Solid/Weak/Speculative — values in $M to match INV_TIERS).
+ *     No FixCard, no CrisisCallout, no LotCalculation — those move to the new
+ *     investment-fixes slide.
+ *
+ * @changelog v4.3.11 (Pass A of Session-10 batch):
+ *   • c6 headline "Sellers wake up." → "Sellers know what they have."
+ *     Narrative reworded: drops "now each seller knows" framing (which implied
+ *     they didn't know before) in favor of "drop the pretense that sellers
+ *     don't know — they've owned these cars, they know."
+ *   • c8 narrative softened: removed "Both sides walk away happy"; replaced
+ *     with "The buyer didn't get the kind of car they would have gladly paid
+ *     more for — but at least they didn't overpay for what they got."
+ *   • c8 insight: dropped "Invisible if you're not looking for it." (unclear);
+ *     ends with "only the Lemon market is left."
+ *   • FrozenMarketView "both happy" caption → "trade happens" — neutral
+ *     framing aligned with the c8 narrative softening.
+ * @hotfix v4.2.1 (post-browser-verification): added `formatEmphasis` helper to
+ *   convert *x* → <em> and **x** → <strong> in narrative/insight/FixCard.body
+ *   slots. v4.2 strings used markdown syntax that rendered literally because
+ *   the slots interpolated raw strings. Helper is a no-op on strings without
+ *   asterisks. Applied at the three render slots in TutorialApp and at FixCard.
+ * @description 15-step build (z0 cost-escalation slide deleted per R16; abstraction
+ *   moved before Carfax per R12). v4.2 revisions applied per CONTINUATION-BRIEF.md:
+ *   R12 — STEPS reordered: c10 → c12 (abstraction) → c11 (Carfax) → p0 → i0 → z1
+ *         Carfax becomes the FIRST application of the just-named principle, not a
+ *         summary of it.
+ *   R13 — Narrative+insight redundancy audit, c10→z1: c10 narrative trimmed
+ *         (ConceptCard already carries the definition + three-state diagram), c10
+ *         insight dropped; i0 narrative + insight + FixCard reset around the
+ *         trust-stack frame; other slides already audited in v4.1 (R7, R9).
+ *   R14 — p0 iPhones: upstream pricing-power point foregrounded in FixCard.phone
+ *         (thin resale market → lower new-iPhone WTP → Apple's self-interest in
+ *         fixing the asymmetry).
+ *   R15 — i0 Capital: reframed cost-of-fix → trust-and-institutions. New question
+ *         "How do you arrange for trustworthy information?" New answer: stacked
+ *         institutions (regulations, liability, auditing, standards, enforcement).
+ *         "Doesn't fix it; eases it" foregrounded.
+ *   R16 — z0 (CostEscalation slide) removed from STEPS. Component preserved in code.
+ *   R17 — Crises = information problems beat appended to i0 as a CrisisCallout
+ *         (Great Depression, 2008, MBS ratings) — bridges to z1 capstone topics.
+ *
+ *   v4.1 baseline preserved (R1–R11): inheritance-hook opener, population/listings,
+ *   symmetric baseline, $11K spin (no top half), loss-viz with bankruptcy callout,
+ *   merged sellers-wake-up cascade (narrativeFirst), Fair walks, FrozenMarketView,
+ *   three-state ConceptCard, single-company-four-opportunities INV_TIERS.
+ *
+ *   Act 1 — Your Problem (c0–c3): inheritance hook, population, listings, symmetric baseline
+ *   Act 2 — The Burn (c4–c5): spin at $11K, loss-viz with bankruptcy
+ *   Act 3 — Sellers Wake Up (c6–c8): merged walk-out, revise to $5K, frozen market
+ *   Act 4 — Diagnosis (c10): allocational efficiency, three states
+ *   Act 5 — Pivot (c12): "It wasn't about the lemons." (now BEFORE Carfax)
+ *   Act 6 — Applications (c11, p0, i0): Carfax, iPhones, Capital + crises beat
+ *   Act 7 — Capstone (z1): per-topic information-problem connections
+ */
+
+// ── Colors ────────────────────────────────────────────────────────────────────
+const colors = {
+  primary:    '#00356b',
+  sand:       '#f5f1e8',
+  earth:      '#8b7355',
+  earthLight: '#d4c4a8',
+  earthDark:  '#5c4d3d',
+  accent:     '#c9a227',
+  clay:       '#c4a574',
+  clayLight:  '#e8dcc8',
+  clayDark:   '#a08050',
+  success:    '#22c55e',
+  successBg:  '#f0fdf4',
+  warning:    '#f59e0b',
+  warningBg:  '#fffbeb',
+  error:      '#dc2626',
+  errorBg:    '#fef2f2',
+  royal:      '#7c3aed',
+  royalBg:    '#f5f3ff',
+};
+
+// ── Sound ─────────────────────────────────────────────────────────────────────
+let audioCtx = null;
+const getAudio = () => {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+};
+const tone = (freq, type, dur, vol) => {
+  vol = vol || 0.25;
+  try {
+    const ctx = getAudio();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e) {}
+};
+const playContinueClick = () => tone(440, 'sine', 0.12, 0.18);
+const playSuccessTone   = () => tone(660, 'sine', 0.14, 0.15);
+const playSoftNope      = () => tone(220, 'sine', 0.10, 0.12);
+
+// ── Tier Data (4-car model, repair-cost framing) ─────────────────────────────
+// Mint: $0 repair → $20K value to you
+// Good: $6K repair → $14K value to you
+// Fair: $12K repair → $8K value to you
+// Lemon: $18K repair → $2K value to you
+// Average value across population = $11K (the number that matters)
+const CAR_TIERS = [
+  { value: 20000, repair:     0, count: 1, label: 'Mint',  emoji: '⭐' },
+  { value: 14000, repair:  6000, count: 1, label: 'Good',  emoji: '✓'  },
+  { value:  8000, repair: 12000, count: 1, label: 'Fair',  emoji: '⚠'  },
+  { value:  2000, repair: 18000, count: 1, label: 'Lemon', emoji: '🍋' },
+];
+const PHONE_TIERS = [
+  { value: 800, count: 1, label: 'Mint',  emoji: '⭐' },
+  { value: 500, count: 1, label: 'Good',  emoji: '✓'  },
+  { value: 300, count: 1, label: 'Fair',  emoji: '⚠'  },
+  { value: 100, count: 1, label: 'Lemon', emoji: '🍋' },
+];
+// v4.1 R11 — opportunity profiles inside ONE company, not four companies of
+// varying quality. Investors can't see which profile is real; the asymmetry is
+// internal to the firm. Labels stay short to fit the token grid.
+const INV_TIERS = [
+  { value: 20, count: 1, label: 'Strong',      emoji: '📈' },
+  { value: 14, count: 1, label: 'Solid',       emoji: '✓'  },
+  { value:  8, count: 1, label: 'Weak',        emoji: '⚠'  },
+  { value:  2, count: 1, label: 'Speculative', emoji: '📉' },
+];
+
+const TIER_STYLES = [
+  { body: '#c9a227', text: '#92400e', bg: '#fef3c7', border: '#c9a227' }, // Mint
+  { body: '#22c55e', text: '#15803d', bg: '#dcfce7', border: '#22c55e' }, // Good
+  { body: '#f97316', text: '#c2410c', bg: '#ffedd5', border: '#f97316' }, // Fair
+  { body: '#dc2626', text: '#991b1b', bg: '#fee2e2', border: '#dc2626' }, // Lemon
+];
+const SECTION_TIERS = { car: CAR_TIERS, phone: PHONE_TIERS, investment: INV_TIERS };
+
+// ── 20-Step Spec (v4.6.0 per Session-11 pass-7) ──────────────────────────────
+// Order: c0, c1, c2, c3, c5, c4, c5b, c6, c7, c8, p0, i0, synth, more, c10,
+//        prod, growth, combFix, invFix, z1
+// (v4.6.0 change from v4.5.5: NEW step `prod` between c10 and growth — a
+// Productive Efficiency concept slide parallel to c10. Same purple chrome,
+// three-state visualization (✓ shared full info → built; ✓ shared ignorance
+// → average; ✕ asymmetric → never built). c10 names the wrong-hands problem;
+// `prod` names the never-made problem; `growth` then dramatizes the stakes.)
+// (v4.5.1 changes from v4.5.0: NEW step `more` + MorePlacesSlide between
+// synth and c10 — text-only "see it everywhere" beat with car/health
+// insurance, labor market, housing, plus the regulatory fix-family note.
+// Also: combFix Apple body tightened (no overclaim), and UnraveledMarketView
+// gets a key={step.id} so beat state resets between p0 and i0.)
+// (v4.5.0 changes: c5 moved BEFORE c4 — exposition of the four outcomes lands
+// before the live simulation. c12 (abstraction punchline) RETIRED — redundant
+// with synth. NEW step `growth` after c10 — production-inefficiency wedge:
+// "the problem is bigger than allocational efficiency; one market spills into
+// another." UnraveledMarketView (p0/i0) now beat-driven: population first,
+// then unraveling, then click-revealed conclusion. invFix's "stack" wording
+// rewritten as "trust system" — TRUST is the through-line for every fix.)
+const STEPS = [
+  // ── Act 1 — Your Problem ────────────────────────────────────────────────
+  {
+    id: 'c0', section: 'car', sectionLabel: '🎁 Your Problem',
+    kind: 'hook',
+    headline: 'Your rich uncle just died.',
+    // v4.3.1 — script reframed: $20K is single-purpose (a car), not a windfall;
+    // uncle was unknown (defuses grief tone, makes the windfall narratively
+    // believable); biggest-financial-decision framing anchors gravity in the
+    // student's actual life; insurance/upkeep neutralized to model-style
+    // language so a sharp student can't poke holes in the variance lesson
+    // ("won't gas eat into my $20K?"). Visual is now a 3-beat click-to-advance
+    // reveal in HookSlide; this prose stays as the speaker script (only
+    // visible when the 📝 notes toggle is on).
+    narrative: 'You didn\'t even know you had a rich uncle. [click — money appears] Much less one that would leave you $20,000. [click — car appears] And tell you to buy yourself a car with it. This is the biggest financial decision you\'ve ever made. A mint-condition car of the model you want costs $20,000 — almost exactly what he left you. Assume insurance and gas are taken care of. If the car needs repairs, those come out of this same $20K. [click — Marketplace appears] You can afford one good car. You open Facebook Marketplace.',
+    narrativeFirst: true,
+    insight: null,
+  },
+  {
+    id: 'c1', section: 'car', sectionLabel: '🚗 The Population',
+    kind: 'population',
+    headline: 'What\'s actually out there',
+    // v4.3.1 — narrative re-aligned to the 3-beat reveal in PopulationView.
+    // Insight box dropped (no lightbulb): the $11K-average lesson now lives in
+    // the visual itself as the punchline of beat 3 (per-car value tags +
+    // bottom banner), so it doesn't need to be repeated in a side note.
+    narrative: 'Of cars of this model on the used market, here\'s what your research tells you. They come in four flavors — mint, good, fair, lemon — and they show up in roughly equal numbers. The difference between them is repair work. Mint is ready to drive — zero. Good needs about $6K of repairs to bring it up to mint. Fair needs $12K. Lemon needs $18K. So what each one is worth to you is the mint price minus what you\'d have to spend to make it mint. Mint $20K. Good $14K. Fair $8K. Lemon $2K. Average across all four: $11K. Hold that number — it matters in a minute.',
+    narrativeFirst: true,
+    insight: null,
+  },
+  {
+    id: 'c2', section: 'car', sectionLabel: '🚗 The Listings',
+    kind: 'listings',
+    headline: 'What you actually see on Marketplace',
+    // v4.3.2 — narrative re-aligned to the 6-beat reveal (empty frame → 4
+    // listings appear one at a time → insight appears). step.insight is null
+    // here because MarketplaceView renders the lightbulb inline on beat 6
+    // (the App-level insight render skips when null).
+    narrative: 'You open Facebook Marketplace and search for the model you want. The first listing comes up at $20,000. Then a second — also $20,000. A third — $20,000. A fourth — $20,000. Every single seller is asking the same price. From the photos alone you can\'t tell which is which — every one is asking the price only the Mint car is worth.',
+    narrativeFirst: true,
+    insight: null,
+  },
+  {
+    id: 'c3', section: 'car', sectionLabel: '🚗 Used Cars',
+    headline: 'What if no one knew?',
+    narrative: 'Let\'s start with a thought experiment. Suppose the sellers don\'t know what they have either — they\'re as in the dark as you. Each seller would expect their car to be average value: $11K. So you offer $11K. Sellers accept (it matches their own expectation). It\'s a fair coin toss across all four cars.',
+    insight: 'This is the BASELINE: a market with symmetric ignorance. Everyone\'s guessing. Nobody has an information advantage. We\'ll see what happens here, then change ONE thing.',
+    activeTiers: [0,1,2,3], infoMode: 'symmetric',
+    offer: 11000, showCalc: true,
+  },
+
+  // ── Act 2 — The Burn ────────────────────────────────────────────────────
+  // v4.5.0 — c5 (exposition: "what $11K could buy") now comes BEFORE c4
+  // (live simulation). Establish the four possible outcomes deterministically
+  // first; THEN let the audience experience the variance.
+  {
+    id: 'c5', section: 'car', sectionLabel: '🚗 Used Cars',
+    kind: 'lossViz',
+    headline: 'What $11K could buy you',
+    // v4.5.0 — narrative reworked to subjunctive (we haven't run the
+    // simulation yet). Sets up the four equally-likely outcomes as
+    // exposition before the live spin in c4.
+    narrative: 'Suppose you offer $11K. You don\'t know which car you\'ll get — each is equally likely. Walk through the four possibilities. Maybe you get a Mint — worth $20K, no repairs needed, $9K cash to spare. Or maybe a Good — worth $14K, $6K of repairs, $3K to spare. Or maybe a Fair — worth $8K, $12K of repairs, short $3K, you can\'t drive it. Or maybe a Lemon — worth $2K, $18K of repairs, short $9K, you can\'t drive it. 2 of 4 outcomes leave you with a car you can\'t fix.',
+    narrativeFirst: true,
+    insight: null,
+  },
+  {
+    id: 'c4', section: 'car', sectionLabel: '🚗 Used Cars',
+    kind: 'spin',
+    headline: 'Now try it. Offer $11,000.',
+    narrative: 'Now actually run it. Click "Offer $11,000." A seller at random accepts (because in symmetric ignorance, all four are equally likely to take your offer). What did you get this time? Click again. And again.',
+    insight: 'On AVERAGE, $11K is fair. But you don\'t get to average across many draws — you only get one car. Run the spin a few times. Notice you almost never get the "average" outcome — you either overpay or underpay, often by a lot. Variance is the lesson.',
+  },
+
+  // ── Act 3 — The Sellers Wake Up + Cascade ──────────────────────────────
+  // v4.3.5 — c5b precursor inserted before c6. Announces the rule change
+  // ("nobody knew" → "sellers know") in 5 typographic beats. Without this
+  // bridge, c6 lands as a big abrupt assumption ("now sellers know — and
+  // here's the math") with no setup.
+  {
+    id: 'c5b', section: 'car', sectionLabel: '🔁 ONE thing changes',
+    kind: 'ruleChange',
+    headline: 'What if sellers know?',
+    narrative: 'That\'s what happens if no one knows the quality of the cars. Is that a reasonable assumption? The sellers have experience with their cars. What if you offer $11K but each seller KNOWS the quality of their car? Let\'s walk through what happens.',
+    narrativeFirst: true,
+    insight: null,
+  },
+  // v4.1: old c6 (Mint walks) and old c7 (Good walks) merged into a single c6.
+  // Both reason identically at $11K — the cascade has them walking simultaneously,
+  // not sequentially. activeTiers [2,3]; narrative leads, then visual, then insight
+  // (R3). c9 ID is intentionally skipped post-merge to preserve c10–c12 continuity.
+  {
+    id: 'c6', section: 'car', sectionLabel: '🚗 Used Cars',
+    // v4.3.8 — c6 promoted to a custom 'cascade' kind (CascadeSlide handles
+    // its own beat state). Headline shortened to not pre-spoil. Insight set
+    // to null because CascadeSlide renders the lightbulb inline at beat 5.
+    kind: 'cascade',
+    headline: 'Sellers know what they have.',
+    narrative: 'Same setup. Same four cars. Same $11K offer. Drop the pretense that sellers don\'t know what they have — they\'ve owned these cars, they know. [click] Mint\'s owner: "Worth $20K. No thanks." Walks. [click] Good\'s owner: "Worth $14K. No thanks." Walks. [click] Only Fair and Lemon would accept $11K. The pool you\'re drawing from is now worth $5K on average. You\'d be paying $11K for it. [click] Expected loss: $6K. Plus a 50% chance of the un-fixable Lemon. [click] Your offer didn\'t draw a random sample. It systematically attracted the worst. Economists call this adverse selection.',
+    narrativeFirst: true,
+    insight: null,
+  },
+  {
+    id: 'c7', section: 'car', sectionLabel: '🚗 Used Cars',
+    // v4.3.10 — c7 promoted to a custom 'cascadeRevision' kind. CascadeRevisionSlide
+    // handles its own beat state, walks the rhetorical revision ($11K → $5K) +
+    // the Fair-walks consequence + the spiral/insight at the end.
+    kind: 'cascadeRevision',
+    headline: 'Reduce your offer.',
+    narrative: 'You won\'t offer $11K to a pool worth an average of $5K. [click] What if you offer $5K instead? Drop your offer to $5K. That matches the pool average. [click] Fair\'s owner: "Worth $8K. No thanks." Walks. [click] Only Lemon would accept $5K — and you wouldn\'t even offer that. You\'d drop to $2K. [click] Lemon accepts at $2K. The market has settled there. Each rational revision drove out the next-best seller — the market isn\'t failing randomly, it\'s unraveling along a predictable information fault line.',
+    narrativeFirst: true,
+    insight: null,
+  },
+  {
+    id: 'c8', section: 'car', sectionLabel: '🚗 Used Cars',
+    kind: 'frozen',
+    headline: 'The Lemon market is the only one that works.',
+    narrative: 'Lemon sellers and Lemon-tolerant buyers find each other at $2K. The trade happens. The buyer didn\'t get the kind of car they would have gladly paid more for — but at least they didn\'t overpay for what they got. Every other potential trade has stalled. The Mint owner is stuck holding a car they wanted to sell. The Good owner is stuck. The Fair owner is stuck. You\'re stuck shopping in the Lemon market when you\'d rather have a Mint.',
+    insight: 'The market hasn\'t disappeared — but it doesn\'t work anymore. Anyone who owns a car that isn\'t a lemon can\'t get a fair deal. And anyone who buys ends up with a lemon.',
+  },
+
+  // ── Act 4 — Same problem, different markets ────────────────────────────
+  // v4.4.0 (Pass C) — p0 and i0 moved here so all three problem snapshots
+  // land back-to-back (cars c8 → phones p0 → capital i0). Then synthesis.
+
+  // p0 — iPhones (problem-only). Battery Health fix moves to combinedFixes.
+  // v4.5.0 — UnraveledMarketView is now beat-driven: beat 1 shows the
+  // population (what each iPhone is worth), beat 2 the trade that happens,
+  // beat 3 the trades that don't, beat 4 the click-revealed conclusion.
+  // step.insight removed; conclusion now lives in-component as `step.conclusion`.
+  {
+    id: 'p0', section: 'phone', sectionLabel: '📱 Same Problem: iPhones',
+    kind: 'unraveled',
+    headline: 'Same pattern: used iPhones.',
+    preamble: 'Used iPhones on Marketplace. Four flavors, same as cars — but battery health is the hidden quality. **Sellers know it. Buyers can\'t see it.**',
+    conclusion: 'Same problem as cars. The asset is different. The asymmetry is identical.',
+    narrative: 'Used iPhones on Marketplace. Same setup as cars — four flavors, sellers know which is which, buyers can\'t tell. The hidden quality is battery health. [click — population appears] Here\'s what each one is worth. [click — trade appears] Only the Lemon trades. [click — stuck reveal] Every other phone\'s owner is stuck. [click — conclusion] Same problem as cars.',
+    narrativeFirst: true,
+    insight: null,
+  },
+
+  // i0 — Capital (problem-only with expanded setup). Units in $M.
+  // v4.5.0 — same beat-driven UnraveledMarketView treatment as p0. Population
+  // first, unraveling, then click-revealed conclusion.
+  {
+    id: 'i0', section: 'investment', sectionLabel: '🏢 Same Problem: Capital',
+    kind: 'unraveled',
+    headline: 'Same pattern: investors and companies.',
+    preamble: 'You\'re an investor. A company comes to you with one of four opportunities — **Strong ($20M)**, **Solid ($14M)**, **Weak ($8M)**, or **Speculative ($2M)**. **The company knows which one. *You don\'t.***',
+    conclusion: 'Same problem again. Cars, phones, capital — the asset doesn\'t matter. The asymmetry does.',
+    narrative: 'You\'re an investor looking to put capital into a company. The company has one of four kinds of opportunities. They know which one; you don\'t. [click — population appears] Here\'s what each one is worth — Strong, Solid, Weak, Speculative. [click — trade appears] Only the Speculative gets funded. [click — stuck reveal] Every other opportunity goes unfunded — investors won\'t pay enough to make it worth the company\'s while. [click — conclusion] Same pattern. Cars, phones, capital. The asymmetry is what matters.',
+    narrativeFirst: true,
+    insight: null,
+  },
+
+  // synth — typographic synthesis (NEW, Session-10 item 8). Lands the
+  // "different markets, same problem: distribution of information" insight
+  // and names adverse selection.
+  {
+    id: 'synth', section: 'pivot', sectionLabel: '🔄 The Pattern',
+    kind: 'synthesis',
+    headline: 'Different markets, same problem.',
+    narrative: 'Cars. Phones. Capital. Three different markets. Same outcome — the better-informed side stayed home, only the worst stuff traded. The asset doesn\'t matter. What matters is the information: not whether it exists, but how it\'s distributed. When sellers know more than buyers, adverse selection kicks in, and markets don\'t work so well. Now we can give the pattern a name.',
+    insight: null,
+  },
+
+  // ── Act 5 — Diagnosis ──────────────────────────────────────────────────
+  // v4.5.1 — NEW step `more` between synth (where we name adverse selection)
+  // and c10 (where we formally diagnose it). Text-only "see it everywhere"
+  // beat: insurance (car + health), labor market, housing, plus a regulatory
+  // fix-family note (ACA, building inspectors, degrees). Lets the audience
+  // recognize the pattern in markets they actually inhabit before c10 puts
+  // a name on it.
+  {
+    id: 'more', section: 'concept', sectionLabel: '🧭 Same Pattern, More Places',
+    kind: 'morePlaces',
+    headline: 'Same pattern, more places.',
+    narrative: 'You\'ve seen this in cars, phones, and capital. Here are four more places it shows up — markets you actually live in. [click — insurance pair] Car insurance: the driver knows how reckless they are; the insurer can\'t see it. Health insurance: you know your lifestyle and family history; the insurer doesn\'t. Same machinery: safe drivers and healthy people opt out, only the riskier pool stays, rates rise. Eventually everyone gets the bad-driver rate or the unhealthy-lifestyle rate. [click — labor + housing pair] Labor market: employers can\'t see how good a worker is until after they\'re hired. Housing: sellers know about the foundation; buyers can\'t see what\'s under the paint. [click — scale insight] Notice the pattern: this shows up wherever markets SCALE UP beyond a community where buyers and sellers share experience. In a small town, you know the seller — you know their reputation, you\'ll see them again. When markets grow past that — strangers buying from strangers, no repeat play, no shared trusted information — adverse selection becomes the default.',
+    narrativeFirst: true,
+    insight: null,
+  },
+
+  {
+    id: 'c10', section: 'concept', sectionLabel: '💡 Allocational Efficiency',
+    kind: 'concept',
+    headline: 'Allocational efficiency',
+    narrative: 'Asymmetric information breaks the sort. The mint owner is stuck. A buyer who\'d happily pay $20K for a verified mint car goes without. Even the *suspicion* that the other side knows more is enough — buyers shade their offers, sellers walk, the spiral begins.',
+    insight: null,
+  },
+
+  // prod — Productive Efficiency concept slide (NEW v4.6.0). Parallel to c10:
+  // same purple ConceptCard chrome, three-state visualization (✓ shared full
+  // info → project funded; ✓ shared ignorance → average projects funded; ✕
+  // asymmetric → walks, never built). Uses BuildingSVG instead of CarSVG to
+  // stay close to i0's visual vocabulary. Softened definition keeps "productive
+  // efficiency" accessible to HS juniors (slight technical mismatch with strict
+  // textbook PPF definition, no econ professor in the audience would object).
+  // Names the concept BEFORE the growth wedge dramatizes the stakes.
+  {
+    id: 'prod', section: 'concept', sectionLabel: '💡 Productive Efficiency',
+    kind: 'productiveConcept',
+    headline: 'Productive efficiency',
+    narrative: 'Asymmetric information doesn\'t just put things in the wrong hands. It changes whether things get made at all. The strong project goes unfunded — not because the investor doesn\'t want to back it, but because they can\'t tell it apart from the weak one. The factory never gets built. The product never ships.',
+    insight: null,
+  },
+
+  // growth — production-inefficiency wedge (NEW v4.5.0). The diagnosis at
+  // c10 lands at "things end up in the wrong hands." This slide expands the
+  // stakes: a problem in one market spills into another. Used cars going
+  // bad means new cars sell for less (buyers can't recover resale value);
+  // companies that can't get capital don't expand → fewer products, fewer
+  // jobs, slower growth. Information asymmetry doesn't just misallocate
+  // what already exists; it changes what gets made. (Replaces the retired
+  // c12 abstraction punchline, which was redundant with synth.)
+  {
+    id: 'growth', section: 'concept', sectionLabel: '💡 Bigger Than That',
+    kind: 'growthWedge',
+    headline: 'It\'s bigger than that.',
+    narrative: 'Allocational efficiency is the start. Things end up in the wrong hands — the Mint owner stuck, the buyer who\'d pay $20K going without. [click] But it doesn\'t stop there. A problem in one market spills into another. [click] If buyers can\'t TRUST used cars, they pay less for new ones too — they know they can\'t easily resell. New car sales fall. [click] Fewer cars built. Fewer factory jobs. Slower growth. Same story for any product where resale matters. [click] Information asymmetry doesn\'t just misallocate what already exists. It changes what gets made.',
+    insight: null,
+  },
+
+  // ── Act 7 — Fixes ──────────────────────────────────────────────────────
+  // v4.4.0 (Pass C) — fixes section. c11 (Carfax application slide) is
+  // retired; Carfax content lives inside combinedFixes side-by-side with
+  // Battery Health. Investments get their own slide because they're the
+  // harder case (risk irreducible) and need the historical-crises framing.
+
+  // combFix — Carfax + Apple Battery Health on one slide.
+  {
+    id: 'combFix', section: 'pivot', sectionLabel: '🌱 Two Markets, Two Fixes',
+    kind: 'combinedFixes',
+    headline: 'Two markets, two fixes.',
+    narrative: 'Cars and iPhones — two markets where someone built a fix that closed the information gap. Carfax: a $40 history report. Apple Battery Health: a free built-in feature. Two completely different mechanisms; same purpose — shrink the gap between what the seller knows and what the buyer can see. Every information problem is a business opportunity in disguise.',
+    insight: null,
+  },
+
+  // invFix — Investment fixes + risk caveat + multi-crisis list.
+  {
+    id: 'invFix', section: 'investment', sectionLabel: '🏢 Investment Fixes',
+    kind: 'investmentFixes',
+    headline: 'Investments are tougher.',
+    narrative: 'Investments are the hardest case. You can ease the asymmetry — disclosures, audits, GAAP, regulators, liability — but you can\'t eliminate risk. Even with the best information you could possibly get, the future is unknown. [click — SEC trust system] The fix here is institutional: the SEC mandates disclosure, officers and auditors are personally liable, independent CPAs verify the numbers, GAAP makes companies comparable, enforcement makes it bite. [click — same toolbox elsewhere] And the same toolbox shows up in the other markets we just looked at — ACA in insurance, building inspectors in housing, degrees and licenses in labor. Different markets, same family of fixes. [click — eases insight] None of these fix the asymmetry; they ease it. Information you can trust is hard to manufacture. [click — crisis cards] And every so often trust breaks down and the asymmetry comes roaring back. That\'s what most major financial crises actually are: information problems first.',
+    insight: null,
+  },
+
+  // ── Act 8 — Capstone ───────────────────────────────────────────────────
+  {
+    id: 'z1', section: 'closing', sectionLabel: '💡 Capstone Connections',
+    headline: 'What\'s the information problem in your capstone?',
+    narrative: 'Each of your four capstone topics is, at its core, an information problem. Look at them through this lens and you\'ll see new questions. New angles. Maybe new businesses.',
+    insight: null,
+    showCapstone: true,
+  },
+];
+
+// ── SVG Shapes ────────────────────────────────────────────────────────────────
+const CarSVG = ({ fill, stroke, w = 80, h = 52 }) => (
+  React.createElement('svg', { viewBox: '0 0 64 42', width: w, height: h, xmlns: 'http://www.w3.org/2000/svg' },
+    React.createElement('rect', { x: 4, y: 20, width: 56, height: 17, rx: 3, fill, stroke, strokeWidth: 2 }),
+    React.createElement('path', { d: 'M15 20 L21 7 L43 7 L49 20 Z', fill, stroke, strokeWidth: 2 }),
+    React.createElement('circle', { cx: 17, cy: 37, r: 5, fill: '#374151', stroke, strokeWidth: 1.5 }),
+    React.createElement('circle', { cx: 47, cy: 37, r: 5, fill: '#374151', stroke, strokeWidth: 1.5 }),
+    React.createElement('path', { d: 'M23 9 L21 17 L32 17 L32 9 Z', fill: stroke, opacity: 0.3 }),
+    React.createElement('path', { d: 'M34 9 L34 17 L43 17 L41 9 Z', fill: stroke, opacity: 0.3 })
+  )
+);
+
+const PhoneSVG = ({ fill, stroke, w = 50, h = 76 }) => (
+  React.createElement('svg', { viewBox: '0 0 38 58', width: w, height: h, xmlns: 'http://www.w3.org/2000/svg' },
+    React.createElement('rect', { x: 3, y: 2, width: 32, height: 54, rx: 5, fill, stroke, strokeWidth: 2 }),
+    React.createElement('rect', { x: 6, y: 9, width: 26, height: 36, rx: 2, fill: stroke, opacity: 0.18 }),
+    React.createElement('circle', { cx: 19, cy: 51, r: 3, fill: stroke, opacity: 0.4 }),
+    React.createElement('rect', { x: 14, y: 4.5, width: 10, height: 2, rx: 1, fill: stroke, opacity: 0.4 })
+  )
+);
+
+const BuildingSVG = ({ fill, stroke, w = 64, h = 74 }) => (
+  React.createElement('svg', { viewBox: '0 0 52 60', width: w, height: h, xmlns: 'http://www.w3.org/2000/svg' },
+    React.createElement('rect', { x: 6, y: 12, width: 40, height: 46, rx: 2, fill, stroke, strokeWidth: 2 }),
+    React.createElement('rect', { x: 12, y: 4, width: 28, height: 10, rx: 1, fill, stroke, strokeWidth: 2 }),
+    React.createElement('rect', { x: 11, y: 18, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 23, y: 18, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 35, y: 18, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 11, y: 30, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 23, y: 30, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 35, y: 30, width: 8, height: 8, rx: 1, fill: stroke, opacity: 0.28 }),
+    React.createElement('rect', { x: 20, y: 44, width: 12, height: 14, rx: 1, fill: stroke, opacity: 0.38 })
+  )
+);
+
+const BuyerSVG = ({ w = 38, h = 50, color = '#6b7280' }) => (
+  React.createElement('svg', { viewBox: '0 0 30 40', width: w, height: h, xmlns: 'http://www.w3.org/2000/svg' },
+    React.createElement('circle', { cx: 15, cy: 10, r: 6, fill: color, opacity: 0.85 }),
+    React.createElement('path', { d: 'M5 38 Q5 22 15 22 Q25 22 25 38 Z', fill: color, opacity: 0.85 })
+  )
+);
+
+const renderShape = (section, fill, stroke, large = false) => {
+  if (section === 'car')        return <CarSVG      fill={fill} stroke={stroke} w={large ? 96 : 80} h={large ? 63 : 52} />;
+  if (section === 'phone')      return <PhoneSVG    fill={fill} stroke={stroke} w={large ? 60 : 50} h={large ? 92 : 76} />;
+  if (section === 'investment') return <BuildingSVG fill={fill} stroke={stroke} w={large ? 76 : 64} h={large ? 88 : 74} />;
+  return null;
+};
+
+// ── Token (single tier, single token) ────────────────────────────────────────
+const Token = ({ section, tierIndex, infoMode, active }) => {
+  const tier = SECTION_TIERS[section][tierIndex];
+  const style = TIER_STYLES[tierIndex];
+  const faded   = !active;
+  const fixed   = infoMode === 'fixed'  && active;
+  const seller  = infoMode === 'seller' && active;
+  const neutral = (infoMode === 'none' || infoMode === 'symmetric') && active;
+
+  let bodyColor, strokeColor, badge;
+  if (faded)        { bodyColor = '#d1d5db'; strokeColor = '#9ca3af'; badge = null; }
+  else if (neutral) { bodyColor = '#9ca3af'; strokeColor = '#6b7280'; badge = '?'; }
+  else if (fixed)   { bodyColor = style.body; strokeColor = style.text; badge = '✓'; }
+  else              { bodyColor = style.body; strokeColor = style.text; badge = tier.emoji; }
+
+  const valueLabel = section === 'investment'
+    ? ('$' + tier.value + 'M')
+    : tier.value >= 1000 ? ('$' + (tier.value / 1000) + 'K') : ('$' + tier.value);
+
+  const showLabel = seller || fixed;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, opacity: faded ? 0.18 : 1, transition: 'opacity 0.5s' }}>
+      <div style={{
+        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+        backgroundColor: faded ? '#d1d5db' : neutral ? '#6b7280' : style.text,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: badge === '?' ? 17 : 14, color: 'white', fontWeight: 700,
+      }}>{badge}</div>
+      {renderShape(section, bodyColor, strokeColor, true)}
+      {showLabel && (
+        <div style={{
+          fontSize: 13, fontWeight: 700, color: 'white',
+          backgroundColor: style.text,
+          padding: '3px 10px', borderRadius: 6, lineHeight: 1.2,
+        }}>{tier.label} · {valueLabel}</div>
+      )}
+      {neutral && (
+        <div style={{
+          fontSize: 13, fontWeight: 700, color: '#6b7280',
+          backgroundColor: '#f3f4f6', padding: '3px 10px', borderRadius: 6, lineHeight: 1.2,
+        }}>?</div>
+      )}
+    </div>
+  );
+};
+
+// ── Token Grid ────────────────────────────────────────────────────────────────
+const TokenGrid = ({ section, activeTiers, infoMode }) => {
+  const tiers = SECTION_TIERS[section];
+  if (!tiers) return null;
+  return (
+    <div style={{
+      backgroundColor: colors.clayLight, borderRadius: 10,
+      padding: '20px 16px', marginBottom: 12,
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'flex-end',
+        gap: 12,
+      }}>
+        {tiers.map((tier, ti) => {
+          const isActive = activeTiers.includes(ti);
+          return (
+            <Token key={ti}
+              section={section}
+              tierIndex={ti}
+              infoMode={infoMode}
+              active={isActive} />
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ── Mode Bar ──────────────────────────────────────────────────────────────────
+const ModeBar = ({ infoMode }) => {
+  const modes = [
+    { key: 'none',      label: 'No info',                bg: '#f3f4f6', text: '#6b7280', border: '#d1d5db' },
+    { key: 'symmetric', label: 'Symmetric (no one knows)', bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+    { key: 'seller',    label: 'Asymmetric (seller knows)', bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+    { key: 'fixed',     label: 'Fixed ✓',                bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
+  ];
+  return (
+    <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
+      {modes.map(m => {
+        const active = m.key === infoMode;
+        return (
+          <div key={m.key} style={{
+            padding: '5px 14px', borderRadius: 99, fontSize: 13,
+            fontWeight: active ? 700 : 500,
+            backgroundColor: active ? m.bg : '#f9fafb',
+            color: active ? m.text : '#9ca3af',
+            border: '1.5px solid ' + (active ? m.border : '#e5e7eb'),
+            transition: 'all 0.25s',
+          }}>{m.label}</div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ── Lot Calculation ───────────────────────────────────────────────────────────
+const LotCalculation = ({ section, activeTiers, offer }) => {
+  const tiers = SECTION_TIERS[section];
+  if (!tiers) return null;
+  const activeTierObjs = tiers.filter((_, i) => activeTiers.includes(i));
+  const totalCount = activeTierObjs.reduce((s, t) => s + t.count, 0);
+  const totalValue = activeTierObjs.reduce((s, t) => s + t.value * t.count, 0);
+  const avg = totalCount > 0 ? Math.round(totalValue / totalCount) : 0;
+
+  const fmt = v => section === 'investment'
+    ? ('$' + v + 'M')
+    : v >= 1000 ? ('$' + (v / 1000).toFixed(0) + 'K') : ('$' + v);
+
+  return (
+    <div style={{ borderRadius: 10, border: '2px solid ' + colors.clayDark, overflow: 'hidden', marginBottom: 12, backgroundColor: colors.clayLight }}>
+      <div style={{ padding: '8px 14px', fontSize: 14, fontWeight: 700, backgroundColor: colors.clay, color: colors.earthDark }}>
+        Market Calculation
+      </div>
+      <div style={{ padding: '12px 14px' }}>
+        <table style={{ width: '100%', fontSize: 14, color: colors.earthDark, borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid ' + colors.earthLight }}>
+              <th style={{ textAlign: 'left',   paddingBottom: 6, fontWeight: 600 }}>Quality</th>
+              <th style={{ textAlign: 'center', paddingBottom: 6, fontWeight: 600 }}>In market</th>
+              <th style={{ textAlign: 'right',  paddingBottom: 6, fontWeight: 600 }}>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tiers.map((tier, i) => {
+              const isActive = activeTiers.includes(i);
+              const ts = TIER_STYLES[i];
+              return (
+                <tr key={i} style={{ opacity: isActive ? 1 : 0.3 }}>
+                  <td style={{ padding: '6px 0' }}>
+                    <span style={{ color: ts.text, fontWeight: 600 }}>{tier.emoji} {tier.label}</span>
+                  </td>
+                  <td style={{ textAlign: 'center', padding: '6px 0' }}>
+                    {isActive ? '✓' : '— walked —'}
+                  </td>
+                  <td style={{ textAlign: 'right',  padding: '6px 0', fontWeight: 600 }}>{fmt(tier.value)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr style={{ borderTop: '2px solid ' + colors.clay }}>
+              <td colSpan={2} style={{ fontWeight: 700, paddingTop: 8, fontSize: 15 }}>Average of remaining</td>
+              <td style={{ textAlign: 'right', fontWeight: 800, paddingTop: 8, fontSize: 17, color: colors.primary }}>{fmt(avg)}</td>
+            </tr>
+          </tfoot>
+        </table>
+        {offer !== null && offer !== undefined && (
+          <div style={{
+            marginTop: 10, paddingTop: 10, borderTop: '1px solid ' + colors.earthLight,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            fontSize: 15, fontWeight: 700, color: colors.primary,
+          }}>
+            <span>Buyer's offer</span>
+            <span style={{ color: fmt(offer) === fmt(avg) ? colors.success : colors.warning, fontSize: 17 }}>{fmt(offer)}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── HookSlide (Step 1 — Inheritance) ─────────────────────────────────────────
+// v4.3.1 — progressive 3-beat reveal. Click anywhere on the slide area to
+// advance. No outer container box (the three elements stand on their own).
+//   Beat 1: money bag alone, centered.
+//   Beat 2: + car appears beside money (small caption: "Insurance & upkeep
+//           assumed covered · Repairs: on you, from this $20K").
+//   Beat 3: + Facebook Marketplace card appears below, separately styled.
+const HookSlide = () => {
+  // v4.3.4 — start on beat 0 (nothing revealed yet). Headline + spoken
+  // setup ("You didn't even know you had a rich uncle.") land before the
+  // first click; click 1 reveals the money bag.
+  const [beat, setBeat] = useState(0);
+  const advance = () => setBeat(b => Math.min(b + 1, 3));
+
+  // Each reveal element: opacity + small upward fade-in.
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+    pointerEvents: visible ? 'auto' : 'none',
+  });
+
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < 3 ? 'pointer' : 'default',
+        padding: '24px 12px 12px', marginBottom: 14,
+        userSelect: 'none',
+      }}>
+
+      {/* Money + (later) arrow + car, all centered horizontally */}
+      <div style={{
+        display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
+        gap: 24, flexWrap: 'wrap', minHeight: 200,
+      }}>
+
+        {/* Beat 1 — Money bag */}
+        <div style={{ ...reveal(beat >= 1), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            width: 120, height: 120, borderRadius: '50%',
+            backgroundColor: '#dcfce7', border: '3px solid ' + colors.success,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 56, lineHeight: 1,
+          }}>💰</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: colors.primary, marginTop: 4 }}>$20,000</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: colors.earth, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Inheritance
+          </div>
+        </div>
+
+        {/* Beat 2 — Arrow */}
+        <div style={{ ...reveal(beat >= 2), fontSize: 36, color: colors.earth, fontWeight: 300, paddingTop: 42 }}>
+          →
+        </div>
+
+        {/* Beat 2 — Car + ground-rule caption */}
+        <div style={{ ...reveal(beat >= 2), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, maxWidth: 220 }}>
+          <div style={{
+            width: 120, height: 120, borderRadius: '50%',
+            backgroundColor: '#f3f4f6', border: '3px dashed #9ca3af',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <CarSVG fill="#9ca3af" stroke="#6b7280" w={76} h={50} />
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: colors.primary, marginTop: 4 }}>One car</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: colors.earth, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            The need
+          </div>
+          {/* Ground-rule caption — fences the model so students don't worry about insurance/gas eating the budget */}
+          <div style={{
+            marginTop: 8, fontSize: 11, color: colors.earthLight, fontStyle: 'italic',
+            lineHeight: 1.45, textAlign: 'center',
+          }}>
+            Insurance &amp; upkeep:<br/>assumed covered.<br/>
+            <span style={{ color: colors.earth, fontWeight: 600, fontStyle: 'normal' }}>
+              Repairs: on you, from this $20K.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Beat 3 — Marketplace card, separate element, distinct CTA-ish styling */}
+      <div style={{
+        ...reveal(beat >= 3),
+        marginTop: 36, display: 'flex', justifyContent: 'center',
+      }}>
+        <div style={{
+          padding: '14px 22px', borderRadius: 12,
+          backgroundColor: '#1877f2', color: 'white',
+          boxShadow: '0 4px 14px rgba(24, 119, 242, 0.25)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <span style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Helvetica, Arial, sans-serif' }}>f</span>
+          <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.01em' }}>Facebook Marketplace</span>
+        </div>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 28, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+      }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {[1, 2, 3].map(n => (
+            <span key={n} style={{
+              width: 8, height: 8, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{
+          fontSize: 11, color: colors.earthLight, fontStyle: 'italic',
+          minHeight: 14,
+        }}>
+          {beat < 3 ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── PopulationView (Step 2 — The Population) ─────────────────────────────────
+// v4.3.2 — progressive 6-beat reveal. Click anywhere to advance.
+//   Beat 1: 4 cars with tier labels only — "what's out there, equal numbers"
+//   Beat 2: Mint repair cost ($0) appears
+//   Beat 3: Good repair cost ($6K) appears
+//   Beat 4: Fair repair cost ($12K) appears
+//   Beat 5: Lemon repair cost ($18K) appears
+//   Beat 6: Value-to-you row + Average banner ($11K) appear together
+// Insight box dropped — the avg-$11K lesson lives in the visual itself.
+// Per-car repair reveals let Rick walk through each tier's math individually
+// while presenting; values land en bloc as the punchline.
+const PopulationView = () => {
+  const fmt = v => v >= 1000 ? ('$' + (v / 1000) + 'K') : ('$' + v);
+  const TOTAL_BEATS = 6;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(6px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+    pointerEvents: visible ? 'auto' : 'none',
+  });
+
+  // Per-tier repair reveal: tier i shows when beat >= 2 + i
+  // (Mint=0 reveals at beat 2, Good=1 at beat 3, Fair=2 at beat 4, Lemon=3 at beat 5)
+  const repairVisible = (i) => beat >= 2 + i;
+
+  return (
+    <div onClick={advance}
+      style={{
+        backgroundColor: 'white', borderRadius: 12, border: '2px solid ' + colors.clayLight,
+        padding: '20px 14px', marginBottom: 14,
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default', userSelect: 'none',
+      }}>
+      <div style={{
+        fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em',
+        color: colors.earth, marginBottom: 14, textAlign: 'center',
+      }}>
+        Cars of this model on the used market — equal numbers in each tier
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+        {CAR_TIERS.map((tier, i) => {
+          const ts = TIER_STYLES[i];
+          return (
+            <div key={i} style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+              padding: '12px 6px', borderRadius: 10,
+              backgroundColor: ts.bg, border: '2px solid ' + ts.border,
+              minHeight: 220,
+            }}>
+              {/* Beat 1 — always visible: tier label + car icon */}
+              <div style={{
+                fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em',
+                color: ts.text,
+              }}>{tier.emoji} {tier.label}</div>
+              <CarSVG fill={ts.body} stroke={ts.text} w={72} h={47} />
+
+              {/* Beats 2-5 — repair cost, one tier at a time */}
+              <div style={{ ...reveal(repairVisible(i)), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: colors.earth, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Repair cost
+                </div>
+                <div style={{
+                  fontSize: 13, fontWeight: 700, color: tier.repair === 0 ? colors.success : ts.text,
+                  padding: '2px 8px', borderRadius: 6,
+                  backgroundColor: tier.repair === 0 ? '#dcfce7' : 'rgba(255,255,255,0.6)',
+                }}>{fmt(tier.repair)}</div>
+              </div>
+
+              {/* Beat 6 — value to you (all four reveal together) */}
+              <div style={{ ...reveal(beat >= 6), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, marginTop: 2 }}>
+                <div style={{
+                  fontSize: 10, fontWeight: 600, color: colors.earth,
+                  textTransform: 'uppercase', letterSpacing: '0.04em',
+                }}>Value to you</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: ts.text }}>
+                  {fmt(tier.value)}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Beat 6 — Average banner. Just the result; the per-car value tags above
+          ARE the calculation, so we don't repeat the addends here. */}
+      <div style={{
+        ...reveal(beat >= 6),
+        marginTop: 14, padding: '14px 18px', borderRadius: 10,
+        backgroundColor: colors.primary, color: 'white',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      }}>
+        <div style={{
+          fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
+          color: 'rgba(255,255,255,0.85)',
+        }}>
+          Average value across the population
+        </div>
+        <div style={{ fontSize: 30, fontWeight: 800, color: colors.accent, lineHeight: 1 }}>$11K</div>
+      </div>
+
+      {/* Beat indicator + click hint. Six dots = one per beat. */}
+      <div style={{
+        marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5, 6].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── MarketplaceView (Step 3 — The Listings) ──────────────────────────────────
+// v4.3.2 — progressive 6-beat reveal. Click anywhere to advance.
+//   Beat 1: Empty Marketplace frame (top bar only, content area empty)
+//   Beats 2-5: Seller A → B → C → D listings appear, each at $20,000
+//   Beat 6: Lightbulb insight box appears below the grid
+// The standalone yellow paragraph that used to sit under the grid was removed
+// (it duplicated what the App-level insight already said). Insight is now
+// rendered INSIDE the component on beat 6 — App-level insight is suppressed
+// for c2 by setting step.insight = null. This lets the lightbulb time to a
+// specific beat instead of always being visible.
+const MarketplaceView = () => {
+  const TOTAL_BEATS = 6;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(6px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+    pointerEvents: visible ? 'auto' : 'none',
+  });
+  // Listing i shows when beat >= 2 + i  (Seller A at beat 2, B at 3, C at 4, D at 5)
+  const listingVisible = (i) => beat >= 2 + i;
+
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default', userSelect: 'none',
+        marginBottom: 14,
+      }}>
+      <div style={{
+        backgroundColor: 'white', borderRadius: 12, border: '2px solid ' + colors.clayLight,
+        overflow: 'hidden',
+      }}>
+        {/* Mock Marketplace top bar — always visible (browser chrome) */}
+        <div style={{
+          backgroundColor: '#1877f2', color: 'white', padding: '10px 14px',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <span style={{ fontSize: 18, fontWeight: 800 }}>f</span>
+          <span style={{ fontSize: 13, fontWeight: 700 }}>Marketplace · Listings near you</span>
+        </div>
+        <div style={{ padding: '18px 14px', minHeight: 180 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} style={{
+                ...reveal(listingVisible(i)),
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                padding: '14px 6px', borderRadius: 8,
+                backgroundColor: '#f3f4f6', border: '1.5px solid #d1d5db',
+              }}>
+                <CarSVG fill="#9ca3af" stroke="#6b7280" w={72} h={47} />
+                <div style={{
+                  fontSize: 11, fontWeight: 700, color: '#6b7280',
+                  textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: 4,
+                }}>Seller {String.fromCharCode(65 + i)}</div>
+                <div style={{
+                  fontSize: 16, fontWeight: 800, color: colors.primary,
+                  padding: '4px 12px', borderRadius: 6, backgroundColor: 'white',
+                  border: '1.5px solid ' + colors.primary,
+                }}>$20,000</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Beat 6 — inline insight (lightbulb box). Matches App-level insight styling
+          so the visual register is consistent across slides. */}
+      <div style={{
+        ...reveal(beat >= 6),
+        marginTop: 12, padding: 14, borderRadius: 10, border: '2px solid ' + colors.accent,
+        backgroundColor: '#fef9e7',
+        display: 'flex', gap: 12, alignItems: 'flex-start',
+      }}>
+        <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+        <div style={{ fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>
+          From the photos alone, you can&rsquo;t tell whether the car is mint, good, fair, or a lemon &mdash; and every seller is asking the most they could plausibly get. <em>(Hold this thought &mdash; we&rsquo;ll come back to why the math here goes wrong.)</em>
+        </div>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5, 6].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── FrozenMarketView (Step 10 — Lemon trades, rest frozen) ───────────────────
+const FrozenMarketView = () => {
+  const traded = CAR_TIERS[3];
+  const tradedStyle = TIER_STYLES[3];
+  const stuck = [
+    { tier: CAR_TIERS[0], style: TIER_STYLES[0], wouldHave: '$20K' },
+    { tier: CAR_TIERS[1], style: TIER_STYLES[1], wouldHave: '$14K' },
+    { tier: CAR_TIERS[2], style: TIER_STYLES[2], wouldHave: '$8K'  },
+  ];
+  return (
+    <div style={{ marginBottom: 14 }}>
+      {/* The trade that happens */}
+      <div style={{
+        backgroundColor: colors.successBg, borderRadius: 12,
+        border: '2.5px solid ' + colors.success, padding: '14px 16px', marginBottom: 12,
+      }}>
+        <div style={{
+          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em',
+          color: '#15803d', marginBottom: 10,
+        }}>
+          ✓ The trade that happens
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 12 }}>
+          {/* Seller */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+            <CarSVG fill={tradedStyle.body} stroke={tradedStyle.text} w={70} h={46} />
+            <div style={{ fontSize: 11, fontWeight: 700, color: tradedStyle.text }}>
+              {traded.emoji} {traded.label} seller
+            </div>
+          </div>
+          {/* Arrow + price */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+            <div style={{
+              fontSize: 16, fontWeight: 800, color: '#15803d',
+              padding: '4px 14px', borderRadius: 99,
+              backgroundColor: 'white', border: '2px solid ' + colors.success,
+            }}>$2,000</div>
+            <div style={{ fontSize: 22, color: colors.success, fontWeight: 300 }}>↔</div>
+            <div style={{
+              fontSize: 10, fontWeight: 700, color: '#15803d',
+              textTransform: 'uppercase', letterSpacing: '0.05em',
+            }}>trade happens</div>
+          </div>
+          {/* Buyer */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+            <BuyerSVG color="#15803d" w={42} h={56} />
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#15803d' }}>
+              Lemon-tolerant buyer
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* The trades that don't */}
+      <div style={{
+        backgroundColor: '#f9fafb', borderRadius: 12,
+        border: '2px solid ' + colors.earthLight, padding: '14px 16px',
+      }}>
+        <div style={{
+          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em',
+          color: colors.earthDark, marginBottom: 12,
+        }}>
+          ✕ The trades that don't
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {stuck.map((s, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '10px 12px', borderRadius: 8,
+              backgroundColor: 'white', border: '1.5px solid ' + colors.earthLight,
+            }}>
+              {/* Seller stuck holding car */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+                <CarSVG fill={s.style.body} stroke={s.style.text} w={50} h={33} />
+                <div style={{ fontSize: 9, fontWeight: 700, color: s.style.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  {s.tier.label}
+                </div>
+              </div>
+              <div style={{
+                fontSize: 12, fontWeight: 600, color: colors.earthDark, flex: 1, lineHeight: 1.4,
+              }}>
+                <strong>{s.tier.label} seller stuck</strong> — wanted to sell, no buyer offered enough.
+              </div>
+              {/* Ghost arrow + ghost buyer */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.4 }}>
+                <span style={{ fontSize: 18, color: colors.earth }}>⤳</span>
+                <BuyerSVG color="#9ca3af" w={32} h={42} />
+              </div>
+              <div style={{
+                fontSize: 10, fontWeight: 700, color: colors.earth,
+                textAlign: 'right', flexShrink: 0, lineHeight: 1.3,
+              }}>
+                Buyer would<br/>have paid<br/><strong>{s.wouldHave}</strong>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* v4.1 R4: in-component yellow footer removed — narrative + insight already carry it. */}
+      </div>
+    </div>
+  );
+};
+
+// ── UnraveledMarketView (Steps p0 / i0 — same problem in phones / capital) ──
+// v4.4.0 (Pass B — Session-10 items 6+7) — section-parameterized snapshot of
+// the end-state in a market where adverse selection has played out. Mirrors
+// FrozenMarketView's car-specific structure but works for phone and investment
+// sections via renderShape() and per-section labels. Used on p0 (problem-only
+// iPhones) and i0 (problem-only Capital) after fixes were stripped out and
+// moved to dedicated fixes slides. Optional `step.preamble` renders a setup
+// line above the visual (used by i0 to introduce the four opportunities).
+const UNRAVELED_DATA = {
+  phone: {
+    items: PHONE_TIERS,
+    nameSingular: 'phone',
+    stuckNoun: 'owner',
+    tradeBuyerLabel: 'Battery-tolerant buyer',
+    tradePrice: '$100',
+    stuckPhrase: 'wanted to sell, no buyer trusted the battery.',
+    wouldHave: ['$800', '$500', '$300'],
+  },
+  investment: {
+    items: INV_TIERS,
+    nameSingular: 'opportunity',
+    stuckNoun: 'company',
+    tradeBuyerLabel: 'Speculative-tolerant investor',
+    tradePrice: '$2M',
+    stuckPhrase: 'unfunded — investor wouldn’t pay enough.',
+    wouldHave: ['$20M', '$14M', '$8M'],
+  },
+};
+
+// v4.5.0 — beat-driven (4 beats):
+//   Beat 1: preamble + population grid (what each item is worth — Rick's #4/#6)
+//   Beat 2: "The trade that happens" panel reveals
+//   Beat 3: "The trades that don't" panel reveals
+//   Beat 4: click-revealed conclusion lightbulb (Rick's #5/#6 — "wait a beat")
+const UnraveledMarketView = ({ section, preamble, conclusion }) => {
+  const data = UNRAVELED_DATA[section];
+  if (!data) return null;
+  const tiers = data.items;
+  const traded = tiers[3];
+  const tradedStyle = TIER_STYLES[3];
+  const stuck = [
+    { tier: tiers[0], style: TIER_STYLES[0], wouldHave: data.wouldHave[0] },
+    { tier: tiers[1], style: TIER_STYLES[1], wouldHave: data.wouldHave[1] },
+    { tier: tiers[2], style: TIER_STYLES[2], wouldHave: data.wouldHave[2] },
+  ];
+
+  const TOTAL_BEATS = 4;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+    pointerEvents: visible ? 'auto' : 'none',
+  });
+
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none', marginBottom: 14,
+      }}>
+      {preamble && (
+        <div style={{
+          marginBottom: 12, padding: '12px 14px',
+          backgroundColor: colors.sand, borderLeft: '3px solid ' + colors.accent,
+          fontSize: 14, lineHeight: 1.55, color: colors.earthDark,
+        }}>
+          {formatEmphasis(preamble)}
+        </div>
+      )}
+
+      {/* Beat 1 — population grid (what each item is worth, sellers know).
+           v4.5.5 — at beat 3 (when "trades that don't" panel reveals), the
+           three better tiers fade out to make it visually obvious that they
+           walked. Only the Lemon stays active in the grid, matching the
+           single trade that actually happens. Header text also shifts. */}
+      <div style={{ ...reveal(beat >= 1), marginBottom: 12 }}>
+        <div style={{
+          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em',
+          color: colors.earthDark, marginBottom: 8, paddingLeft: 4,
+          transition: 'color 0.4s',
+        }}>
+          {beat >= 3
+            ? 'Only the Lemon stays in the market'
+            : ('The four ' + (data.nameSingular === 'opportunity' ? 'opportunities' : data.nameSingular + 's') + ' on the table')}
+        </div>
+        <TokenGrid
+          section={section}
+          activeTiers={beat >= 3 ? [3] : [0, 1, 2, 3]}
+          infoMode="seller" />
+      </div>
+
+      {/* Beat 2 — The trade that happens */}
+      <div style={{ ...reveal(beat >= 2) }}>
+        <div style={{
+          backgroundColor: colors.successBg, borderRadius: 12,
+          border: '2.5px solid ' + colors.success, padding: '14px 16px', marginBottom: 12,
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em',
+            color: '#15803d', marginBottom: 10,
+          }}>
+            ✓ The trade that happens
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 12 }}>
+            {/* Seller side (the asset / opportunity) */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+              {renderShape(section, tradedStyle.body, tradedStyle.text)}
+              <div style={{ fontSize: 11, fontWeight: 700, color: tradedStyle.text, textAlign: 'center' }}>
+                {traded.emoji} {traded.label} {data.nameSingular}
+              </div>
+            </div>
+            {/* Arrow + price */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+              <div style={{
+                fontSize: 16, fontWeight: 800, color: '#15803d',
+                padding: '4px 14px', borderRadius: 99,
+                backgroundColor: 'white', border: '2px solid ' + colors.success,
+              }}>{data.tradePrice}</div>
+              <div style={{ fontSize: 22, color: colors.success, fontWeight: 300 }}>↔</div>
+              <div style={{
+                fontSize: 10, fontWeight: 700, color: '#15803d',
+                textTransform: 'uppercase', letterSpacing: '0.05em',
+              }}>trade happens</div>
+            </div>
+            {/* Buyer side */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+              <BuyerSVG color="#15803d" w={42} h={56} />
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#15803d', textAlign: 'center', maxWidth: 110 }}>
+                {data.tradeBuyerLabel}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Beat 3 — The trades that don't */}
+      <div style={{ ...reveal(beat >= 3) }}>
+        <div style={{
+          backgroundColor: '#f9fafb', borderRadius: 12,
+          border: '2px solid ' + colors.earthLight, padding: '14px 16px', marginBottom: 12,
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em',
+            color: colors.earthDark, marginBottom: 12,
+          }}>
+            ✕ The trades that don&rsquo;t
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {stuck.map((s, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 12px', borderRadius: 8,
+                backgroundColor: 'white', border: '1.5px solid ' + colors.earthLight,
+              }}>
+                {/* Stuck seller (item icon) */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, flexShrink: 0, width: 56 }}>
+                  <div style={{ transform: 'scale(0.7)', transformOrigin: 'center', height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {renderShape(section, s.style.body, s.style.text)}
+                  </div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: s.style.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    {s.tier.label}
+                  </div>
+                </div>
+                <div style={{
+                  fontSize: 12, fontWeight: 600, color: colors.earthDark, flex: 1, lineHeight: 1.4,
+                }}>
+                  <strong>{s.tier.label} {data.nameSingular} stuck</strong> — {data.stuckPhrase}
+                </div>
+                {/* Ghost arrow + ghost buyer */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.4 }}>
+                  <span style={{ fontSize: 18, color: colors.earth }}>⤳</span>
+                  <BuyerSVG color="#9ca3af" w={32} h={42} />
+                </div>
+                <div style={{
+                  fontSize: 10, fontWeight: 700, color: colors.earth,
+                  textAlign: 'right', flexShrink: 0, lineHeight: 1.3,
+                }}>
+                  Buyer would<br/>have paid<br/><strong>{s.wouldHave}</strong>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Beat 4 — click-revealed conclusion (Rick's "wait a beat") */}
+      {conclusion && (
+        <div style={{
+          ...reveal(beat >= 4),
+          padding: 14, borderRadius: 10, border: '2px solid ' + colors.accent,
+          backgroundColor: '#fef9e7', marginBottom: 12,
+          display: 'flex', gap: 12, alignItems: 'flex-start',
+        }}>
+          <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+          <div style={{ fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>
+            {formatEmphasis(conclusion)}
+          </div>
+        </div>
+      )}
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── ConceptCard (Step 11 — Allocational Efficiency) ──────────────────────────
+// v4.1 R5+R6 — three states, not two. The pedagogy is that the *wedge* breaks
+// markets, not the absence of information. Shared ignorance also works (just at
+// the average). Asymmetric is the failure mode. Definition copy is cars-only;
+// "capital" doesn't appear until the actual capital step (i0).
+const ConceptCard = () => {
+  const tsMint = TIER_STYLES[0];
+  return (
+    <div style={{
+      backgroundColor: colors.royalBg, borderRadius: 14, border: '2px solid ' + colors.royal,
+      padding: '24px 20px', marginBottom: 14,
+    }}>
+      <div style={{
+        fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em',
+        color: colors.royal, textAlign: 'center', marginBottom: 8,
+      }}>
+        Concept
+      </div>
+      <div style={{
+        fontFamily: 'Lora, serif', fontSize: 32, fontWeight: 600,
+        color: colors.primary, textAlign: 'center', lineHeight: 1.15, marginBottom: 12,
+      }}>
+        Allocational Efficiency
+      </div>
+      <div style={{
+        fontSize: 14, color: colors.earthDark, textAlign: 'center', lineHeight: 1.6,
+        maxWidth: 520, margin: '0 auto 22px',
+      }}>
+        A market is allocationally efficient when goods reach the people who value them most.
+        It's not the absence of information that breaks markets — it's the <em>wedge</em>.
+      </div>
+
+      {/* State 1 — Shared information ✓ */}
+      <div style={{
+        backgroundColor: 'white', borderRadius: 10, padding: '14px 16px',
+        border: '1.5px solid ' + colors.success, marginBottom: 10,
+      }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+          color: '#15803d', marginBottom: 8,
+        }}>
+          ✓ Shared full information — markets work
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <CarSVG fill={tsMint.body} stroke={tsMint.text} w={56} h={37} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: tsMint.text }}>Mint seller</div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 24, color: colors.success }}>→</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: colors.success }}>$20K trade · fair price</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <BuyerSVG color="#15803d" w={32} h={42} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#15803d' }}>Buyer who values it</div>
+          </div>
+        </div>
+      </div>
+
+      {/* State 2 — Shared ignorance ✓ (NEW in v4.1) */}
+      <div style={{
+        backgroundColor: 'white', borderRadius: 10, padding: '14px 16px',
+        border: '1.5px solid #2563eb', marginBottom: 10,
+      }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+          color: '#1d4ed8', marginBottom: 8,
+        }}>
+          ✓ Shared ignorance — markets also work
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <div style={{ position: 'relative' }}>
+              <CarSVG fill="#9ca3af" stroke="#6b7280" w={56} h={37} />
+              <div style={{
+                position: 'absolute', top: -6, right: -8,
+                width: 22, height: 22, borderRadius: '50%',
+                backgroundColor: '#1d4ed8', color: 'white',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 13, fontWeight: 800,
+              }}>?</div>
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8' }}>Seller doesn't know</div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 24, color: '#2563eb' }}>↔</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#1d4ed8' }}>$11K trade · the average</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <div style={{ position: 'relative' }}>
+              <BuyerSVG color="#1d4ed8" w={32} h={42} />
+              <div style={{
+                position: 'absolute', top: -4, right: -8,
+                width: 20, height: 20, borderRadius: '50%',
+                backgroundColor: '#1d4ed8', color: 'white',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 800,
+              }}>?</div>
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8' }}>Buyer doesn't know</div>
+          </div>
+        </div>
+      </div>
+
+      {/* State 3 — Asymmetric ✕ */}
+      <div style={{
+        backgroundColor: 'white', borderRadius: 10, padding: '14px 16px',
+        border: '1.5px dashed ' + colors.error, opacity: 0.85,
+      }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+          color: colors.error, marginBottom: 8,
+        }}>
+          ✕ Asymmetric information — markets break
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <CarSVG fill={tsMint.body} stroke={tsMint.text} w={56} h={37} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: tsMint.text }}>Mint seller (knows)</div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 24, color: colors.error }}>⤳</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: colors.error }}>no trade</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <BuyerSVG color="#9ca3af" w={32} h={42} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: colors.earth }}>Buyer can't tell, walks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── ProductiveEfficiencyCard (Step `prod` — concept slide parallel to c10) ──
+// v4.6.0 (NEW — Session-11 pass-7). Same chrome and three-state structure as
+// ConceptCard (allocational efficiency), but applied to PRODUCTIVE efficiency:
+// whether the things that should be made actually get made. Three states:
+//   ✓ Shared full info → strong project funded → factory built
+//   ✓ Shared ignorance → average projects funded → some built, some not
+//   ✕ Asymmetric info  → investor can't tell, walks → strong project never built
+// Uses BuildingSVG to stay close to i0's visual vocabulary. Project (left) →
+// arrow → investor (right), mirroring c10's seller→buyer layout but with
+// the asset/role inversion appropriate to the capital-market direction.
+const ProductiveEfficiencyCard = () => {
+  const tsStrong = TIER_STYLES[0]; // gold (Strong opportunity = analog to Mint)
+  return (
+    <div style={{
+      backgroundColor: colors.royalBg, borderRadius: 14, border: '2px solid ' + colors.royal,
+      padding: '24px 20px', marginBottom: 14,
+    }}>
+      <div style={{
+        fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em',
+        color: colors.royal, textAlign: 'center', marginBottom: 8,
+      }}>
+        Concept
+      </div>
+      <div style={{
+        fontFamily: 'Lora, serif', fontSize: 32, fontWeight: 600,
+        color: colors.primary, textAlign: 'center', lineHeight: 1.15, marginBottom: 12,
+      }}>
+        Productive Efficiency
+      </div>
+      <div style={{
+        fontSize: 14, color: colors.earthDark, textAlign: 'center', lineHeight: 1.6,
+        maxWidth: 540, margin: '0 auto 22px',
+      }}>
+        A market is productively efficient when the things that <em>should</em> be made
+        actually <em>get</em> made — when capital reaches the projects that should be built.
+      </div>
+
+      {/* State 1 — Shared full information ✓ */}
+      <div style={{
+        backgroundColor: 'white', borderRadius: 10, padding: '14px 16px',
+        border: '1.5px solid ' + colors.success, marginBottom: 10,
+      }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+          color: '#15803d', marginBottom: 8,
+        }}>
+          ✓ Shared full information — projects get funded
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <BuildingSVG fill={tsStrong.body} stroke={tsStrong.text} w={42} h={48} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: tsStrong.text }}>Strong project</div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 24, color: colors.success }}>→</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: colors.success }}>$20M funded · built</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <BuyerSVG color="#15803d" w={32} h={42} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#15803d' }}>Investor who funds it</div>
+          </div>
+        </div>
+      </div>
+
+      {/* State 2 — Shared ignorance ✓ */}
+      <div style={{
+        backgroundColor: 'white', borderRadius: 10, padding: '14px 16px',
+        border: '1.5px solid #2563eb', marginBottom: 10,
+      }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+          color: '#1d4ed8', marginBottom: 8,
+        }}>
+          ✓ Shared ignorance — projects get funded at the average
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <div style={{ position: 'relative' }}>
+              <BuildingSVG fill="#9ca3af" stroke="#6b7280" w={42} h={48} />
+              <div style={{
+                position: 'absolute', top: -6, right: -8,
+                width: 22, height: 22, borderRadius: '50%',
+                backgroundColor: '#1d4ed8', color: 'white',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 13, fontWeight: 800,
+              }}>?</div>
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8' }}>Founder doesn't know</div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 24, color: '#2563eb' }}>↔</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#1d4ed8' }}>$11M · average outcome</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <div style={{ position: 'relative' }}>
+              <BuyerSVG color="#1d4ed8" w={32} h={42} />
+              <div style={{
+                position: 'absolute', top: -4, right: -8,
+                width: 20, height: 20, borderRadius: '50%',
+                backgroundColor: '#1d4ed8', color: 'white',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 800,
+              }}>?</div>
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8' }}>Investor doesn't know</div>
+          </div>
+        </div>
+      </div>
+
+      {/* State 3 — Asymmetric ✕ */}
+      <div style={{
+        backgroundColor: 'white', borderRadius: 10, padding: '14px 16px',
+        border: '1.5px dashed ' + colors.error, opacity: 0.85,
+      }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+          color: colors.error, marginBottom: 8,
+        }}>
+          ✕ Asymmetric information — strong projects never built
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <BuildingSVG fill={tsStrong.body} stroke={tsStrong.text} w={42} h={48} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: tsStrong.text }}>Strong project (founder knows)</div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ fontSize: 24, color: colors.error }}>⤳</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: colors.error }}>no funding · never built</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <BuyerSVG color="#9ca3af" w={32} h={42} />
+            <div style={{ fontSize: 10, fontWeight: 700, color: colors.earth }}>Investor can't tell, walks</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer tying it back to allocational */}
+      <div style={{
+        marginTop: 18, padding: '12px 16px', borderRadius: 8,
+        backgroundColor: '#ede9fe', border: '1px solid ' + colors.royal,
+        fontSize: 13, color: '#3b1d6e', textAlign: 'center', lineHeight: 1.55,
+      }}>
+        Same wedge as allocational. Different consequence: not <em>"wrong hands"</em> — <strong>"never made."</strong>
+      </div>
+    </div>
+  );
+};
+
+// ── AbstractionSlide (Step c12 — "It wasn't about the cars.") ───────────────
+// v4.4.0 (Pass B) — rebuilt as beat-driven reveal (modeled on RuleChangeSlide).
+// Drops Carfax mention (fix not yet introduced at this point in the deck post-
+// restructure). Drops "the actual fix: making knowledge shared" line for the
+// same reason. Lands the punchline on "It was about the INFORMATION." Click
+// anywhere to advance. 4 beats.
+//   Beat 1: "For the last 20 minutes we've been talking about lemons."
+//   Beat 2: "About cars. About $20K. About Mint condition."
+//   Beat 3: "It wasn't about the cars."
+//   Beat 4 (punchline): "It was about the INFORMATION."
+const AbstractionSlide = () => {
+  const TOTAL_BEATS = 4;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+  });
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none',
+        backgroundColor: 'white', borderRadius: 14, border: '2px solid ' + colors.earthLight,
+        padding: '48px 28px', marginBottom: 14, textAlign: 'center',
+        minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22,
+      }}>
+      {/* Beat 1 — recap lead-in */}
+      <div style={{
+        ...reveal(beat >= 1),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 16, lineHeight: 1.5, color: colors.earth,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        For the last 20 minutes we&rsquo;ve been talking about lemons.
+      </div>
+
+      {/* Beat 2 — the props */}
+      <div style={{
+        ...reveal(beat >= 2),
+        fontFamily: 'Lora, serif',
+        fontSize: 19, lineHeight: 1.45, color: colors.earthDark, fontWeight: 500,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        About cars. About $20K. About Mint condition.
+      </div>
+
+      {/* Beat 3 — the negation */}
+      <div style={{
+        ...reveal(beat >= 3),
+        fontFamily: 'Lora, serif',
+        fontSize: 22, lineHeight: 1.4, color: colors.primary, fontWeight: 600,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        It wasn&rsquo;t about the cars.
+      </div>
+
+      {/* Beat 4 — punchline */}
+      <div style={{
+        ...reveal(beat >= 4),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 36, fontWeight: 600, lineHeight: 1.15,
+        color: colors.primary, letterSpacing: '-0.01em',
+        maxWidth: 600, margin: '0 auto',
+      }}>
+        It was about the <span style={{
+          color: colors.accent, fontStyle: 'normal', fontWeight: 700,
+          textTransform: 'uppercase', letterSpacing: '0.02em',
+        }}>information</span>.
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── SynthesisSlide (NEW — Session-10 item 8) ────────────────────────────────
+// v4.4.0 (Pass C) — typographic synthesis after p0/i0/c10. Lands the "same
+// problem in different markets" insight. Modeled on AbstractionSlide /
+// RuleChangeSlide (headline suppressed in App; the slide IS the slide).
+// Click anywhere to advance. 5 beats culminating in the adverse-selection
+// term reveal.
+const SynthesisSlide = () => {
+  const TOTAL_BEATS = 5;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+  });
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none',
+        backgroundColor: 'white', borderRadius: 14, border: '2px solid ' + colors.earthLight,
+        padding: '44px 28px', marginBottom: 14, textAlign: 'center',
+        minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22,
+      }}>
+      {/* Beat 1 — "Different markets." */}
+      <div style={{
+        ...reveal(beat >= 1),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 18, lineHeight: 1.5, color: colors.earth,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        Cars. iPhones. Capital.
+      </div>
+
+      {/* Beat 2 — "Same problem." */}
+      <div style={{
+        ...reveal(beat >= 2),
+        fontFamily: 'Lora, serif',
+        fontSize: 22, lineHeight: 1.4, color: colors.earthDark, fontWeight: 500,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        Different markets, same problem.
+      </div>
+
+      {/* Beat 3 — single-word punch */}
+      <div style={{
+        ...reveal(beat >= 3),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 40, fontWeight: 700, lineHeight: 1.1,
+        color: colors.primary, letterSpacing: '-0.01em',
+      }}>
+        Information.
+      </div>
+
+      {/* Beat 4 — distribution, not lack */}
+      <div style={{
+        ...reveal(beat >= 4),
+        fontFamily: 'Lora, serif',
+        fontSize: 19, lineHeight: 1.5, color: colors.earthDark, fontWeight: 500,
+        maxWidth: 540, margin: '0 auto',
+      }}>
+        Not the <em>lack</em> of it.&nbsp; The <span style={{ color: colors.primary, fontWeight: 700 }}>distribution</span> of it.
+      </div>
+
+      {/* Beat 5 — adverse selection (highlighted) */}
+      <div style={{
+        ...reveal(beat >= 5),
+        fontFamily: 'Lora, serif',
+        fontSize: 17, lineHeight: 1.55, color: colors.earthDark, fontWeight: 500,
+        backgroundColor: '#fef9e7',
+        border: '2px solid ' + colors.accent,
+        borderRadius: 10,
+        padding: '16px 22px',
+        maxWidth: 580, margin: '0 auto',
+      }}>
+        When sellers know more than buyers, <strong style={{ color: colors.accent, textTransform: 'uppercase', letterSpacing: '0.02em' }}>adverse selection</strong> kicks in — and markets don&rsquo;t work so well.
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── MorePlacesSlide (Step `more` — see-it-everywhere examples) ──────────────
+// v4.5.1 (NEW — Session-11 pass-2 #4). Text-only slide between synth and c10
+// that shows the adverse-selection pattern in markets the audience actually
+// inhabits: car insurance, health insurance, labor market, housing market.
+// Closing beat introduces the regulatory-fix family (ACA, building inspectors,
+// degrees) — the toolbox is bigger than Carfax + Apple. 3 beats (paired-card
+// rows + a fix-family panel). App headline shown — slide is structured, not
+// typographic.
+const MORE_PLACES_DATA = {
+  insurance: [
+    {
+      icon: '🚗',
+      label: 'Car insurance',
+      hidden: 'How reckless the driver is.',
+      mechanism: 'Safe drivers find the pooled rate unfair → opt out → only riskier drivers stay → rates rise. Eventually everyone gets the bad-driver rate.',
+    },
+    {
+      icon: '🩺',
+      label: 'Health insurance',
+      hidden: 'Your lifestyle and family history.',
+      mechanism: 'Healthy people find the rate unfair → opt out → unhealthy pool concentrates → rates rise. Eventually everyone gets a rate priced as if they had an unhealthy lifestyle.',
+    },
+  ],
+  laborHousing: [
+    {
+      icon: '💼',
+      label: 'Labor market',
+      hidden: 'How good a worker actually is.',
+      mechanism: 'Employers can\'t verify quality up front. Without signals (degrees, references, portfolios), wages get pooled toward the average — and the best workers exit to look elsewhere.',
+    },
+    {
+      icon: '🏠',
+      label: 'Housing market',
+      hidden: 'What\'s under the paint — foundation, wiring, plumbing.',
+      mechanism: 'Sellers know about the bad foundation; buyers can\'t see it. Without inspections or warranties, sound houses can\'t command a premium and buyers shade offers downward.',
+    },
+  ],
+};
+
+const MorePlacesSlide = () => {
+  const TOTAL_BEATS = 3;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+  });
+
+  const Card = ({ icon, label, hidden, mechanism, accentColor }) => (
+    <div style={{
+      flex: 1, minWidth: 0,
+      borderRadius: 12, border: '2px solid ' + colors.earthLight,
+      backgroundColor: 'white', overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      <div style={{
+        padding: '10px 14px', backgroundColor: colors.clayLight,
+        display: 'flex', alignItems: 'center', gap: 8,
+      }}>
+        <span style={{ fontSize: 20 }}>{icon}</span>
+        <div style={{ fontSize: 14, fontWeight: 700, color: accentColor || colors.primary }}>
+          {label}
+        </div>
+      </div>
+      <div style={{ padding: '10px 14px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: colors.earth }}>
+          Hidden from the other side
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: colors.earthDark, lineHeight: 1.45 }}>
+          {hidden}
+        </div>
+        <div style={{ fontSize: 12.5, color: colors.earth, lineHeight: 1.5, marginTop: 4, fontStyle: 'italic' }}>
+          {mechanism}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none',
+        backgroundColor: 'white', borderRadius: 14, border: '2px solid ' + colors.earthLight,
+        padding: '22px 20px', marginBottom: 14,
+        display: 'flex', flexDirection: 'column', gap: 16,
+      }}>
+
+      {/* Beat 1 — insurance row */}
+      <div style={{ ...reveal(beat >= 1) }}>
+        <div style={{
+          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em',
+          color: colors.earth, marginBottom: 8, paddingLeft: 4,
+        }}>
+          Insurance
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'stretch' }}>
+          {MORE_PLACES_DATA.insurance.map((d, i) => (
+            <div key={i} style={{ flex: 1, display: 'flex' }}>
+              <Card {...d} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Beat 2 — labor + housing row */}
+      <div style={{ ...reveal(beat >= 2) }}>
+        <div style={{
+          fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em',
+          color: colors.earth, marginBottom: 8, paddingLeft: 4,
+        }}>
+          Labor &amp; Housing
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'stretch' }}>
+          {MORE_PLACES_DATA.laborHousing.map((d, i) => (
+            <div key={i} style={{ flex: 1, display: 'flex' }}>
+              <Card {...d} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Beat 3 — the scale insight (v4.5.2). Adverse selection is the
+           failure mode of ANONYMOUS markets. In a community where everyone
+           shares experience, info asymmetry self-corrects. It bites only
+           when markets scale beyond that community. (Fix discussion moved
+           to invFix per Rick's session-11 pass-3 #2+#3.) */}
+      <div style={{
+        ...reveal(beat >= 3),
+        borderRadius: 12, border: '2px solid ' + colors.accent,
+        backgroundColor: '#fef9e7', overflow: 'hidden',
+      }}>
+        <div style={{ padding: '14px 18px', fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+            <div>
+              The pattern shows up wherever markets <strong>scale up beyond a community where buyers and sellers share experience</strong>. In a small town, you know the seller, you know their reputation, you&rsquo;ll see them again next week. When markets grow past that &mdash; strangers buying from strangers, no repeat play, no shared trusted information &mdash; <strong>adverse selection becomes the default.</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── GrowthWedgeSlide (Step `growth` — production-inefficiency wedge) ─────────
+// v4.5.0 (NEW — Session-11 piece 2). Lands the "more than allocational
+// efficiency" point: a problem in one market spills into another, and what
+// gets MADE — not just what gets allocated — is affected. 5 beats; click to
+// advance. Modeled on AbstractionSlide / SynthesisSlide. Headline suppressed
+// in App; the slide IS the slide. TRUST is the keyword in the spillover beat.
+const GrowthWedgeSlide = () => {
+  const TOTAL_BEATS = 5;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+  });
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none',
+        backgroundColor: 'white', borderRadius: 14, border: '2px solid ' + colors.earthLight,
+        padding: '40px 28px', marginBottom: 14, textAlign: 'center',
+        minHeight: 420, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22,
+      }}>
+      {/* Beat 1 — recap of c10 */}
+      <div style={{
+        ...reveal(beat >= 1),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 16, lineHeight: 1.5, color: colors.earth,
+        maxWidth: 540, margin: '0 auto',
+      }}>
+        Allocational efficiency is the start. Things end up in the wrong hands.
+      </div>
+
+      {/* Beat 2 — but it doesn't stop there */}
+      <div style={{
+        ...reveal(beat >= 2),
+        fontFamily: 'Lora, serif',
+        fontSize: 22, lineHeight: 1.4, color: colors.primary, fontWeight: 600,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        But it doesn&rsquo;t stop there.
+      </div>
+
+      {/* Beat 3 — the spillover (TRUST is the keyword) */}
+      <div style={{
+        ...reveal(beat >= 3),
+        fontFamily: 'Lora, serif',
+        fontSize: 17, lineHeight: 1.55, color: colors.earthDark, fontWeight: 500,
+        backgroundColor: '#fef9e7',
+        border: '2px solid ' + colors.accent,
+        borderRadius: 10,
+        padding: '16px 22px',
+        maxWidth: 580, margin: '0 auto',
+      }}>
+        If buyers can&rsquo;t <strong style={{ color: colors.accent, textTransform: 'uppercase', letterSpacing: '0.02em' }}>trust</strong> the used market, they pay less for new cars too — they know they can&rsquo;t easily resell.
+      </div>
+
+      {/* Beat 4 — the consequence chain */}
+      <div style={{
+        ...reveal(beat >= 4),
+        fontFamily: 'Lora, serif',
+        fontSize: 18, lineHeight: 1.5, color: colors.earthDark, fontWeight: 500,
+        maxWidth: 540, margin: '0 auto',
+      }}>
+        Fewer new cars sold. Fewer cars built. Fewer factory jobs. <span style={{ color: colors.primary, fontWeight: 700 }}>Slower growth.</span>
+      </div>
+
+      {/* Beat 5 — the punchline */}
+      <div style={{
+        ...reveal(beat >= 5),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 22, fontWeight: 600, lineHeight: 1.3,
+        color: colors.primary,
+        maxWidth: 600, margin: '0 auto',
+      }}>
+        Information asymmetry doesn&rsquo;t just misallocate what already exists.<br/>
+        <span style={{ color: colors.accent, fontStyle: 'normal', fontWeight: 700 }}>It changes what gets made.</span>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── RuleChangeSlide (Step 7 — c5b — the rule change between c5 and c6) ──────
+// v4.3.5 — typographic precursor slide that announces the shift from
+// symmetric ignorance ("nobody knows") to asymmetric information ("sellers
+// know"). 5 progressive beats, click anywhere to advance. Modeled on
+// AbstractionSlide (headline suppressed in App; the slide IS the slide).
+const RuleChangeSlide = () => {
+  const TOTAL_BEATS = 5;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+  });
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none',
+        backgroundColor: 'white', borderRadius: 14, border: '2px solid ' + colors.earthLight,
+        padding: '40px 28px', marginBottom: 14, textAlign: 'center',
+        minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22,
+      }}>
+      {/* Beat 1 — recap of c5 */}
+      <div style={{
+        ...reveal(beat >= 1),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 16, lineHeight: 1.5, color: colors.earth,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        That&rsquo;s what happens if no one knows the quality of the cars.
+      </div>
+
+      {/* Beat 2 — the question */}
+      <div style={{
+        ...reveal(beat >= 2),
+        fontFamily: 'Lora, serif',
+        fontSize: 22, lineHeight: 1.4, color: colors.primary, fontWeight: 600,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        Is that a reasonable assumption?
+      </div>
+
+      {/* Beat 3 — the answer */}
+      <div style={{
+        ...reveal(beat >= 3),
+        fontFamily: 'Lora, serif',
+        fontSize: 17, lineHeight: 1.5, color: colors.earthDark,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        The sellers have experience with their cars.
+      </div>
+
+      {/* Beat 4 — the rule change (highlighted) */}
+      <div style={{
+        ...reveal(beat >= 4),
+        fontFamily: 'Lora, serif',
+        fontSize: 22, fontWeight: 700, color: colors.primary, lineHeight: 1.35,
+        backgroundColor: '#fef9e7',
+        border: '2px solid ' + colors.accent,
+        borderRadius: 10,
+        padding: '18px 22px',
+        maxWidth: 540, margin: '0 auto',
+      }}>
+        What if you offer $11K but each seller <strong style={{ color: colors.accent, textTransform: 'uppercase', letterSpacing: '0.02em' }}>knows</strong> the quality of their car?
+      </div>
+
+      {/* Beat 5 — transition cue */}
+      <div style={{
+        ...reveal(beat >= 5),
+        fontFamily: 'Lora, serif', fontStyle: 'italic',
+        fontSize: 15, lineHeight: 1.5, color: colors.earth,
+        maxWidth: 520, margin: '0 auto',
+      }}>
+        Let&rsquo;s walk through what happens.
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── CascadeSlide (Step 8 — c6 — sellers wake up, Mint+Good walk) ────────────
+// v4.3.8 — progressive 5-beat walkthrough. Click anywhere to advance. Drives
+// the same TokenGrid + LotCalculation primitives used by other car slides,
+// but cycles activeTiers per beat so Mint and Good visibly walk away in
+// sequence. Per-beat caption above the visual narrates each step. Insight
+// (lightbulb) appears at the final beat.
+//   Beat 1: All 4 cars active, $11K offer, intro caption
+//   Beat 2: Mint walks  (activeTiers [1,2,3]); pool avg drops to $8K
+//   Beat 3: Good walks  (activeTiers [2,3]);   pool avg drops to $5K
+//   Beat 4: Caption highlights the gap ($11K offer · $5K pool)
+//   Beat 5: Insight appears — "adverse selection"
+const CascadeSlide = () => {
+  const TOTAL_BEATS = 5;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(6px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+    pointerEvents: visible ? 'auto' : 'none',
+  });
+
+  // Per-beat activeTiers: tiers fade out as their owners walk
+  const tiersByBeat = {
+    1: [0, 1, 2, 3],   // all four
+    2: [1, 2, 3],      // Mint walked
+    3: [2, 3],         // Good walked
+    4: [2, 3],         // same as 3, caption highlights the math
+    5: [2, 3],         // same, insight reveals
+  };
+  const activeTiers = tiersByBeat[beat];
+
+  // Per-beat caption text (always visible at top, swaps in-place)
+  const captions = {
+    1: 'Same setup. Same four cars. Same $11K offer. But now each seller knows what their car is worth.',
+    2: <span><strong>Mint&rsquo;s owner:</strong> &ldquo;Worth $20K. No thanks.&rdquo; <em>Walks.</em></span>,
+    3: <span><strong>Good&rsquo;s owner:</strong> &ldquo;Worth $14K. No thanks.&rdquo; <em>Walks.</em></span>,
+    4: <span>Only Fair and Lemon would accept $11K. The pool you&rsquo;re drawing from is now worth <strong>$5K on average</strong>. You&rsquo;d be paying $11K for it.</span>,
+    5: <span>You&rsquo;re paying $11K for a pool worth $5K. Expected loss: <strong>$6K.</strong> Plus a 50% chance of the un-fixable Lemon.</span>,
+  };
+
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none', marginBottom: 14,
+      }}>
+      {/* Per-beat caption */}
+      <div style={{
+        padding: '14px 18px', borderRadius: 10, marginBottom: 14,
+        backgroundColor: colors.sand, borderLeft: '4px solid ' + colors.accent,
+        fontSize: 15, color: '#374151', lineHeight: 1.6, minHeight: 60,
+        transition: 'background-color 0.3s',
+      }}>
+        {captions[beat]}
+      </div>
+
+      {/* Token grid + calc — re-render with current beat's activeTiers */}
+      <TokenGrid section="car" activeTiers={activeTiers} infoMode="seller" />
+      <LotCalculation section="car" activeTiers={activeTiers} offer={11000} />
+
+      {/* Insight reveal — beat 5 */}
+      <div style={{
+        ...reveal(beat >= 5),
+        padding: 14, borderRadius: 10, border: '2px solid ' + colors.accent,
+        backgroundColor: '#fef9e7', marginBottom: 12,
+        display: 'flex', gap: 12, alignItems: 'flex-start',
+      }}>
+        <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+        <div style={{ fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>
+          Your offer didn&rsquo;t draw a random sample. <strong>It systematically attracted the worst.</strong> Economists call this <em>adverse selection</em>.
+        </div>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── CascadeRevisionSlide (Step 9 — c7 — you revise to $5K, Fair walks) ──────
+// v4.3.10 — progressive 4-beat walkthrough. Same pattern as CascadeSlide but
+// for c7: starts where c6 ended (Fair + Lemon left), revises offer down to
+// $5K, Fair walks, only Lemon accepts. Spiral badge + insight at the end.
+//   Beat 1: TokenGrid [2,3] · offer $11K · caption sets up the rhetorical revision
+//   Beat 2: offer drops to $5K (LotCalculation updates)
+//   Beat 3: Fair walks (TokenGrid [3]); caption narrates
+//   Beat 4: SpiralBadge + lightbulb appear — "the market is unraveling"
+const CascadeRevisionSlide = () => {
+  // v4.5.2 — added beat 5 (offer drops to $2K, Lemon accepts at exactly $2K).
+  // The $2K equilibrium is the punchline — the market has settled where the
+  // Lemon trades at its true value, and every other potential trade is gone.
+  // Bridges directly into c8 (FrozenMarketView).
+  const TOTAL_BEATS = 5;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(6px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+    pointerEvents: visible ? 'auto' : 'none',
+  });
+
+  // Beat-controlled active tiers and offer
+  const tiersByBeat = {
+    1: [2, 3],   // carrying over from c6's end state
+    2: [2, 3],   // offer changes to $5K; tiers same until Fair reacts
+    3: [3],      // Fair walks
+    4: [3],      // offer drops to $2K
+    5: [3],      // Lemon accepts at $2K — equilibrium + insight reveals
+  };
+  const offerByBeat = {
+    1: 11000,    // still showing the old offer
+    2: 5000,     // revised down to pool average
+    3: 5000,
+    4: 2000,     // revised down again — only Lemon left
+    5: 2000,     // equilibrium
+  };
+  const activeTiers = tiersByBeat[beat];
+  const offer = offerByBeat[beat];
+
+  const captions = {
+    1: <span>You won&rsquo;t offer $11K to a pool worth an average of $5K. <strong>What if you offer $5K instead?</strong></span>,
+    2: <span>Drop your offer to <strong>$5K</strong>. That matches the pool average.</span>,
+    3: <span><strong>Fair&rsquo;s owner:</strong> &ldquo;Worth $8K. No thanks.&rdquo; <em>Walks.</em></span>,
+    4: <span>Only Lemon would accept $5K &mdash; and you wouldn&rsquo;t even offer that. You&rsquo;d drop to <strong>$2K</strong>.</span>,
+    5: <span>Lemon accepts at <strong>$2K</strong>. The market has settled there. Each rational revision drove out the next-best seller.</span>,
+  };
+
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none', marginBottom: 14,
+      }}>
+      {/* Per-beat caption */}
+      <div style={{
+        padding: '14px 18px', borderRadius: 10, marginBottom: 14,
+        backgroundColor: colors.sand, borderLeft: '4px solid ' + colors.accent,
+        fontSize: 15, color: '#374151', lineHeight: 1.6, minHeight: 60,
+        transition: 'background-color 0.3s',
+      }}>
+        {captions[beat]}
+      </div>
+
+      <TokenGrid section="car" activeTiers={activeTiers} infoMode="seller" />
+      <LotCalculation section="car" activeTiers={activeTiers} offer={offer} />
+
+      {/* Spiral badge — appears at beat 5 (the equilibrium) */}
+      <div style={reveal(beat >= 5)}>
+        <SpiralBadge />
+      </div>
+
+      {/* Insight reveal — beat 5 */}
+      <div style={{
+        ...reveal(beat >= 5),
+        padding: 14, borderRadius: 10, border: '2px solid ' + colors.accent,
+        backgroundColor: '#fef9e7', marginBottom: 12,
+        display: 'flex', gap: 12, alignItems: 'flex-start',
+      }}>
+        <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+        <div style={{ fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>
+          The market isn&rsquo;t &ldquo;failing&rdquo; randomly &mdash; <strong>it&rsquo;s unraveling along a predictable information fault line.</strong>
+        </div>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Spin Experience ($11K offer with BARGAIN/OVERPAID labels) ────────────────
+// v4.1 — top-half flip-card panel + listings panel removed (R2). The interactive
+// simulation IS the page; the spin lives in the symmetric-ignorance world where
+// neither side knows.
+const SpinExperience = () => {
+  const [drawn, setDrawn] = useState(null);
+  const [spinning, setSpinning] = useState(false);
+  const [flashIdx, setFlashIdx] = useState(0);
+  const [totals, setTotals] = useState(0);
+  const [bargainCt, setBargainCt] = useState(0);
+  const [overpaidCt, setOverpaidCt] = useState(0);
+
+  const OFFER = 11000;
+  const timeoutsRef = useRef([]);
+  const clearTimeouts = () => {
+    timeoutsRef.current.forEach(id => clearTimeout(id));
+    timeoutsRef.current = [];
+  };
+  useEffect(() => () => clearTimeouts(), []);
+
+  const makeOffer = () => {
+    if (spinning) return;
+    clearTimeouts();
+    setSpinning(true);
+    setDrawn(null);
+
+    const finalIdx = Math.floor(Math.random() * 4);
+    const delays = [80, 80, 90, 100, 120, 150, 200];
+    let cum = 0;
+
+    delays.forEach((d, i) => {
+      cum += d;
+      const id = setTimeout(() => { setFlashIdx(i % 4); }, cum);
+      timeoutsRef.current.push(id);
+    });
+
+    const finalId = setTimeout(() => {
+      setSpinning(false);
+      setDrawn(finalIdx);
+      setTotals(t => t + 1);
+      // Bargain when value > offer; Overpaid when value < offer; (equal would be fair, not used here)
+      if (CAR_TIERS[finalIdx].value > OFFER) setBargainCt(c => c + 1);
+      else                                    setOverpaidCt(c => c + 1);
+      playSuccessTone();
+    }, cum + 80);
+    timeoutsRef.current.push(finalId);
+  };
+
+  const reset = () => {
+    clearTimeouts();
+    setDrawn(null);
+    setSpinning(false);
+    setFlashIdx(0);
+    setTotals(0); setBargainCt(0); setOverpaidCt(0);
+  };
+
+  const fmtMoney = v => '$' + v.toLocaleString();
+
+  // Result panel
+  let resultBg = '#f9fafb', resultBorder = '2px dashed #d1d5db';
+  let resultBody = (
+    <>
+      <div style={{ fontSize: 36, color: '#d1d5db' }}>?</div>
+      <div style={{ fontSize: 13, color: '#9ca3af', fontWeight: 600 }}>Make an offer to find out</div>
+    </>
+  );
+  if (spinning) {
+    const t = TIER_STYLES[flashIdx];
+    resultBg = t.bg; resultBorder = '2px solid ' + t.border;
+    resultBody = (
+      <>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: t.text, opacity: 0.6 }}>drawing…</div>
+        <CarSVG fill={t.body} stroke={t.text} w={90} h={59} />
+      </>
+    );
+  } else if (drawn !== null) {
+    const tier = CAR_TIERS[drawn];
+    const ts = TIER_STYLES[drawn];
+    const delta = tier.value - OFFER; // positive = bargain; negative = overpaid
+    const isBargain = delta > 0;
+    const verdictBg    = isBargain ? '#f0fdf4' : '#fef2f2';
+    const verdictColor = isBargain ? '#15803d' : '#991b1b';
+    const verdictText  = isBargain
+      ? 'BARGAIN by $' + delta.toLocaleString()
+      : 'OVERPAID by $' + Math.abs(delta).toLocaleString();
+    // Repair affordability: $20K start - $11K offer = $9K cash left
+    const cashLeft = 20000 - OFFER; // 9000
+    const repairShort = tier.repair - cashLeft;
+    const canFix = repairShort <= 0;
+    const fixText = canFix
+      ? '✓ Can afford ' + (tier.repair === 0 ? 'no repairs needed' : '$' + tier.repair.toLocaleString() + ' in repairs')
+      : '✗ Repairs cost $' + tier.repair.toLocaleString() + ' — short $' + repairShort.toLocaleString();
+    resultBg = ts.bg; resultBorder = '2.5px solid ' + ts.border;
+    resultBody = (
+      <>
+        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: ts.text }}>Seller {String.fromCharCode(65 + drawn)} accepted</div>
+        <CarSVG fill={ts.body} stroke={ts.text} w={88} h={58} />
+        <div style={{ fontSize: 14, fontWeight: 800, color: ts.text }}>{tier.emoji} {tier.label}</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: ts.text }}>
+          You paid {fmtMoney(OFFER)}. Worth <strong>{fmtMoney(tier.value)}</strong>.
+        </div>
+        <div style={{
+          fontSize: 12, fontWeight: 800, padding: '5px 10px', borderRadius: 8,
+          backgroundColor: verdictBg, color: verdictColor, textAlign: 'center', lineHeight: 1.4,
+          letterSpacing: '0.04em',
+        }}>{verdictText}</div>
+        <div style={{
+          fontSize: 11, fontWeight: 600,
+          color: canFix ? '#15803d' : '#991b1b',
+          textAlign: 'center', lineHeight: 1.3,
+        }}>{fixText}</div>
+      </>
+    );
+  }
+
+  return (
+    <div style={{ marginBottom: 14 }}>
+      {/* Simulation (formerly bottom; v4.1 stripped the symmetric-ignorance flip-card top half) */}
+      <div style={{ background: 'white', borderRadius: 12, border: '2px solid ' + colors.clayLight, padding: 18 }}>
+        <div style={{ fontSize: 16, fontWeight: 800, color: colors.primary, marginBottom: 4 }}>Your turn</div>
+        <div style={{ fontSize: 13, color: colors.earthDark, marginBottom: 14, lineHeight: 1.5 }}>
+          You offer the average — <strong>$11,000</strong>. Every seller accepts. But you only get one car — and <strong>no car is worth exactly $11K to you</strong>. The average is impossible to actually receive.
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, alignItems: 'start' }}>
+          {/* Offer + record */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <button onClick={makeOffer} disabled={spinning}
+              style={{
+                background: spinning ? '#9ca3af' : colors.primary, color: 'white', border: 'none',
+                borderRadius: 10, padding: '13px 0', width: '100%',
+                fontSize: 15, fontWeight: 700, cursor: spinning ? 'default' : 'pointer',
+                fontFamily: 'Inter, sans-serif',
+              }}>
+              {spinning ? 'Drawing…' : 'Offer $11,000 →'}
+            </button>
+            <div style={{ padding: '10px 8px', backgroundColor: colors.sand, borderRadius: 10, display: 'flex' }}>
+              <div style={{ flex: 1, textAlign: 'center', padding: '0 6px' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: colors.primary, lineHeight: 1 }}>{totals}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: colors.earth, marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Offers</div>
+              </div>
+              <div style={{ flex: 1, textAlign: 'center', padding: '0 6px', borderLeft: '1.5px solid ' + colors.earthLight }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: colors.success, lineHeight: 1 }}>{bargainCt}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: colors.earth, marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Bargain</div>
+              </div>
+              <div style={{ flex: 1, textAlign: 'center', padding: '0 6px', borderLeft: '1.5px solid ' + colors.earthLight }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: colors.error, lineHeight: 1 }}>{overpaidCt}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: colors.earth, marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Overpaid</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Result */}
+          <div style={{
+            minHeight: 210, borderRadius: 12,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 6, padding: '12px 10px',
+            background: resultBg, border: resultBorder,
+            transition: 'background 0.3s, border-color 0.3s',
+          }}>
+            {resultBody}
+          </div>
+        </div>
+
+        {/* Reset */}
+        <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <button onClick={reset} style={{
+            background: 'none', border: '1.5px solid ' + colors.clay, color: colors.earth,
+            borderRadius: 8, padding: '6px 16px', fontSize: 12, fontWeight: 600,
+            cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+          }}>↺ Start over</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Loss Visualization ($11K offer + per-tier affordability) ─────────────────
+// v4.3.4 — progressive 6-beat reveal. Click anywhere to advance.
+//   Beat 1 (initial): Offer badge "💸 You offer: $11,000" — the anchor
+//   Beat 2: Mint outcome row appears (✓ $9K bargain, repairs covered)
+//   Beat 3: Good outcome row appears (✓ $3K bargain, repairs covered)
+//   Beat 4: Fair outcome row appears (✗ $3K overpaid, can't fix)
+//   Beat 5: Lemon outcome row appears (✗ $9K overpaid, can't fix)
+//   Beat 6: Summary panel appears ("2 in 4 bargain · 2 in 4 can't afford repairs")
+// Bankruptcy/bounded-downside callout removed in v4.3.3.
+const LossVisualization = () => {
+  const TOTAL_BEATS = 6;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(6px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+    pointerEvents: visible ? 'auto' : 'none',
+  });
+  // Row i appears when beat >= 2 + i  (Mint at 2, Good at 3, Fair at 4, Lemon at 5)
+  const rowVisible = (i) => beat >= 2 + i;
+
+  // After paying $11K out of $20K starting cash, $9K cash remains for repairs.
+  // Mint: $0 repair, $9K to spare ✓
+  // Good: $6K repair, $3K to spare ✓
+  // Fair: $12K repair, short $3K ✗
+  // Lemon: $18K repair, short $9K ✗
+  const rows = [
+    { idx: 0, worth: 20000, net:  9000, verdict: { bg: '#dcfce7', color: '#15803d', text: '+$9K BARGAIN' }, repair: 0,     fix: { ok: true,  text: '$0 repairs needed', extra: '$9K cash to spare' } },
+    { idx: 1, worth: 14000, net:  3000, verdict: { bg: '#dcfce7', color: '#15803d', text: '+$3K BARGAIN' }, repair: 6000,  fix: { ok: true,  text: '$6K repairs',        extra: '$3K cash to spare' } },
+    { idx: 2, worth:  8000, net: -3000, verdict: { bg: '#fee2e2', color: '#991b1b', text: '−$3K OVERPAID' }, repair: 12000, fix: { ok: false, text: '$12K repairs',       extra: 'short $3K — can\'t fix' } },
+    { idx: 3, worth:  2000, net: -9000, verdict: { bg: '#fee2e2', color: '#991b1b', text: '−$9K OVERPAID' }, repair: 18000, fix: { ok: false, text: '$18K repairs',       extra: 'short $9K — can\'t fix' } },
+  ];
+
+  // Bar widths: scale value-received as percentage of $20K starting cash
+  const valueWidth = (v) => (v / 20000) * 100;
+
+  return (
+    <div onClick={advance}
+      style={{
+        marginBottom: 14,
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default', userSelect: 'none',
+      }}>
+      {/* Offer badge + uncertainty framing — always visible (anchor + the lesson).
+          v4.3.7 — added "You don't know what you'll get" subtitle so the
+          uncertainty is explicit on screen, not only in the spoken script. */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: colors.primary, color: 'white',
+          fontSize: 14, fontWeight: 700, padding: '8px 18px', borderRadius: 99,
+        }}>💸 You offer: $11,000</div>
+        <div style={{
+          fontSize: 13, color: colors.earth, fontStyle: 'italic',
+          textAlign: 'center', lineHeight: 1.4,
+        }}>
+          You don&rsquo;t know what you&rsquo;ll get. Each is equally likely.
+        </div>
+      </div>
+
+      {/* Outcome rows — one per beat (Mint→Good→Fair→Lemon at beats 2-5) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+        {rows.map((r, i) => {
+          const tier = CAR_TIERS[r.idx];
+          const ts = TIER_STYLES[r.idx];
+          return (
+            <div key={r.idx} style={{
+              ...reveal(rowVisible(i)),
+              background: 'white', borderRadius: 12, padding: '12px 14px 14px',
+              border: '2px solid ' + (r.fix.ok ? colors.clayLight : '#fecaca'),
+            }}>
+              {/* "Maybe..." prefix — first row says "Maybe…", rest say "Or maybe…" */}
+              <div style={{
+                fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
+                color: colors.earthLight, marginBottom: 6, fontStyle: 'italic',
+              }}>
+                {i === 0 ? 'Maybe…' : 'Or maybe…'}
+              </div>
+              {/* Top: car + tier + probability */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <CarSVG fill={ts.body} stroke={ts.text} w={56} h={37} />
+                <div style={{
+                  fontSize: 13, fontWeight: 700, padding: '3px 11px', borderRadius: 99,
+                  backgroundColor: ts.bg, color: ts.text, border: '1.5px solid ' + ts.border,
+                  flexShrink: 0,
+                }}>{tier.emoji} {tier.label}</div>
+                <div style={{
+                  marginLeft: 'auto', flexShrink: 0,
+                  fontSize: 11, fontWeight: 600, color: colors.earth,
+                  backgroundColor: colors.clayLight, padding: '3px 9px', borderRadius: 99,
+                }}>1 in 4</div>
+              </div>
+
+              {/* Value-received bar (full width, no on-mount animation).
+                  v4.3.6 — bar color now uses tier palette (Mint=gold, Good=green,
+                  Fair=orange, Lemon=red), matching every other tier visual in
+                  the deck. Previous code painted Mint green via a
+                  positive-vs-negative color scheme that conflicted with the
+                  established palette. */}
+              <div style={{ height: 26, borderRadius: 8, background: '#f3f4f6', overflow: 'hidden', marginBottom: 6 }}>
+                <div style={{
+                  height: '100%',
+                  width: valueWidth(r.worth) + '%',
+                  background: ts.body,
+                  borderRadius: '8px 0 0 8px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                  paddingRight: 8,
+                }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'white', whiteSpace: 'nowrap' }}>
+                    Worth ${r.worth.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Numbers row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#6b7280' }}>
+                  Paid $11K · worth ${r.worth.toLocaleString()}
+                </span>
+                <span style={{
+                  fontSize: 12, fontWeight: 800, padding: '3px 10px', borderRadius: 99,
+                  background: r.verdict.bg, color: r.verdict.color, letterSpacing: '0.03em',
+                }}>{r.verdict.text}</span>
+              </div>
+
+              {/* Affordability row */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '7px 10px', borderRadius: 8,
+                backgroundColor: r.fix.ok ? '#f0fdf4' : '#fef2f2',
+                border: '1px solid ' + (r.fix.ok ? '#bbf7d0' : '#fecaca'),
+              }}>
+                <span style={{
+                  fontSize: 14, fontWeight: 800,
+                  color: r.fix.ok ? '#15803d' : '#991b1b',
+                }}>{r.fix.ok ? '✓' : '✗'}</span>
+                <div style={{ flex: 1, fontSize: 12, color: r.fix.ok ? '#166534' : '#7f1d1d', lineHeight: 1.4 }}>
+                  <strong>{r.fix.text}</strong> · <span style={{ fontWeight: 600 }}>{r.fix.extra}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Summary panel — beat 6 */}
+      <div style={{
+        ...reveal(beat >= 6),
+        background: colors.primary, borderRadius: 12, padding: '18px 20px', color: 'white',
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'rgba(255,255,255,0.7)', marginBottom: 14 }}>
+          What this means on average
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 0 }}>
+          <div style={{ textAlign: 'center', padding: '0 10px' }}>
+            <div style={{ fontSize: 30, fontWeight: 800, color: '#86efac', lineHeight: 1 }}>2 in 4</div>
+            <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4, color: 'rgba(255,255,255,0.7)' }}>bargain outcomes</div>
+          </div>
+          <div style={{ textAlign: 'center', padding: '0 10px', borderLeft: '1px solid rgba(255,255,255,0.2)' }}>
+            <div style={{ fontSize: 30, fontWeight: 800, color: '#fca5a5', lineHeight: 1 }}>2 in 4</div>
+            <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4, color: 'rgba(255,255,255,0.7)' }}>can't afford repairs</div>
+          </div>
+          <div style={{ textAlign: 'center', padding: '0 10px', borderLeft: '1px solid rgba(255,255,255,0.2)' }}>
+            <div style={{ fontSize: 30, fontWeight: 800, color: '#fcd34d', lineHeight: 1 }}>$0</div>
+            <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4, color: 'rgba(255,255,255,0.7)' }}>expected loss on average</div>
+          </div>
+        </div>
+        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.15)', fontSize: 12, color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', textAlign: 'center' }}>
+          The math is fair. The lived experience is not.
+        </div>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5, 6].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Fix Cards ─────────────────────────────────────────────────────────────────
+const FIX_DATA = {
+  car: {
+    title: '🌱 The Fix as Business: Carfax',
+    cost: '~$40 per report',
+    costColor: colors.success,
+    body: 'In 1984, an entrepreneur saw an information problem in the used-car market and built a business to solve it. Carfax aggregated vehicle histories — accidents, ownership, service records — into a database any buyer could pull for about $40.',
+    outcome: 'Carfax got rich. The market got better. Both buyers and Mint sellers won. Profit motive pointed at a real problem produces social good as a by-product. This is the good side of economics.',
+  },
+  // v4.5.1 — body tightened per Rick's session-11 pass-2 #1+#2.
+  //   - "no one would buy them" was overclaim; corrected to "owners of
+  //     anything better than a Lemon couldn't get a fair deal" (the actual
+  //     adverse-selection outcome, consistent with the cars/phones lesson).
+  //   - "was actually a new-iPhone-pricing problem" → "had bad effects on
+  //     the market for new iPhones too" (declarative, not rhetorical).
+  phone: {
+    title: '🌱 The Fix as Business: Battery Health',
+    cost: 'Free to you — Apple wins upstream',
+    costColor: '#2563eb',
+    body: 'Apple realized: if buyers couldn\'t TRUST used iPhones, owners of anything better than a Lemon couldn\'t get a fair deal — only the worst phones would trade. And that had bad effects on the market for new iPhones too: buyers know they can\'t easily resell, so they pay less for a new one.',
+    outcome: 'Here\'s how Apple fixed it. Settings → Battery → Battery Health shows the real number, in real time, un-fakeable by the seller. Free to you. Apple wins upstream — used iPhones now trade, and new iPhones command a higher price. Self-interest, not generosity.',
+  },
+  // v4.5.0 — body rewritten per Rick's #11 + #12 + #13:
+  //   - Explicit contrast with the prior two fixes (Carfax / Apple)
+  //   - "Stack" replaced with "trust system" / "trust layers"
+  //   - TRUST surfaced as the through-line
+  investment: {
+    title: '🌱 The Fix as Institutions: SEC + Audit + GAAP',
+    cost: '~$100K–$10M+/yr per public co.',
+    costColor: colors.royal,
+    body: 'You can\'t fix this by collecting and reporting existing information (Carfax) or by building a feature into the product (Apple). With investments, the relevant information is *future* — how the company will perform — and no website can know that. The only way to ease the asymmetry is to build TRUST in what gets disclosed. Trust has to be constructed. Five layers, working together: ① Regulations (the SEC mandates what must be disclosed). ② Legal liability (officers, directors, and auditors are personally on the hook for false statements). ③ Independent auditing (CPAs verify the books — their licenses and reputations at stake). ④ Accounting standards (GAAP makes disclosures comparable across companies). ⑤ Enforcement (SEC penalties, shareholder suits).',
+    outcome: 'Each layer constrains the gap a little more. None of them — alone or together — eliminates the asymmetry. They ease it. That\'s as good as it gets.',
+  },
+};
+
+const FixCard = ({ section }) => {
+  const d = FIX_DATA[section];
+  if (!d) return null;
+  return (
+    <div style={{ borderRadius: 10, border: '2px solid ' + colors.success, overflow: 'hidden', marginBottom: 12, backgroundColor: colors.successBg }}>
+      <div style={{ padding: '10px 14px', backgroundColor: '#dcfce7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: '#14532d' }}>{d.title}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: d.costColor }}>{d.cost}</span>
+      </div>
+      <div style={{ padding: '12px 14px', fontSize: 14, color: '#166534', lineHeight: 1.6 }}>
+        <p style={{ marginBottom: 8 }}>{formatEmphasis(d.body)}</p>
+        <p style={{ fontWeight: 600 }}>{formatEmphasis(d.outcome)}</p>
+      </div>
+    </div>
+  );
+};
+
+// ── Crisis Callout (v4.2 R17 — crises = information problems suspect #1) ────
+// Renders below the i0 FixCard. Connects the institutional stack to the
+// historical episodes the Seeds of Fortune students will study in their
+// capstones. Honest about the connection: the SEC stack itself came from the
+// Great Depression's information failures.
+const CrisisCallout = () => (
+  <div style={{
+    borderRadius: 12, border: '2px solid ' + colors.error,
+    overflow: 'hidden', marginBottom: 12,
+    backgroundColor: '#fff5f5',
+  }}>
+    <div style={{
+      padding: '10px 14px', backgroundColor: colors.error, color: 'white',
+      fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em',
+      display: 'flex', alignItems: 'center', gap: 8,
+    }}>
+      <span style={{ fontSize: 16 }}>⚠</span>
+      <span>When the stack is bypassed</span>
+    </div>
+    <div style={{ padding: '14px 16px', fontSize: 14, color: '#7f1d1d', lineHeight: 1.6 }}>
+      <p style={{ margin: '0 0 8px' }}>
+        When markets break — the <strong>Great Depression</strong>, the <strong>2008 financial crisis</strong> — look for the information problem first.
+      </p>
+      <p style={{ margin: '0 0 8px' }}>
+        In 2008 it was <strong>MBS ratings</strong>: AAA-rated tranches that weren't AAA. The institutional stack was bypassed or compromised. The asymmetry came back. Allocational efficiency collapsed.
+      </p>
+      <p style={{ margin: 0, fontWeight: 600, color: '#991b1b' }}>
+        The SEC stack itself was built in response to the Great Depression's information failures. Crises don't just expose information problems — they create the institutions that try to ease the next one.
+      </p>
+    </div>
+  </div>
+);
+
+// ── CombinedFixesSlide (NEW — Session-10 item 9) ────────────────────────────
+// v4.4.0 (Pass C) — Carfax + Apple Battery Health side-by-side fixes slide.
+// Repurposes FIX_DATA.car and FIX_DATA.phone content into matched cards on a
+// single slide. 4 beats: headline → Carfax card → Battery Monitor card → tying
+// insight. Replaces the retired c11 (Carfax application) slide and the FixCard
+// that previously rode along with p0.
+const CombinedFixesSlide = () => {
+  const TOTAL_BEATS = 4;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+  });
+  const Card = ({ icon, label, market, fix, body, costLine, costColor }) => (
+    <div style={{
+      flex: 1, minWidth: 0,
+      borderRadius: 12, border: '2px solid ' + colors.success,
+      backgroundColor: colors.successBg, overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      <div style={{
+        padding: '12px 14px', backgroundColor: '#dcfce7',
+        display: 'flex', flexDirection: 'column', gap: 4,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 20 }}>{icon}</span>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: colors.earth, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {market}
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#14532d' }}>{fix}</div>
+          </div>
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: costColor }}>{costLine}</div>
+      </div>
+      <div style={{ padding: '12px 14px', fontSize: 13, color: '#166534', lineHeight: 1.55 }}>
+        {formatEmphasis(body)}
+      </div>
+    </div>
+  );
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none',
+        backgroundColor: 'white', borderRadius: 14, border: '2px solid ' + colors.earthLight,
+        padding: '28px 22px', marginBottom: 14,
+        display: 'flex', flexDirection: 'column', gap: 18,
+      }}>
+      {/* Beat 1 — headline */}
+      <div style={{ ...reveal(beat >= 1), textAlign: 'center' }}>
+        <div style={{
+          fontFamily: 'Lora, serif', fontSize: 26, fontWeight: 600, color: colors.primary, lineHeight: 1.2,
+        }}>
+          Two markets, two fixes.
+        </div>
+        <div style={{
+          fontFamily: 'Lora, serif', fontStyle: 'italic',
+          fontSize: 14, color: colors.earth, marginTop: 6,
+        }}>
+          Same information problem. Two very different ways someone solved it.
+        </div>
+      </div>
+
+      {/* Beats 2 + 3 — the two cards, side by side */}
+      <div style={{ display: 'flex', gap: 14, alignItems: 'stretch' }}>
+        <div style={{ ...reveal(beat >= 2), flex: 1, minWidth: 0, display: 'flex' }}>
+          <Card
+            icon="🚗"
+            market="Used cars"
+            fix="Carfax (1984)"
+            costLine="~$40 per report"
+            costColor={colors.success}
+            body={FIX_DATA.car.body + ' ' + FIX_DATA.car.outcome}
+          />
+        </div>
+        <div style={{ ...reveal(beat >= 3), flex: 1, minWidth: 0, display: 'flex' }}>
+          <Card
+            icon="📱"
+            market="Used iPhones"
+            fix="Apple Battery Health"
+            costLine="Free to you — Apple wins upstream"
+            costColor="#2563eb"
+            body={FIX_DATA.phone.body + ' ' + FIX_DATA.phone.outcome}
+          />
+        </div>
+      </div>
+
+      {/* Beat 4 — synthesis insight */}
+      <div style={{
+        ...reveal(beat >= 4),
+        padding: '14px 18px', borderRadius: 10,
+        border: '2px solid ' + colors.accent, backgroundColor: '#fef9e7',
+        display: 'flex', gap: 12, alignItems: 'flex-start',
+      }}>
+        <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+        <div style={{ fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>
+          Two completely different fixes — a paid third-party report and a free built-in feature. Different mechanisms, same purpose: <strong>shrink the gap between what the seller knows and what the buyer can see.</strong> Every information problem is a business opportunity in disguise.
+        </div>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── CRISIS_DATA (NEW — Session-10 item 10) ──────────────────────────────────
+// v4.4.0 (Pass C) — short list of historical crises framed as information
+// problems. Used by InvestmentFixesSlide. Each entry is one or two sentences
+// for an HS-junior audience: "who knew, who didn't, what happened."
+const CRISIS_DATA = [
+  {
+    icon: '🏦',
+    name: 'Great Depression',
+    year: '1930s',
+    title: 'Bank runs',
+    body: 'Depositors couldn\'t tell which banks were solvent. Once one bank failed, everyone worried that someone *else* knew their bank was bad too. The asymmetry triggered cascading withdrawals — and healthy banks failed alongside the unhealthy ones. The SEC and the trust system around it were built in response.',
+  },
+  {
+    icon: '📉',
+    name: 'Enron',
+    year: '2001',
+    title: 'Accounting fraud',
+    body: 'Enron\'s executives knew the company\'s reported earnings were fabricated through hidden off-balance-sheet entities. Auditors, analysts, and shareholders didn\'t. When the asymmetry was exposed, the stock collapsed from ~$90 to under $1 in months. Sarbanes-Oxley tightened the trust system in response.',
+  },
+  {
+    icon: '🏠',
+    name: '2008 financial crisis',
+    year: '2008',
+    title: 'MBS ratings',
+    body: 'Banks bundled millions of mortgage payments into investments called *Mortgage-Backed Securities* — basically, slices of "people\'s monthly mortgage checks pooled together." Ratings agencies stamped these AAA (top quality). Insiders knew the underlying mortgages were riskier than the rating implied. When buyers found out, the AAA market evaporated almost overnight.',
+  },
+  {
+    icon: '🪙',
+    name: 'FTX',
+    year: '2022',
+    title: 'Customer funds',
+    body: 'FTX customers and investors thought their crypto deposits were safely held. FTX insiders knew the deposits were being lent to a sister hedge fund and used as collateral for risky bets. Once the asymmetry was exposed, FTX collapsed in days.',
+  },
+];
+
+// ── InvestmentFixesSlide ─────────────────────────────────────────────────────
+// v4.5.2 — beat 4 INSERTED: "Same toolbox in other markets" panel that lists
+// the regulatory fixes for the markets shown on the `more` slide (insurance →
+// ACA, housing → inspectors, labor → degrees/licenses). Per Rick's session-11
+// pass-3 #3: "sneak in a box on fixes in the other markets we introduced;
+// no need for a separate page for each fix." Total beats now 7.
+//   Beat 1: "Investments are tougher."
+//   Beat 2: "Risk is irreducible — even with the best info, the future is unknown."
+//   Beat 3: SEC trust system FixCard
+//   Beat 4 (NEW v4.5.2): "Same toolbox in other markets" — ACA, inspectors, degrees
+//   Beat 5: "These don't fix it. They ease it." (was beat 4)
+//   Beat 6: "When trust breaks down" + 4 crisis cards (was beat 5)
+//   Beat 7: Closing insight — crises are info problems first. (was beat 6)
+const InvestmentFixesSlide = () => {
+  const TOTAL_BEATS = 7;
+  const [beat, setBeat] = useState(1);
+  const advance = () => setBeat(b => Math.min(b + 1, TOTAL_BEATS));
+  const reveal = (visible) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(8px)',
+    transition: 'opacity 0.4s ease, transform 0.4s ease',
+  });
+  return (
+    <div onClick={advance}
+      style={{
+        cursor: beat < TOTAL_BEATS ? 'pointer' : 'default',
+        userSelect: 'none',
+        backgroundColor: 'white', borderRadius: 14, border: '2px solid ' + colors.earthLight,
+        padding: '24px 22px', marginBottom: 14,
+        display: 'flex', flexDirection: 'column', gap: 16,
+      }}>
+      {/* Beat 1 — pivot */}
+      <div style={{ ...reveal(beat >= 1), textAlign: 'center' }}>
+        <div style={{
+          fontFamily: 'Lora, serif', fontSize: 24, fontWeight: 600, color: colors.primary, lineHeight: 1.2,
+        }}>
+          Investments are tougher.
+        </div>
+      </div>
+
+      {/* Beat 2 — risk caveat */}
+      <div style={{
+        ...reveal(beat >= 2),
+        fontFamily: 'Lora, serif',
+        fontSize: 16, lineHeight: 1.55, color: colors.earthDark,
+        textAlign: 'center', maxWidth: 600, margin: '0 auto',
+      }}>
+        More abstract than cars or phones. And no matter how much you know, an investment <strong>always involves risk</strong> — even with the best information you could possibly get, the future is unknown.
+      </div>
+
+      {/* Beat 3 — SEC stack */}
+      <div style={{ ...reveal(beat >= 3) }}>
+        <div style={{
+          borderRadius: 12, border: '2px solid ' + colors.success,
+          backgroundColor: colors.successBg, overflow: 'hidden',
+        }}>
+          <div style={{
+            padding: '10px 14px', backgroundColor: '#dcfce7',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#14532d' }}>
+              🌱 The Fix as Institutions: SEC + Audit + GAAP
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: colors.royal }}>
+              ~$100K–$10M+/yr per public co.
+            </span>
+          </div>
+          <div style={{ padding: '12px 14px', fontSize: 13, color: '#166534', lineHeight: 1.6 }}>
+            {formatEmphasis(FIX_DATA.investment.body)}
+          </div>
+        </div>
+      </div>
+
+      {/* Beat 4 — "Same toolbox in other markets" panel (NEW v4.5.2 per
+           Rick's session-11 pass-3 #3). Three compact pills covering the
+           regulatory fixes for the markets shown on the `more` slide:
+           insurance → ACA, housing → building inspectors, labor → degrees. */}
+      <div style={{ ...reveal(beat >= 4) }}>
+        <div style={{
+          borderRadius: 10, border: '1.5px solid ' + colors.royal,
+          backgroundColor: colors.royalBg, overflow: 'hidden',
+        }}>
+          <div style={{
+            padding: '8px 14px', backgroundColor: '#ede9fe',
+            fontSize: 12, fontWeight: 700, color: colors.royal,
+            display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <span style={{ fontSize: 14 }}>🏛</span>
+            <span>Ways this effect is eased in other markets</span>
+          </div>
+          <div style={{ padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { market: 'Insurance', fix: 'ACA mandates that everyone enroll', why: 'Keeps the healthy from leaving — stops the unraveling at the source.' },
+              { market: 'Housing',   fix: 'Building inspectors verify quality during construction', why: 'Trusted information manufactured before a buyer can be deceived.' },
+              { market: 'Labor',     fix: 'Degrees and licenses signal worker quality', why: 'Credentials substitute for what employers can\'t verify directly.' },
+            ].map((row, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'baseline', gap: 8,
+                fontSize: 12.5, color: '#3b1d6e', lineHeight: 1.5,
+              }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em',
+                  color: colors.royal, minWidth: 70, flexShrink: 0,
+                }}>{row.market}</span>
+                <span><strong>{row.fix}</strong> — <span style={{ fontStyle: 'italic', color: '#5b3b8e' }}>{row.why}</span></span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Beat 5 (was 4) — "ease, don't fix" */}
+      <div style={{
+        ...reveal(beat >= 5),
+        padding: '12px 16px', borderRadius: 10,
+        border: '2px solid ' + colors.accent, backgroundColor: '#fef9e7',
+        display: 'flex', gap: 12, alignItems: 'flex-start',
+      }}>
+        <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+        <div style={{ fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>
+          None of these &mdash; SEC, ACA, inspectors, licenses &mdash; <em>fixes</em> the asymmetry. They <strong>ease</strong> it. Information you can <strong>trust</strong> is hard to manufacture; that&rsquo;s why these systems are elaborate, and why they cost what they cost.
+        </div>
+      </div>
+
+      {/* Beat 6 (was 5) — crisis list (header + 4 cards) */}
+      <div style={{ ...reveal(beat >= 6) }}>
+        <div style={{
+          borderRadius: 12, border: '2px solid ' + colors.error, overflow: 'hidden',
+          backgroundColor: '#fff5f5',
+        }}>
+          <div style={{
+            padding: '10px 14px', backgroundColor: colors.error, color: 'white',
+            fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em',
+            display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <span style={{ fontSize: 16 }}>⚠</span>
+            <span>When trust breaks down</span>
+          </div>
+          <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <p style={{ margin: 0, fontSize: 13, color: '#7f1d1d', lineHeight: 1.55, fontStyle: 'italic' }}>
+              This isn&rsquo;t constant. But every so often the asymmetry comes roaring back — and it tends to look like one of these:
+            </p>
+            {CRISIS_DATA.map((c, i) => (
+              <div key={i} style={{
+                borderRadius: 8, padding: '10px 12px',
+                backgroundColor: 'white', border: '1.5px solid #fecaca',
+                display: 'flex', gap: 10, alignItems: 'flex-start',
+              }}>
+                <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{c.icon}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#991b1b' }}>{c.name}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: colors.earth }}>· {c.year}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.04em' }}>· {c.title}</span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: '#7f1d1d', lineHeight: 1.5 }}>
+                    {formatEmphasis(c.body)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Beat 7 (was 6) — closing insight. v4.5.3: threads the scale →
+           trust → crisis arc from the `more` slide. */}
+      <div style={{
+        ...reveal(beat >= 7),
+        padding: '14px 18px', borderRadius: 10,
+        backgroundColor: colors.primary, color: 'white',
+        textAlign: 'center',
+      }}>
+        <p style={{ margin: 0, fontWeight: 700, fontSize: 15 }}>
+          Crises are information problems first.
+        </p>
+        <p style={{ margin: '8px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.55 }}>
+          Markets that have scaled past shared experience run on <strong style={{ color: colors.accent }}>trust</strong>. When trust breaks down, the asymmetry comes back &mdash; and it&rsquo;s always the same kind of gap: between what one side knows and what the other side has to trust.
+        </p>
+      </div>
+
+      {/* Beat indicator + click hint */}
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+      }}>
+        <div style={{ display: 'flex', gap: 5 }}>
+          {[1, 2, 3, 4, 5, 6, 7].map(n => (
+            <span key={n} style={{
+              width: 7, height: 7, borderRadius: '50%',
+              backgroundColor: beat >= n ? colors.accent : '#d8cfb8',
+              transition: 'background-color 0.3s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: colors.earthLight, fontStyle: 'italic', minHeight: 14 }}>
+          {beat < TOTAL_BEATS ? 'click to continue ▸' : ''}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Cost Escalation (log-scaled bars) ─────────────────────────────────────────
+// v4.2 R16 — no longer rendered (z0 step removed from STEPS). Component
+// preserved here in case Rick wants to reinstate it. Safe to delete later.
+const CostEscalation = () => {
+  const rows = [
+    { icon: '🚗', label: 'Used Car',        cost: '~$40',           note: 'Commercial fix (Carfax) — entrepreneur captured the gap',  barW: 4,  barColor: colors.success, costColor: colors.success },
+    { icon: '📱', label: 'Used iPhone',     cost: 'Free',           note: 'Built-in fix (Battery Health) — Apple\'s aligned incentives',     barW: 8,  barColor: '#2563eb',     costColor: '#2563eb' },
+    { icon: '🏢', label: 'Capital Markets', cost: '$100K–$10M+/yr', note: 'Mandatory infrastructure (SEC/Audit) — scaled to the stakes',     barW: 95, barColor: colors.royal,  costColor: colors.royal },
+  ];
+  return (
+    <div style={{ borderRadius: 10, border: '2px solid ' + colors.earthLight, overflow: 'hidden', marginBottom: 12, backgroundColor: 'white' }}>
+      <div style={{ padding: '10px 14px', fontSize: 14, fontWeight: 700, backgroundColor: colors.clayLight, color: colors.earthDark }}>
+        The fix scales with the stakes
+      </div>
+      <div style={{ padding: '12px 14px' }}>
+        {rows.map((row, i) => (
+          <div key={i} style={{ marginBottom: i < 2 ? 12 : 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5 }}>
+              <span style={{ fontSize: 22 }}>{row.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: colors.earthDark, lineHeight: 1.3 }}>{row.label}</div>
+                <div style={{ fontSize: 11, color: colors.earth, lineHeight: 1.3 }}>{row.note}</div>
+              </div>
+              <div style={{ fontSize: i === 2 ? 17 : 14, fontWeight: 800, color: row.costColor, whiteSpace: 'nowrap' }}>{row.cost}</div>
+            </div>
+            <div style={{ height: 10, background: '#f3f4f6', borderRadius: 99, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%', width: row.barW + '%',
+                background: row.barColor, borderRadius: 99,
+                transition: 'width 0.6s cubic-bezier(.4,0,.2,1)',
+              }}/>
+            </div>
+          </div>
+        ))}
+        <div style={{ fontSize: 10, color: colors.earth, marginTop: 8, textAlign: 'right', fontStyle: 'italic' }}>
+          (bars on log scale — $40 to $10M+ spans ~2,500×)
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Capstone Connections (per Step 17 spec, new icons + copy) ────────────────
+const CapstoneConnections = () => {
+  const rows = [
+    {
+      icon: '🏛',
+      topic: 'Recessions, Credit & the Financial System',
+      info: 'Lenders can\'t directly see which borrowers will repay. Credit scores, employment data, and recession signals are the information infrastructure. In a downturn, that infrastructure gets noisier — and good borrowers get worse rates or no loan at all. Allocational efficiency cracks under stress.',
+    },
+    {
+      icon: '🏢',
+      topic: 'Investment Banks & Capital Markets',
+      info: 'An IPO is an information event. Investment banks exist partly to bridge what the company knows about itself and what investors can verify. Research desks, roadshows, audited financials, ratings — every piece is information infrastructure. Without it, only the most desperate companies could raise capital.',
+    },
+    {
+      icon: '📲',
+      topic: 'Fintech',
+      info: 'Fintech is largely the business of solving information problems at scale. Credit scoring on thin-file borrowers. Fraud detection. Robo-advisor disclosure. Mobile banking that brings underserved customers into a system that can verify them. Every fintech company is an answer to "what couldn\'t we measure before?"',
+    },
+    {
+      icon: '🏠',
+      topic: 'Housing Finance & Structured Credit',
+      info: 'Lenders can\'t see borrower quality directly — credit scores, appraisals, MBS ratings exist to make hidden information shared. When that infrastructure misjudges (think 2008), allocational efficiency collapses dramatically. The trades that DO happen end up moving capital to the wrong borrowers.',
+    },
+  ];
+  return (
+    <div style={{ borderRadius: 10, border: '2px solid ' + colors.primary, overflow: 'hidden', marginBottom: 12, backgroundColor: 'white' }}>
+      <div style={{ padding: '10px 14px', fontSize: 14, fontWeight: 700, backgroundColor: colors.primary, color: 'white' }}>
+        The information problem in your capstone
+      </div>
+      <div style={{ padding: '12px 14px' }}>
+        {rows.map((row, i) => (
+          <div key={i} style={{
+            display: 'flex', gap: 12, padding: 12, borderRadius: 8,
+            backgroundColor: colors.sand, marginBottom: i < 3 ? 8 : 0, alignItems: 'flex-start',
+          }}>
+            <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1.2 }}>{row.icon}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: colors.primary, marginBottom: 4, lineHeight: 1.3 }}>
+                {row.topic}
+              </div>
+              <div style={{ fontSize: 13, color: colors.earthDark, lineHeight: 1.55 }}>{row.info}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ── formatEmphasis helper (v4.2 fix) ─────────────────────────────────────────
+// Narrative/insight/FixCard.body strings may contain markdown-style emphasis:
+// *text* → <em>text</em>, **text** → <strong>text</strong>. The render slots
+// otherwise interpolate raw strings, so without this helper the asterisks would
+// show up literally. Bold must be matched before italic to avoid mis-pairing.
+const formatEmphasis = (s) => {
+  if (!s || typeof s !== 'string') return s;
+  if (!s.includes('*')) return s;
+  const parts = [];
+  let i = 0, key = 0;
+  const re = /\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+  let m;
+  while ((m = re.exec(s)) !== null) {
+    if (m.index > i) parts.push(s.slice(i, m.index));
+    if (m[1] != null) parts.push(<strong key={'k' + (key++)}>{m[1]}</strong>);
+    else              parts.push(<em     key={'k' + (key++)}>{m[2]}</em>);
+    i = m.index + m[0].length;
+  }
+  if (i < s.length) parts.push(s.slice(i));
+  return parts;
+};
+
+// ── Spiral Badge ──────────────────────────────────────────────────────────────
+const SpiralBadge = () => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 10, marginBottom: 12, backgroundColor: colors.errorBg, borderLeft: '4px solid ' + colors.error }}>
+    <span style={{ fontSize: 26 }}>📉</span>
+    <div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: colors.error }}>Adverse selection cascade</div>
+      <div style={{ fontSize: 12, color: '#991b1b', marginTop: 2 }}>Quality exits → average falls → next-best quality exits → …</div>
+    </div>
+  </div>
+);
+
+// ── Main App ──────────────────────────────────────────────────────────────────
+const TutorialApp = () => {
+  const [idx, setIdx]               = useState(0);
+  const [devMode, setDevMode]       = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  // v4.3 — speaker notes toggle. Narrative boxes are Rick's spoken script, hidden by default
+  // so students see clean visuals + headline + insight only. Initialized from ?notes=1 URL param
+  // and toggleable from the 📝 button in the header.
+  const [showNotes, setShowNotes]   = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('notes') === '1';
+  });
+
+  const step    = STEPS[idx];
+  const isFirst = idx === 0;
+  const isLast  = idx === STEPS.length - 1;
+  const progress = Math.round((idx / (STEPS.length - 1)) * 100);
+
+  const go = (i) => { playContinueClick(); setIdx(i); window.scrollTo(0, 0); };
+  const next    = () => { if (!isLast)  go(idx + 1); };
+  const prev    = () => { if (!isFirst) go(idx - 1); };
+  const restart = () => { playContinueClick(); setIdx(0); window.scrollTo(0, 0); };
+
+  const headerClick = () => {
+    const n = clickCount + 1;
+    setClickCount(n);
+    if (n >= 3) { setDevMode(d => !d); setClickCount(0); }
+  };
+
+  const SECTION_COLORS = {
+    car:        { bg: '#dbeafe', text: '#1e40af', dot: '#3b82f6' },
+    phone:      { bg: '#fce7f3', text: '#9d174d', dot: '#ec4899' },
+    investment: { bg: '#d1fae5', text: '#065f46', dot: '#22c55e' },
+    closing:    { bg: '#fef3c7', text: '#92400e', dot: '#c9a227' },
+    concept:    { bg: '#f5f3ff', text: '#5b21b6', dot: '#7c3aed' },
+    pivot:      { bg: '#fef3c7', text: '#92400e', dot: '#f59e0b' },
+  };
+  const sc = SECTION_COLORS[step.section] || SECTION_COLORS.closing;
+
+  // Resolve a "render section" for components that need car/phone/investment data.
+  // Steps 11 (concept) and 13 (pivot) are bespoke kinds that don't need this.
+  const renderSection = step.section === 'concept' || step.section === 'pivot'
+    ? 'car'  // unused for these kinds, just a safe default
+    : step.section;
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: colors.sand }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '16px 16px 48px' }}>
+
+        {/* Header */}
+        <div style={{ borderRadius: 12, padding: 16, marginBottom: 16, backgroundColor: colors.primary }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div onClick={headerClick} style={{ cursor: 'pointer' }}>
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: 'white', lineHeight: 1.3, margin: 0 }}>
+                Markets &amp; Information
+              </h1>
+              <p style={{ fontSize: 13, marginTop: 3, color: colors.earthLight, margin: '3px 0 0' }}>
+                Seeds of Fortune &middot; Yale &middot; May 4, 2026
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <button onClick={() => setShowNotes(s => !s)}
+                title={showNotes ? 'Hide speaker notes' : 'Show speaker notes'}
+                aria-label="Toggle speaker notes" aria-pressed={showNotes}
+                style={{
+                  fontSize: 16, background: 'none', border: 'none', cursor: 'pointer', padding: 6, lineHeight: 1,
+                  opacity: showNotes ? 1 : 0.55, filter: showNotes ? 'none' : 'grayscale(0.6)',
+                }}>
+                &#128221;
+              </button>
+              <button onClick={restart} title="Restart" aria-label="Restart"
+                style={{ fontSize: 22, color: 'white', background: 'none', border: 'none', cursor: 'pointer', padding: 6, lineHeight: 1 }}>
+                &#8635;
+              </button>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>
+              <span>Step {idx + 1} of {STEPS.length} &middot; <span style={{ opacity: 0.7 }}>{step.id}</span></span>
+              <span>{progress}%</span>
+            </div>
+            <div style={{ height: 7, borderRadius: 99, backgroundColor: 'rgba(255,255,255,0.2)' }}
+              role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+              <div style={{ height: '100%', borderRadius: 99, backgroundColor: colors.accent, width: progress + '%', transition: 'width 0.4s' }} />
+            </div>
+          </div>
+
+          {devMode && (
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>Dev: jump to step</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {STEPS.map((s, i) => (
+                  <button key={i} onClick={() => go(i)}
+                    style={{
+                      padding: '3px 9px', borderRadius: 4, fontSize: 11, border: 'none', cursor: 'pointer',
+                      backgroundColor: i === idx ? 'white' : 'rgba(255,255,255,0.2)',
+                      color: i === idx ? colors.primary : 'white',
+                      fontWeight: i === idx ? 700 : 500,
+                    }}>{s.id}</button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Section label */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <span style={{ padding: '5px 14px', borderRadius: 99, fontSize: 13, fontWeight: 700, backgroundColor: sc.bg, color: sc.text }}>
+            {step.sectionLabel}
+          </span>
+          <span style={{ fontSize: 12, color: colors.earth, fontWeight: 500 }}>{idx + 1} / {STEPS.length}</span>
+        </div>
+
+        {/* Headline */}
+        <h2 style={{
+          fontSize: step.kind === 'abstraction' ? 20 : 24,
+          fontWeight: 700, color: colors.primary, marginBottom: 14, lineHeight: 1.3,
+          // Hide headline for slides that ARE the headline — abstraction (c12),
+          // rule-change precursor (c5b), and synthesis (NEW). These build their
+          // own typography and the App-level headline would compete with the
+          // typography inside.
+          display: (step.kind === 'abstraction' || step.kind === 'ruleChange' || step.kind === 'synthesis' || step.kind === 'growthWedge') ? 'none' : 'block',
+        }}>
+          {step.headline}
+        </h2>
+
+        {/* Narrative — early position when narrativeFirst is set (R3 c6: reasoning precedes the visual).
+            v4.3: gated on showNotes — narrative is the speaker script, hidden from students by default. */}
+        {showNotes && step.narrativeFirst && step.narrative && step.kind !== 'abstraction' && step.kind !== 'synthesis' && step.kind !== 'growthWedge' && (
+          <div style={{
+            padding: 16, borderRadius: 10, marginBottom: 12,
+            backgroundColor: colors.sand, borderLeft: '4px solid ' + colors.accent,
+            fontStyle: 'italic', fontSize: 15, color: '#374151', lineHeight: 1.65,
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: colors.earth, marginBottom: 6, fontStyle: 'normal' }}>
+              &#128221; SCRIPT
+            </div>
+            {formatEmphasis(step.narrative)}
+          </div>
+        )}
+
+        {/* Per-step content (kind dispatcher) */}
+        {step.kind === 'hook'        && <HookSlide />}
+        {step.kind === 'population'  && <PopulationView />}
+        {step.kind === 'listings'    && <MarketplaceView />}
+        {step.kind === 'spin'        && <SpinExperience />}
+        {step.kind === 'lossViz'     && <LossVisualization />}
+        {step.kind === 'frozen'      && <FrozenMarketView />}
+        {step.kind === 'concept'     && <ConceptCard />}
+        {step.kind === 'productiveConcept' && <ProductiveEfficiencyCard />}
+        {step.kind === 'abstraction' && <AbstractionSlide />}
+        {step.kind === 'ruleChange'  && <RuleChangeSlide />}
+        {step.kind === 'cascade'     && <CascadeSlide />}
+        {step.kind === 'cascadeRevision' && <CascadeRevisionSlide />}
+        {/* v4.5.1 — key={step.id} forces remount between p0 and i0. Both use
+             the same UnraveledMarketView component, so without a key React
+             reuses the instance and the beat state from p0 (which the user
+             clicked to 4) carries into i0, making the whole slide appear at
+             once instead of requiring click-through. The key resets state. */}
+        {step.kind === 'unraveled'   && <UnraveledMarketView key={step.id} section={step.section} preamble={step.preamble} conclusion={step.conclusion} />}
+        {step.kind === 'synthesis'   && <SynthesisSlide />}
+        {step.kind === 'combinedFixes' && <CombinedFixesSlide />}
+        {step.kind === 'investmentFixes' && <InvestmentFixesSlide />}
+        {step.kind === 'growthWedge' && <GrowthWedgeSlide />}
+        {step.kind === 'morePlaces'  && <MorePlacesSlide key={step.id} />}
+
+        {/* Standard cascade content for steps without a kind, scoped to
+             car/phone/investment. v4.5.4 — ModeBar removed: c3 is the only
+             step that falls into this branch, and the symmetric/asymmetric/
+             fixed pill row at the bottom is clutter on a slide whose job is
+             just to show the symmetric-ignorance baseline. */}
+        {!step.kind && (step.section === 'car' || step.section === 'phone' || step.section === 'investment') && (
+          <>
+            <TokenGrid section={renderSection} activeTiers={step.activeTiers} infoMode={step.infoMode} />
+            {step.showSpiral && <SpiralBadge />}
+            {step.showCalc   && <LotCalculation section={renderSection} activeTiers={step.activeTiers} offer={step.offer} />}
+            {step.showFix    && <FixCard section={renderSection} />}
+            {/* v4.2 R17 — crises beat appended below the FixCard on i0 */}
+            {step.crisesBeat && <CrisisCallout />}
+          </>
+        )}
+
+        {/* Closing content — z1 only (z0 cost-escalation slide removed in v4.2 R16) */}
+        {step.section === 'closing' && (
+          <>
+            {step.showCapstone && <CapstoneConnections />}
+          </>
+        )}
+
+        {/* Narrative — default (post-visual) position. Suppressed on abstraction slide (R8: the slide IS the slide) and skipped if already shown above (R3).
+            v4.3: gated on showNotes — narrative is the speaker script, hidden from students by default. */}
+        {showNotes && !step.narrativeFirst && step.kind !== 'abstraction' && step.kind !== 'synthesis' && step.kind !== 'growthWedge' && step.narrative && (
+          <div style={{
+            padding: 16, borderRadius: 10, marginBottom: 12,
+            backgroundColor: colors.sand, borderLeft: '4px solid ' + colors.accent,
+            fontStyle: 'italic', fontSize: 15, color: '#374151', lineHeight: 1.65,
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: colors.earth, marginBottom: 6, fontStyle: 'normal' }}>
+              &#128221; SCRIPT
+            </div>
+            {formatEmphasis(step.narrative)}
+          </div>
+        )}
+
+        {/* Insight */}
+        {step.insight && (
+          <div style={{
+            padding: 14, borderRadius: 10, border: '2px solid ' + colors.accent,
+            backgroundColor: '#fef9e7', marginBottom: 12,
+            display: 'flex', gap: 12, alignItems: 'flex-start',
+          }}>
+            <span style={{ fontSize: 20, color: colors.accent, flexShrink: 0, marginTop: 1 }}>💡</span>
+            <div style={{ fontSize: 14, color: colors.earthDark, lineHeight: 1.6 }}>{formatEmphasis(step.insight)}</div>
+          </div>
+        )}
+
+        {/* Closing coda — only on z1 (last step). v4.5.3: reworked to invoke
+             the scale insight as the final frame. Replaces "Wherever you find
+             an information problem" with the scale-conditional version: it's
+             the markets that have outgrown shared experience that need this
+             pattern named. Closes on TRUST as the through-line. */}
+        {step.id === 'z1' && (
+          <div style={{ padding: 22, borderRadius: 10, textAlign: 'center', backgroundColor: colors.primary, marginBottom: 12 }}>
+            <p style={{ color: 'white', fontWeight: 700, fontSize: 17, margin: 0 }}>
+              Wherever a market has outgrown shared experience,
+            </p>
+            <p style={{ color: colors.earthLight, fontSize: 14, marginTop: 8, margin: '8px 0 0' }}>
+              you'll find an information problem — and a place where <strong style={{ color: colors.accent }}>trust</strong> can be rebuilt.
+            </p>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
+          <button onClick={prev} disabled={isFirst} aria-label="Previous step"
+            style={{
+              flex: 1, padding: '14px 0', borderRadius: 10, fontWeight: 700, fontSize: 15,
+              backgroundColor: isFirst ? '#e5e7eb' : 'white',
+              color: isFirst ? '#9ca3af' : colors.primary,
+              border: '2px solid ' + (isFirst ? '#e5e7eb' : colors.primary),
+              cursor: isFirst ? 'not-allowed' : 'pointer',
+            }}>← Back</button>
+          <button onClick={next} disabled={isLast} aria-label="Next step"
+            style={{
+              flex: 1, padding: '14px 0', borderRadius: 10, fontWeight: 700, fontSize: 15,
+              backgroundColor: isLast ? '#e5e7eb' : colors.primary,
+              color: isLast ? '#9ca3af' : 'white',
+              border: 'none', cursor: isLast ? 'not-allowed' : 'pointer',
+            }}>{isLast ? '✓ Complete' : 'Next →'}</button>
+        </div>
+
+        {/* Step dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginTop: 16, flexWrap: 'wrap' }}>
+          {STEPS.map((s, i) => {
+            const dc = SECTION_COLORS[s.section] || SECTION_COLORS.closing;
+            const active = i === idx;
+            const past   = i < idx;
+            return (
+              <button key={i} onClick={() => go(i)} aria-label={'Step ' + (i + 1) + ': ' + s.headline}
+                title={s.id + ' — ' + s.headline}
+                style={{
+                  width: active ? 14 : 10, height: active ? 14 : 10,
+                  borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0,
+                  backgroundColor: active ? dc.dot : past ? colors.earthLight : '#e5e7eb',
+                  transition: 'all 0.2s',
+                }} />
+            );
+          })}
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(TutorialApp));
+</script>
+</body>
+</html>

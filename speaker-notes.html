@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Speaker Notes — Markets & Information (Akerlof Interactive)</title>
+<style>
+  :root {
+    --ink: #0d2746;
+    --earth: #5a4634;
+    --earth-light: #8b7355;
+    --sand: #faf3e0;
+    --rule: #d8cfb8;
+    --accent: #c9a227;
+    --pivot: #f59e0b;
+    --concept: #7c3aed;
+    --car: #1e40af;
+    --phone: #9d174d;
+    --capital: #065f46;
+    --closing: #92400e;
+    --placeholder-bg: #fff8e1;
+    --placeholder-border: #d4a017;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    color: #1f2937;
+    background: var(--sand);
+    line-height: 1.55;
+    margin: 0;
+    padding: 32px 24px 80px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 {
+    font-size: 28px; color: var(--ink); margin: 0 0 4px;
+    font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 700;
+  }
+  .subtitle { font-size: 14px; color: var(--earth); margin: 0 0 28px; font-family: "Helvetica Neue", Arial, sans-serif; }
+
+  .placeholder {
+    background: var(--placeholder-bg);
+    border: 2px dashed var(--placeholder-border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: 18px 0 28px;
+  }
+  .placeholder .label {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
+    color: #92400e; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .placeholder h3 {
+    font-family: Georgia, serif; font-style: italic;
+    color: #7c5a00; font-weight: 600;
+    margin: 0 0 6px; font-size: 18px;
+  }
+  .placeholder p {
+    margin: 0; color: #6b4f00; font-size: 14px;
+  }
+
+  .act {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.14em;
+    color: var(--earth-light); text-transform: uppercase;
+    margin: 32px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .slide {
+    background: white;
+    border-left: 4px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 20px 18px;
+    margin-bottom: 14px;
+    page-break-inside: avoid;
+  }
+  .slide.car      { border-left-color: var(--car); }
+  .slide.phone    { border-left-color: var(--phone); }
+  .slide.capital  { border-left-color: var(--capital); }
+  .slide.concept  { border-left-color: var(--concept); }
+  .slide.pivot    { border-left-color: var(--pivot); }
+  .slide.closing  { border-left-color: var(--closing); }
+
+  .slide-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 8px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+  .stepnum {
+    font-size: 12px; font-weight: 700; color: white;
+    background: var(--ink);
+    border-radius: 4px; padding: 3px 7px; letter-spacing: 0.04em;
+  }
+  .stepid {
+    font-size: 11px; color: var(--earth-light); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .section-tag {
+    margin-left: auto;
+    font-size: 11px; font-weight: 600; color: var(--earth);
+  }
+
+  .headline {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px; font-weight: 700; color: var(--ink);
+    margin: 4px 0 10px; line-height: 1.3;
+  }
+
+  .row { margin: 10px 0; }
+  .row .lbl {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.12em;
+    color: var(--earth-light); text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .row.script .lbl  { color: #1e3a8a; }
+  .row.point  .lbl  { color: #92400e; }
+  .row.visual .lbl  { color: var(--earth-light); }
+
+  .row.visual .body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px; color: var(--earth);
+    background: #f5efdc; border-radius: 4px;
+    padding: 6px 10px; line-height: 1.5;
+  }
+  .row.script .body {
+    font-size: 15px; color: #111827;
+    background: #f0f7ff; border-left: 3px solid #93c5fd;
+    padding: 10px 14px; border-radius: 0 6px 6px 0;
+  }
+  .row.point .body {
+    font-size: 14px; color: #5c3a00;
+    background: #fef9e7; border-left: 3px solid var(--accent);
+    padding: 10px 14px; border-radius: 0 6px 6px 0;
+  }
+
+  em { color: #1e40af; font-style: italic; }
+  strong { color: #111827; }
+
+  .meta-bar {
+    background: white; border: 1px solid var(--rule);
+    border-radius: 8px; padding: 12px 16px; margin: 0 0 24px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px; color: var(--earth);
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .meta-bar b { color: var(--ink); }
+
+  @media print {
+    body { background: white; padding: 16px; font-size: 11pt; }
+    .slide { box-shadow: none; border: 1px solid #ccc; border-left-width: 4px; }
+    .placeholder { border-style: solid; border-color: #aaa; background: #fafafa; }
+    .slide-head .section-tag { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Speaker Notes — Akerlof Interactive Walkthrough</h1>
+  <p class="subtitle">Markets &amp; Information &middot; Seeds of Fortune &middot; Yale &middot; May 4, 2026</p>
+
+  <div class="meta-bar">
+    <span><b>20 slides</b></span>
+    <span><b>~17&ndash;22 min</b> for the interactive segment</span>
+    <span>Tool: <b>akerlof-lemons-v4.html</b> (v4.6.0)</span>
+    <span>Notes toggle: <b>📝</b> in the header (or <b>?notes=1</b>)</span>
+  </div>
+
+  <!-- ───────── GOING IN ───────── -->
+  <div class="placeholder">
+    <div class="label">⟶ Going In · TO BE WRITTEN</div>
+    <h3>How I open and hand the students into the interactive</h3>
+    <p>Akerlof bio &middot; framing the question (&ldquo;why does information matter?&rdquo;) &middot; the bridge from history-of-accounting section into the marketplace setup. We&rsquo;ll add this together.</p>
+  </div>
+
+  <!-- ───────── ACT 1 — Your Problem ───────── -->
+  <div class="act">Act 1 · Your Problem</div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">1</span><span class="stepid">c0 · hook · 3-beat reveal</span>
+      <span class="section-tag">🎁 Your Problem</span>
+    </div>
+    <div class="headline">Your rich uncle just died.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere on the slide to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1:</strong> Money bag alone, centered. Label: $20,000 · INHERITANCE.<br/>
+        <strong>Beat 2:</strong> Car silhouette appears beside it with arrow. Small italic caption beneath the car: <em>&ldquo;Insurance &amp; upkeep: assumed covered. Repairs: on you, from this $20K.&rdquo;</em><br/>
+        <strong>Beat 3:</strong> Facebook Marketplace card appears below as its own element (not bundled).
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (headline carries the opener; voice carries the second line; clicks land the visuals)</div>
+      <div class="body">
+        <p style="margin:0 0 4px"><strong>(headline already on screen):</strong> &ldquo;Your rich uncle just died.&rdquo;</p>
+        <p style="margin:0 0 8px"><strong>Spoken before any click:</strong> &ldquo;You didn&rsquo;t even know you had a rich uncle.&rdquo; <em>(beat &mdash; let it land)</em></p>
+        <p style="margin:0 0 8px"><strong>Click 1 &rarr; Beat 1 (money appears):</strong> &ldquo;Much less one that would leave you $20,000.&rdquo;</p>
+        <p style="margin:0 0 8px"><strong>Click 2 &rarr; Beat 2 (car appears):</strong> &ldquo;And tell you to buy yourself a car with it. This is the biggest financial decision you&rsquo;ve ever made. A mint-condition car of the model you want costs $20,000 &mdash; almost exactly what he left you. Assume insurance and gas are taken care of. If the car needs repairs, those come out of this same $20K.&rdquo;</p>
+        <p style="margin:0"><strong>Click 3 &rarr; Beat 3 (Marketplace appears):</strong> &ldquo;You can afford one good car. You open Facebook Marketplace.&rdquo;</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">2</span><span class="stepid">c1 · population · 6-beat reveal</span>
+      <span class="section-tag">🚗 The Population</span>
+    </div>
+    <div class="headline">What&rsquo;s actually out there</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere on the cars to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1:</strong> 4 tier cards appear with labels + car icons only. Subtitle: <em>&ldquo;Cars of this model on the used market &mdash; equal numbers in each tier.&rdquo;</em><br/>
+        <strong>Beat 2:</strong> Mint repair cost appears: <strong>$0</strong>.<br/>
+        <strong>Beat 3:</strong> Good repair cost appears: <strong>$6K</strong>.<br/>
+        <strong>Beat 4:</strong> Fair repair cost appears: <strong>$12K</strong>.<br/>
+        <strong>Beat 5:</strong> Lemon repair cost appears: <strong>$18K</strong>.<br/>
+        <strong>Beat 6:</strong> &ldquo;Value to you&rdquo; row appears for all four ($20K / $14K / $8K / $2K), <em>plus</em> a navy banner below: <strong>Average value across the population: $11K</strong>. (The per-car value tags ARE the calculation &mdash; no addends repeated.)
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per repair-cost reveal)</div>
+      <div class="body">
+        <p style="margin:0 0 8px"><strong>Beat 1 (cars + tiers appear):</strong> Of cars of this model on the used market, here&rsquo;s what your research tells you. They come in four flavors &mdash; mint, good, fair, lemon &mdash; and they show up in roughly equal numbers.</p>
+        <p style="margin:0 0 8px"><strong>Bridge:</strong> The difference between them is repair work &mdash; what it would cost to bring each one up to mint condition.</p>
+        <p style="margin:0 0 4px"><strong>Beat 2 (Mint repair):</strong> Mint is ready to drive &mdash; zero.</p>
+        <p style="margin:0 0 4px"><strong>Beat 3 (Good repair):</strong> Good needs about $6K of repairs.</p>
+        <p style="margin:0 0 4px"><strong>Beat 4 (Fair repair):</strong> Fair needs $12K.</p>
+        <p style="margin:0 0 8px"><strong>Beat 5 (Lemon repair):</strong> Lemon needs $18K.</p>
+        <p style="margin:0"><strong>Beat 6 (values + average appear):</strong> So what each one is worth to you is the mint price minus what you&rsquo;d have to spend to make it mint. Mint $20K. Good $14K. Fair $8K. Lemon $2K. <strong>Average across all four: $11K.</strong> Hold that number &mdash; it matters in a minute.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">3</span><span class="stepid">c2 · listings · 6-beat reveal</span>
+      <span class="section-tag">🚗 The Listings</span>
+    </div>
+    <div class="headline">What you actually see on Marketplace</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere on the frame to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1:</strong> Empty Marketplace frame (blue top bar visible, content area empty).<br/>
+        <strong>Beat 2:</strong> Seller A&rsquo;s listing appears: gray car silhouette, <strong>$20,000</strong>.<br/>
+        <strong>Beat 3:</strong> Seller B&rsquo;s listing appears: <strong>$20,000</strong>.<br/>
+        <strong>Beat 4:</strong> Seller C&rsquo;s listing appears: <strong>$20,000</strong>.<br/>
+        <strong>Beat 5:</strong> Seller D&rsquo;s listing appears: <strong>$20,000</strong>.<br/>
+        <strong>Beat 6:</strong> Yellow lightbulb insight box appears below the grid.
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per listing)</div>
+      <div class="body">
+        <p style="margin:0 0 8px"><strong>Beat 1 (empty frame):</strong> You open Facebook Marketplace and search for the model you want.</p>
+        <p style="margin:0 0 4px"><strong>Beat 2 (Seller A):</strong> The first listing comes up. $20,000.</p>
+        <p style="margin:0 0 4px"><strong>Beat 3 (Seller B):</strong> Second listing. $20,000.</p>
+        <p style="margin:0 0 4px"><strong>Beat 4 (Seller C):</strong> Third. $20,000.</p>
+        <p style="margin:0 0 8px"><strong>Beat 5 (Seller D):</strong> Fourth. $20,000.</p>
+        <p style="margin:0"><strong>Beat 6 (insight appears):</strong> Every single seller is asking the same price. From the photos alone, you can&rsquo;t tell which is which &mdash; and every one is asking the price only the Mint car is worth.</p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Lightbulb on screen (beat 6)</div>
+      <div class="body">From the photos alone, you can&rsquo;t tell whether the car is mint, good, fair, or a lemon &mdash; and every seller is asking the most they could plausibly get. <em>(Hold this thought &mdash; we&rsquo;ll come back to why the math here goes wrong.)</em></div>
+    </div>
+  </div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">4</span><span class="stepid">c3 · standard</span>
+      <span class="section-tag">🚗 Used Cars</span>
+    </div>
+    <div class="headline">What if no one knew?</div>
+    <div class="row visual"><div class="lbl">On screen</div>
+      <div class="body">TokenGrid (4 cars, symmetric mode &mdash; all face-down) + LotCalculation showing the $11K offer with expected outcomes.</div>
+    </div>
+    <div class="row script"><div class="lbl">What I say</div>
+      <div class="body">Let&rsquo;s start with a thought experiment. Suppose the sellers don&rsquo;t know what they have either &mdash; they&rsquo;re as in the dark as you. Each seller would expect their car to be average value: $11K. So you offer $11K. Sellers accept (it matches their own expectation). It&rsquo;s a fair coin toss across all four cars.</div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">This is the BASELINE: a market with <strong>symmetric ignorance</strong>. Everyone&rsquo;s guessing. Nobody has an information advantage. We&rsquo;ll see what happens here, then change ONE thing.</div>
+    </div>
+  </div>
+
+  <!-- ───────── ACT 2 — The Burn ───────── -->
+  <div class="act">Act 2 · The Burn</div>
+
+  <!-- v4.5.0 — c5 (exposition) now precedes c4 (live simulation). -->
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">5</span><span class="stepid">c5 · lossViz · 6-beat reveal</span>
+      <span class="section-tag">🚗 Used Cars</span>
+    </div>
+    <div class="headline">What $11K could buy you</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1:</strong> &ldquo;💸 You offer: $11,000&rdquo; badge + subtitle <em>&ldquo;You don&rsquo;t know what you&rsquo;ll get. Each is equally likely.&rdquo;</em><br/>
+        <strong>Beat 2:</strong> &ldquo;Maybe&hellip;&rdquo; Mint outcome appears: gold bar, +$9K bargain, $0 repairs, $9K cash to spare.<br/>
+        <strong>Beat 3:</strong> &ldquo;Or maybe&hellip;&rdquo; Good outcome: green bar, +$3K bargain, $6K repairs, $3K cash to spare.<br/>
+        <strong>Beat 4:</strong> &ldquo;Or maybe&hellip;&rdquo; Fair outcome: orange bar, ✗ &minus;$3K overpaid, $12K repairs, short $3K.<br/>
+        <strong>Beat 5:</strong> &ldquo;Or maybe&hellip;&rdquo; Lemon outcome: red bar, ✗ &minus;$9K overpaid, $18K repairs, short $9K.<br/>
+        <strong>Beat 6:</strong> Navy summary panel: <strong>2 in 4 bargain · 2 in 4 can&rsquo;t afford repairs · $0 expected loss</strong>. Closing line: <em>&ldquo;The math is fair. The lived experience is not.&rdquo;</em>
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per outcome — &ldquo;maybe&rdquo; rhythm)</div>
+      <div class="body">
+        <p style="margin:0 0 8px"><strong>Beat 1 (offer + framing):</strong> Suppose you offer $11K. You don&rsquo;t know which car you&rsquo;ll get &mdash; each is equally likely. Walk through what could happen.</p>
+        <p style="margin:0 0 4px"><strong>Beat 2 (Mint reveals):</strong> <em>Maybe</em> you&rsquo;ll get a Mint &mdash; worth $20K, no repairs needed, $9K cash to spare.</p>
+        <p style="margin:0 0 4px"><strong>Beat 3 (Good reveals):</strong> <em>Or maybe</em> a Good &mdash; worth $14K, $6K of repairs, still $3K to spare.</p>
+        <p style="margin:0 0 4px"><strong>Beat 4 (Fair reveals):</strong> <em>Or maybe</em> a Fair &mdash; worth $8K, $12K of repairs, short $3K. You can&rsquo;t drive it.</p>
+        <p style="margin:0 0 8px"><strong>Beat 5 (Lemon reveals):</strong> <em>Or maybe</em> a Lemon &mdash; worth $2K, $18K of repairs, short $9K. You can&rsquo;t drive it.</p>
+        <p style="margin:0"><strong>Beat 6 (summary):</strong> 2 of 4 outcomes leave you with a car you can&rsquo;t fix. The math is fair. The lived experience is not.</p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Why this slide moved before c4 (v4.5.0)</div>
+      <div class="body">Establishes the four possible outcomes deterministically before the live spin in c4. Audience now sees what could happen, then experiences the variance.</div>
+    </div>
+  </div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">6</span><span class="stepid">c4 · spin</span>
+      <span class="section-tag">🚗 Used Cars</span>
+    </div>
+    <div class="headline">Now try it. Offer $11,000.</div>
+    <div class="row visual"><div class="lbl">On screen</div>
+      <div class="body">Big &ldquo;Offer $11,000&rdquo; button. Tally counters (Bargain / Overpaid). Result panel after each draw.</div>
+    </div>
+    <div class="row script"><div class="lbl">What I say</div>
+      <div class="body">Now actually run it. Click &ldquo;Offer $11,000.&rdquo; A seller at random accepts (because in symmetric ignorance, all four are equally likely to take your offer). What did you get? Click again. And again. <em>(Run it 8&ndash;12 times so they see the spread.)</em></div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">On AVERAGE, $11K is fair. But you don&rsquo;t get to average across many draws &mdash; <strong>you only get one car</strong>. <strong>No car is worth exactly $11K to you</strong> &mdash; the average is impossible to actually receive. You&rsquo;ll get a Mint, Good, Fair, or Lemon, never the in-between.</div>
+    </div>
+  </div>
+
+  <!-- ───────── ACT 3 — Sellers Wake Up ───────── -->
+  <div class="act">Act 3 · The Asymmetry &amp; Cascade</div>
+
+  <div class="slide pivot">
+    <div class="slide-head">
+      <span class="stepnum">7</span><span class="stepid">c5b · ruleChange · 5-beat reveal</span>
+      <span class="section-tag">🔁 ONE thing changes</span>
+    </div>
+    <div class="headline">(headline suppressed &mdash; the slide IS the slide)</div>
+    <div class="row visual"><div class="lbl">On screen — typographic build, click to reveal each line</div>
+      <div class="body">
+        <strong>Beat 1:</strong> <em>&ldquo;That&rsquo;s what happens if no one knows the quality of the cars.&rdquo;</em> (small, italic, recap of c5)<br/>
+        <strong>Beat 2:</strong> <strong>&ldquo;Is that a reasonable assumption?&rdquo;</strong> (larger, navy, the question)<br/>
+        <strong>Beat 3:</strong> &ldquo;The sellers have experience with their cars.&rdquo; (mid-size, the answer)<br/>
+        <strong>Beat 4:</strong> Yellow callout: <strong>&ldquo;What if you offer $11K but each seller KNOWS the quality of their car?&rdquo;</strong> (the rule change &mdash; visually highlighted, &ldquo;KNOWS&rdquo; in gold)<br/>
+        <strong>Beat 5:</strong> <em>&ldquo;Let&rsquo;s walk through what happens.&rdquo;</em> (transition cue to c6)
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per line)</div>
+      <div class="body">
+        <p style="margin:0 0 4px"><strong>Beat 1:</strong> That&rsquo;s what happens if no one knows the quality of the cars.</p>
+        <p style="margin:0 0 4px"><strong>Beat 2:</strong> Is that a reasonable assumption? <em>(rhetorical &mdash; let it land)</em></p>
+        <p style="margin:0 0 4px"><strong>Beat 3:</strong> The sellers have experience with their cars.</p>
+        <p style="margin:0 0 4px"><strong>Beat 4:</strong> What if you offer $11K but each seller <em>knows</em> the quality of their car?</p>
+        <p style="margin:0"><strong>Beat 5:</strong> Let&rsquo;s walk through what happens.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">8</span><span class="stepid">c6 · cascade · 5-beat walkthrough</span>
+      <span class="section-tag">🚗 Used Cars</span>
+    </div>
+    <div class="headline">Sellers know what they have.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat (TokenGrid + LotCalculation update per beat)</div>
+      <div class="body">
+        <strong>Beat 1:</strong> All 4 cars active in TokenGrid. LotCalculation: avg $11K · offer $11K. Caption: setup line.<br/>
+        <strong>Beat 2:</strong> Mint fades out (walks). Calc avg drops to <strong>$8K</strong>. Caption: Mint refuses.<br/>
+        <strong>Beat 3:</strong> Good fades out (walks). Calc avg drops to <strong>$5K</strong>. Caption: Good refuses.<br/>
+        <strong>Beat 4:</strong> Caption highlights the gap: $11K offer · $5K pool.<br/>
+        <strong>Beat 5:</strong> Caption states expected loss ($6K). Yellow lightbulb appears: <em>adverse selection</em>.
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat)</div>
+      <div class="body">
+        <p style="margin:0 0 8px"><strong>Beat 1:</strong> Same setup. Same four cars. Same $11K offer. <strong>Drop the pretense that sellers don&rsquo;t know what they have</strong> &mdash; they&rsquo;ve owned these cars, they know.</p>
+        <p style="margin:0 0 8px"><strong>Beat 2 (Mint walks):</strong> Mint&rsquo;s owner: &ldquo;Worth $20K. No thanks.&rdquo; Walks.</p>
+        <p style="margin:0 0 8px"><strong>Beat 3 (Good walks):</strong> Good&rsquo;s owner: &ldquo;Worth $14K. No thanks.&rdquo; Walks.</p>
+        <p style="margin:0 0 8px"><strong>Beat 4 (pool average drops):</strong> Only Fair and Lemon would accept $11K. The pool you&rsquo;re drawing from is worth $5K on average. You&rsquo;d be paying $11K for it.</p>
+        <p style="margin:0"><strong>Beat 5 (insight reveals):</strong> You&rsquo;re paying $11K for a pool worth $5K. Expected loss: $6K. Plus a 50% chance of the un-fixable Lemon. <strong>Your offer didn&rsquo;t draw a random sample. It systematically attracted the worst.</strong> Economists call this <em>adverse selection</em>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">9</span><span class="stepid">c7 · cascadeRevision · 5-beat walkthrough (v4.5.2)</span>
+      <span class="section-tag">🚗 Used Cars</span>
+    </div>
+    <div class="headline">What if you offer $5K?</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1:</strong> Carries over c6&rsquo;s end-state: TokenGrid [Fair, Lemon] · offer $11K. Caption: rhetorical revision setup.<br/>
+        <strong>Beat 2:</strong> Offer drops to <strong>$5K</strong>. LotCalculation updates (matches pool average).<br/>
+        <strong>Beat 3:</strong> Fair fades out (walks). TokenGrid [Lemon only].<br/>
+        <strong>Beat 4 (NEW v4.5.2):</strong> Offer drops again to <strong>$2K</strong>. Caption: &ldquo;Only Lemon would accept $5K &mdash; you&rsquo;d drop to $2K.&rdquo;<br/>
+        <strong>Beat 5:</strong> Lemon accepts at $2K. Spiral badge + yellow lightbulb appear: <em>the market is unraveling along a predictable information fault line</em>. Equilibrium reached &mdash; bridges directly into c8.
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat)</div>
+      <div class="body">
+        <p style="margin:0 0 8px"><strong>Beat 1:</strong> You won&rsquo;t offer $11K to a pool worth an <strong>average of $5K</strong>. <strong>What if you offer $5K instead?</strong></p>
+        <p style="margin:0 0 8px"><strong>Beat 2 (offer drops to $5K):</strong> Drop your offer to $5K. That matches the pool average.</p>
+        <p style="margin:0 0 8px"><strong>Beat 3 (Fair walks):</strong> Fair&rsquo;s owner: &ldquo;Worth $8K. No thanks.&rdquo; Walks.</p>
+        <p style="margin:0 0 8px"><strong>Beat 4 (offer drops to $2K):</strong> Only Lemon would accept $5K &mdash; and you wouldn&rsquo;t even offer that. You&rsquo;d drop to $2K.</p>
+        <p style="margin:0"><strong>Beat 5 (equilibrium + insight):</strong> Lemon accepts at $2K. The market has settled there. Each rational revision drove out the next-best seller. <strong>The market isn&rsquo;t failing randomly &mdash; it&rsquo;s unraveling along a predictable information fault line.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide car">
+    <div class="slide-head">
+      <span class="stepnum">10</span><span class="stepid">c8 · frozen</span>
+      <span class="section-tag">🚗 Used Cars</span>
+    </div>
+    <div class="headline">The Lemon market is the only one that works.</div>
+    <div class="row visual"><div class="lbl">On screen</div>
+      <div class="body">Top: Lemon trade happens at $2K (caption now reads <em>&ldquo;trade happens&rdquo;</em>, not &ldquo;both happy&rdquo;). Bottom: Mint, Good, and Fair sellers each shown stuck holding their car, with greyed-out arrows toward absent buyers + &ldquo;buyer would have paid&rdquo; tags.</div>
+    </div>
+    <div class="row script"><div class="lbl">What I say</div>
+      <div class="body">Lemon sellers and Lemon-tolerant buyers find each other at $2K. The trade happens. <strong>The buyer didn&rsquo;t get the kind of car they would have gladly paid more for &mdash; but at least they didn&rsquo;t overpay for what they got.</strong> Every other potential trade has stalled. The Mint owner is stuck holding a car they wanted to sell. The Good owner is stuck. The Fair owner is stuck. You&rsquo;re stuck shopping in the Lemon market when you&rsquo;d rather have a Mint.</div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">The market hasn&rsquo;t disappeared &mdash; but it doesn&rsquo;t work anymore. <strong>Anyone who owns a car that isn&rsquo;t a lemon can&rsquo;t get a fair deal. And anyone who buys ends up with a lemon.</strong></div>
+    </div>
+  </div>
+
+  <!-- ───────── ACT 4 — Same Problem, Different Markets ───────── -->
+  <div class="act">Act 4 · Same Problem, Different Markets</div>
+
+  <div class="slide phone">
+    <div class="slide-head">
+      <span class="stepnum">11</span><span class="stepid">p0 · unraveled · 4-beat reveal (v4.5.0)</span>
+      <span class="section-tag">📱 Same Problem: iPhones</span>
+    </div>
+    <div class="headline">Same pattern: used iPhones.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat</div>
+      <div class="body">
+        Sand-colored preamble at top stays visible the whole time: &ldquo;Used iPhones on Marketplace. Four flavors, same as cars &mdash; but battery health is the hidden quality. <strong>Sellers know it. Buyers can&rsquo;t see it.</strong>&rdquo;<br/>
+        <strong>Beat 1:</strong> Population grid &mdash; all four iPhones (Mint $800 · Good $500 · Fair $300 · Lemon $100) shown with seller-known prices. (Rick&rsquo;s #4: &ldquo;the set of available iPhones should be on a slide before the one that shows the market unravels.&rdquo;)<br/>
+        <strong>Beat 2:</strong> ✓ Green &ldquo;trade that happens&rdquo; panel reveals: Lemon phone trades at <strong>$100</strong> with a <em>Battery-tolerant buyer</em>.<br/>
+        <strong>Beat 3:</strong> ✕ Grey &ldquo;trades that don&rsquo;t&rdquo; panel reveals: Mint, Good, Fair owners stuck with &ldquo;buyer would have paid $800 / $500 / $300&rdquo; tags.<br/>
+        <strong>Beat 4 (click-revealed conclusion lightbulb):</strong> &ldquo;Same problem as cars. The asset is different. The asymmetry is identical.&rdquo;
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat — let each land)</div>
+      <div class="body">
+        <p style="margin:0 0 6px"><strong>Beat 1 (population):</strong> Used iPhones on Marketplace. Same setup as cars &mdash; four flavors, sellers know which is which, buyers can&rsquo;t tell. The hidden quality is battery health. Here&rsquo;s what each one is worth.</p>
+        <p style="margin:0 0 6px"><strong>Beat 2 (trade):</strong> Only the Lemon trades.</p>
+        <p style="margin:0 0 6px"><strong>Beat 3 (stuck):</strong> Every other phone&rsquo;s owner is stuck.</p>
+        <p style="margin:0"><strong>Beat 4 (conclusion — wait a beat before clicking):</strong> Same problem as cars. The asset is different. The asymmetry is identical.</p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">The repetition is the lesson. Different asset, same mechanism.</div>
+    </div>
+  </div>
+
+  <div class="slide capital">
+    <div class="slide-head">
+      <span class="stepnum">12</span><span class="stepid">i0 · unraveled · 4-beat reveal (v4.5.0, $M units)</span>
+      <span class="section-tag">🏢 Same Problem: Capital</span>
+    </div>
+    <div class="headline">Same pattern: investors and companies.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat</div>
+      <div class="body">
+        Sand-colored preamble at top stays visible: &ldquo;You&rsquo;re an investor. A company comes to you with one of four opportunities &mdash; <strong>Strong ($20M)</strong>, <strong>Solid ($14M)</strong>, <strong>Weak ($8M)</strong>, or <strong>Speculative ($2M)</strong>. <strong>The company knows which one. <em>You don&rsquo;t.</em></strong>&rdquo;<br/>
+        <strong>Beat 1:</strong> Population grid &mdash; all four opportunities (Strong, Solid, Weak, Speculative) shown with values. Mirror of p0&rsquo;s population beat.<br/>
+        <strong>Beat 2:</strong> ✓ Green &ldquo;trade that happens&rdquo; panel: Speculative opportunity funded at <strong>$2M</strong> by a <em>Speculative-tolerant investor</em>.<br/>
+        <strong>Beat 3:</strong> ✕ Grey &ldquo;trades that don&rsquo;t&rdquo; panel: Strong, Solid, Weak companies stuck with &ldquo;buyer would have paid $20M / $14M / $8M&rdquo; tags.<br/>
+        <strong>Beat 4 (click-revealed conclusion lightbulb):</strong> &ldquo;Same problem again. Cars, phones, capital &mdash; the asset doesn&rsquo;t matter. The asymmetry does.&rdquo;
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat &mdash; mirror the rhythm of p0 so the repetition is felt)</div>
+      <div class="body">
+        <p style="margin:0 0 6px"><strong>Beat 1 (population):</strong> You&rsquo;re an investor. The company has one of four kinds of opportunities. They know which one; you don&rsquo;t. Here&rsquo;s what each one is worth &mdash; Strong, Solid, Weak, Speculative.</p>
+        <p style="margin:0 0 6px"><strong>Beat 2 (trade):</strong> Only the Speculative gets funded.</p>
+        <p style="margin:0 0 6px"><strong>Beat 3 (stuck):</strong> Every other opportunity goes unfunded &mdash; investors won&rsquo;t pay enough to make it worth the company&rsquo;s while.</p>
+        <p style="margin:0"><strong>Beat 4 (conclusion — wait a beat):</strong> Same pattern. Cars, phones, capital. The asymmetry is what matters.</p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">Three for three. Different markets, same machinery. Now we can name it.</div>
+    </div>
+  </div>
+
+  <div class="slide pivot">
+    <div class="slide-head">
+      <span class="stepnum">13</span><span class="stepid">synth · synthesis · 5-beat reveal</span>
+      <span class="section-tag">🔄 The Pattern</span>
+    </div>
+    <div class="headline">Different markets, same problem.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat (typographic slide; the slide IS the slide, App-level headline suppressed)</div>
+      <div class="body">
+        <strong>Beat 1:</strong> Italic lead-in: &ldquo;Cars. iPhones. Capital.&rdquo;<br/>
+        <strong>Beat 2:</strong> &ldquo;Different markets, same problem.&rdquo;<br/>
+        <strong>Beat 3:</strong> Large punchline: <em>&ldquo;Information.&rdquo;</em><br/>
+        <strong>Beat 4:</strong> &ldquo;Not the <em>lack</em> of it. The <strong>distribution</strong> of it.&rdquo;<br/>
+        <strong>Beat 5:</strong> Yellow callout: &ldquo;When sellers know more than buyers, <strong>ADVERSE SELECTION</strong> kicks in &mdash; and markets don&rsquo;t work so well.&rdquo;
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat &mdash; let each line breathe)</div>
+      <div class="body">
+        <p style="margin:0 0 6px"><strong>Beat 1:</strong> Cars. iPhones. Capital.</p>
+        <p style="margin:0 0 6px"><strong>Beat 2:</strong> Different markets, same problem.</p>
+        <p style="margin:0 0 6px"><strong>Beat 3:</strong> <em>Information.</em></p>
+        <p style="margin:0 0 6px"><strong>Beat 4:</strong> Not the <em>lack</em> of it. The <strong>distribution</strong> of it.</p>
+        <p style="margin:0"><strong>Beat 5 (highlighted callout):</strong> When sellers know more than buyers, <strong>adverse selection</strong> kicks in &mdash; and markets don&rsquo;t work so well.</p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body"><strong>Now we have a name for the pattern.</strong> Adverse selection. The mechanism we just watched three times.</div>
+    </div>
+  </div>
+
+  <!-- ───────── ACT 5 — Diagnosis ───────── -->
+  <div class="act">Act 5 · The Diagnosis</div>
+
+  <!-- v4.5.1 — NEW slide between synth and c10. Text-only "see it everywhere"
+       beat with insurance, labor, housing, plus the regulatory fix-family note. -->
+  <div class="slide concept">
+    <div class="slide-head">
+      <span class="stepnum">14</span><span class="stepid">more · morePlaces · 3-beat reveal (NEW v4.5.1)</span>
+      <span class="section-tag">🧭 Same Pattern, More Places</span>
+    </div>
+    <div class="headline">Same pattern, more places.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1 (Insurance row):</strong> Two cards appear side-by-side. <strong>🚗 Car insurance</strong> &mdash; hidden from the insurer: how reckless the driver is. Mechanism: safe drivers find the pooled rate unfair → opt out → only riskier drivers stay → rates rise → everyone gets the bad-driver rate. <strong>🩺 Health insurance</strong> &mdash; hidden: lifestyle and family history. Same machinery → everyone gets a rate priced as if they had an unhealthy lifestyle.<br/>
+        <strong>Beat 2 (Labor + Housing row):</strong> <strong>💼 Labor market</strong> &mdash; employers can&rsquo;t verify quality up front; without signals (degrees, references, portfolios), wages get pooled and the best workers exit. <strong>🏠 Housing</strong> &mdash; sellers know about the foundation; buyers can&rsquo;t see what&rsquo;s under the paint. Without inspections or warranties, sound houses can&rsquo;t command a premium.<br/>
+        <strong>Beat 3 (Scale insight panel — yellow lightbulb, v4.5.2):</strong> &ldquo;The pattern shows up wherever markets <strong>scale up beyond a community where buyers and sellers share experience</strong>. In a small town, you know the seller, you know their reputation, you&rsquo;ll see them again next week. When markets grow past that &mdash; strangers buying from strangers, no repeat play, no shared trusted information &mdash; <strong>adverse selection becomes the default.</strong>&rdquo; (Fix discussion deliberately deferred to invFix; see toolbox box there.)
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat — light touch, this is recognition not deep dive)</div>
+      <div class="body">
+        <p style="margin:0 0 6px"><strong>Lead in:</strong> You&rsquo;ve seen this in cars, phones, and capital. Here are four more places it shows up &mdash; markets you actually live in.</p>
+        <p style="margin:0 0 6px"><strong>Beat 1 (insurance):</strong> Car insurance: the driver knows how reckless they are; the insurer can&rsquo;t see it. Health insurance: you know your lifestyle and family history; the insurer doesn&rsquo;t. Same machinery: safe drivers and healthy people opt out, only the riskier pool stays, rates rise. Eventually everyone gets the bad-driver rate or the unhealthy-lifestyle rate.</p>
+        <p style="margin:0 0 6px"><strong>Beat 2 (labor + housing):</strong> Labor market: employers can&rsquo;t see how good a worker is until after they&rsquo;re hired. Housing: sellers know about the foundation; buyers can&rsquo;t see what&rsquo;s under the paint.</p>
+        <p style="margin:0"><strong>Beat 3 (scale insight):</strong> Notice the pattern: this shows up wherever markets <em>scale up</em> beyond a community where buyers and sellers share experience. In a small town, you know the seller &mdash; you know their reputation, you&rsquo;ll see them again. When markets grow past that &mdash; strangers buying from strangers, no repeat play, no shared trusted information &mdash; <strong>adverse selection becomes the default.</strong></p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">Once they can name the pattern (adverse selection), they should see it in their own life immediately. <strong>The scale insight is the load-bearing point</strong>: adverse selection is the failure mode of <em>anonymous</em> markets &mdash; the kind that emerge when you outgrow the community where shared experience does the trust work. Fix conversation deferred to invFix (toolbox box).</div>
+    </div>
+  </div>
+
+  <div class="slide concept">
+    <div class="slide-head">
+      <span class="stepnum">15</span><span class="stepid">c10 · concept</span>
+      <span class="section-tag">💡 Allocational Efficiency</span>
+    </div>
+    <div class="headline">Allocational efficiency</div>
+    <div class="row visual"><div class="lbl">On screen</div>
+      <div class="body">ConceptCard with three states: ✓ Full info works · ✓ Shared ignorance works (trades at the average) · ✗ Asymmetric breaks. The card carries the definition.</div>
+    </div>
+    <div class="row script"><div class="lbl">What I say</div>
+      <div class="body">Asymmetric information breaks the sort. The mint owner is stuck. A buyer who&rsquo;d happily pay $20K for a verified mint car goes without. <em>Even the suspicion that the other side knows more is enough</em> &mdash; buyers shade their offers, sellers walk, the spiral begins.</div>
+    </div>
+  </div>
+
+  <!-- v4.6.0 — NEW concept slide: Productive Efficiency, parallel to c10. -->
+  <div class="slide concept">
+    <div class="slide-head">
+      <span class="stepnum">16</span><span class="stepid">prod · productiveConcept (NEW v4.6.0)</span>
+      <span class="section-tag">💡 Productive Efficiency</span>
+    </div>
+    <div class="headline">Productive efficiency</div>
+    <div class="row visual"><div class="lbl">On screen</div>
+      <div class="body">Same purple ConceptCard chrome as c10, three-state visualization with BuildingSVG (project on left, investor on right). Definition: <em>&ldquo;A market is productively efficient when the things that should be made actually get made &mdash; when capital reaches the projects that should be built.&rdquo;</em> Three states: ✓ Shared full info → strong project funded ($20M, built) · ✓ Shared ignorance → average project funded ($11M, average outcome) · ✗ Asymmetric → strong project never built (investor walks). Footer: &ldquo;Same wedge as allocational. Different consequence: not <em>wrong hands</em> &mdash; <strong>never made</strong>.&rdquo;</div>
+    </div>
+    <div class="row script"><div class="lbl">What I say</div>
+      <div class="body">Asymmetric information doesn&rsquo;t just put things in the wrong hands. <strong>It changes whether things get made at all.</strong> The strong project goes unfunded &mdash; not because the investor doesn&rsquo;t want to back it, but because they can&rsquo;t tell it apart from the weak one. The factory never gets built. The product never ships. <em>(Let the &ldquo;same wedge, different consequence&rdquo; footer land before clicking next &mdash; that&rsquo;s the bridge into growth.)</em></div>
+    </div>
+    <div class="row point"><div class="lbl">Pedagogical caveat</div>
+      <div class="body">The textbook definition of productive efficiency is narrower (lowest-cost production on the PPF). What this slide actually shows is closer to <em>dynamic efficiency</em> &mdash; whether the right quantity of investment and production happens over time. The softened framing here is fine for HS juniors and parallels &ldquo;allocational&rdquo; cleanly; no econ professor in the audience would object. Worth noting if anyone asks.</div>
+    </div>
+  </div>
+
+  <!-- ───────── ACT 6 — Bigger Stakes (NEW v4.5.0) ───────── -->
+  <!-- v4.5.0 — c12 RETIRED (redundant with synth). Replaced by the new
+       production-inefficiency wedge slide that lands the &ldquo;more than
+       allocational efficiency&rdquo; point Rick flagged in his click-through. -->
+  <div class="act">Act 6 · Bigger Than That</div>
+
+  <div class="slide concept">
+    <div class="slide-head">
+      <span class="stepnum">17</span><span class="stepid">growth · growthWedge · 5-beat reveal (NEW v4.5.0)</span>
+      <span class="section-tag">💡 Bigger Than That</span>
+    </div>
+    <div class="headline">It&rsquo;s bigger than that.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat (typographic; App-level headline suppressed)</div>
+      <div class="body">
+        <strong>Beat 1:</strong> Italic lead-in: &ldquo;Allocational efficiency is the start. Things end up in the wrong hands.&rdquo;<br/>
+        <strong>Beat 2:</strong> Larger, navy: &ldquo;But it doesn&rsquo;t stop there.&rdquo;<br/>
+        <strong>Beat 3:</strong> Yellow callout: &ldquo;If buyers can&rsquo;t <strong>TRUST</strong> the used market, they pay less for new cars too &mdash; they know they can&rsquo;t easily resell.&rdquo;<br/>
+        <strong>Beat 4:</strong> Mid-size: &ldquo;Fewer new cars sold. Fewer cars built. Fewer factory jobs. <strong>Slower growth.</strong>&rdquo;<br/>
+        <strong>Beat 5:</strong> Big serif punchline: &ldquo;Information asymmetry doesn&rsquo;t just misallocate what already exists.<br/><strong>It changes what gets made.</strong>&rdquo;
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat &mdash; this is the &ldquo;why this matters beyond used cars&rdquo; moment)</div>
+      <div class="body">
+        <p style="margin:0 0 6px"><strong>Beat 1:</strong> Allocational efficiency is the start. Things end up in the wrong hands &mdash; the Mint owner stuck, the buyer who&rsquo;d gladly pay $20K going without.</p>
+        <p style="margin:0 0 6px"><strong>Beat 2:</strong> But it doesn&rsquo;t stop there. A problem in one market spills into another.</p>
+        <p style="margin:0 0 6px"><strong>Beat 3:</strong> If buyers can&rsquo;t <em>trust</em> the used market, they pay less for new cars too &mdash; they know they can&rsquo;t easily resell. New car sales fall.</p>
+        <p style="margin:0 0 6px"><strong>Beat 4:</strong> Fewer cars built. Fewer factory jobs. Slower growth. Same story for any product where resale matters.</p>
+        <p style="margin:0"><strong>Beat 5 (punchline):</strong> Information asymmetry doesn&rsquo;t just misallocate what already exists. <em>It changes what gets made.</em></p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">This is the bigger-stakes coda. The c10 diagnosis (&ldquo;wrong hands&rdquo;) under-sells what&rsquo;s at stake for an audience whose intuition about &ldquo;why economics matters&rdquo; is built around growth, jobs, and standard of living. <strong>TRUST is the through-line</strong> that connects this to the fixes that come next.</div>
+    </div>
+  </div>
+
+  <!-- ───────── ACT 7 — Fixes ───────── -->
+  <div class="act">Act 7 · Fixes</div>
+
+  <div class="slide pivot">
+    <div class="slide-head">
+      <span class="stepnum">18</span><span class="stepid">combFix · combinedFixes · 4-beat reveal (NEW)</span>
+      <span class="section-tag">🌱 Two Markets, Two Fixes</span>
+    </div>
+    <div class="headline">Two markets, two fixes.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1:</strong> Centered headline + italic subtitle: &ldquo;Same information problem. Two very different ways someone solved it.&rdquo;<br/>
+        <strong>Beat 2:</strong> 🚗 <strong>Carfax (1984)</strong> card slides in on the left &mdash; ~$40 per report, third-party history database, profit motive aimed at a real gap.<br/>
+        <strong>Beat 3:</strong> 📱 <strong>Apple Battery Health</strong> card slides in on the right &mdash; free to you, Apple wins upstream by thickening the resale market.<br/>
+        <strong>Beat 4:</strong> Yellow lightbulb appears below: &ldquo;Different mechanisms, same purpose &mdash; <strong>shrink the gap between what the seller knows and what the buyer can see.</strong> Every information problem is a business opportunity in disguise.&rdquo;
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat)</div>
+      <div class="body">
+        <p style="margin:0 0 6px"><strong>Beat 1:</strong> Two markets, two fixes. Same information problem. Two very different ways someone solved it.</p>
+        <p style="margin:0 0 6px"><strong>Beat 2 (Carfax):</strong> In 1984, an entrepreneur saw the gap and built a paid third-party database &mdash; about $40 a report. Carfax got rich. The market got better. Both buyers and Mint sellers won.</p>
+        <p style="margin:0 0 6px"><strong>Beat 3 (Battery Health):</strong> Apple realized: if buyers couldn&rsquo;t <strong>trust</strong> used iPhones, owners of anything better than a Lemon couldn&rsquo;t get a fair deal &mdash; only the worst phones would trade. And that had bad effects on the market for new iPhones too: buyers know they can&rsquo;t easily resell, so they pay less for a new one. So Apple built the fix into the device &mdash; Settings → Battery → Battery Health, the real number, in real time, un-fakeable. Free to you. Apple wins upstream because used iPhones now trade. <strong>Self-interest, not generosity.</strong></p>
+        <p style="margin:0"><strong>Beat 4 (insight):</strong> Two completely different fixes. Same purpose: shrink the gap. Every information problem is a business opportunity in disguise.</p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">A paid report and a free built-in feature look nothing alike &mdash; but they&rsquo;re solving the same thing. <strong>Once you can name the pattern (adverse selection), you can spot the fixes.</strong></div>
+    </div>
+  </div>
+
+  <div class="slide capital">
+    <div class="slide-head">
+      <span class="stepnum">19</span><span class="stepid">invFix · investmentFixes · 7-beat reveal (v4.5.2)</span>
+      <span class="section-tag">🏢 Investment Fixes</span>
+    </div>
+    <div class="headline">Investments are tougher.</div>
+    <div class="row visual"><div class="lbl">On screen — click anywhere to advance each beat</div>
+      <div class="body">
+        <strong>Beat 1:</strong> Centered: &ldquo;Investments are tougher.&rdquo;<br/>
+        <strong>Beat 2:</strong> Caveat: &ldquo;More abstract than cars or phones. And no matter how much you know, an investment <strong>always involves risk</strong> &mdash; even with the best information you could possibly get, the future is unknown.&rdquo; (v4.5.0 wording, Rick&rsquo;s #10.)<br/>
+        <strong>Beat 3:</strong> Green FixCard appears: <em>&ldquo;The Fix as Institutions: SEC + Audit + GAAP · ~$100K&ndash;$10M+/yr per public co.&rdquo;</em> Body opens with the explicit contrast: <strong>&ldquo;You can&rsquo;t fix this by collecting and reporting existing information (Carfax) or by building a feature into the product (Apple). With investments, the relevant information is FUTURE &mdash; and no website can know that. The only fix is to build TRUST in what gets disclosed.&rdquo;</strong> Then the five layers of the trust system: ① Regulations · ② Legal liability · ③ Independent auditing · ④ Accounting standards · ⑤ Enforcement. (v4.5.0, Rick&rsquo;s #11 + #12 + #13.)<br/>
+        <strong>Beat 4 (NEW v4.5.2, header reworded v4.5.4):</strong> Purple &ldquo;Ways this effect is eased in other markets&rdquo; box: 3 compact rows. <strong>Insurance</strong> &mdash; ACA mandates that everyone enroll. <strong>Housing</strong> &mdash; building inspectors verify quality during construction. <strong>Labor</strong> &mdash; degrees and licenses signal worker quality. (Per Rick&rsquo;s session-11 pass-3 #3: sneaks in the regulatory-fix family for the markets shown on the `more` slide, no separate page needed.)<br/>
+        <strong>Beat 5 (was 4):</strong> Yellow lightbulb: &ldquo;None of these &mdash; SEC, ACA, inspectors, licenses &mdash; <em>fix</em> the asymmetry. They <strong>ease</strong> it. Information you can <strong>trust</strong> is hard to manufacture.&rdquo;<br/>
+        <strong>Beat 6 (was 5):</strong> Red &ldquo;When trust breaks down&rdquo; panel appears with four cards in order: 🏦 <strong>Great Depression</strong> (bank runs) · 📉 <strong>Enron</strong> (accounting fraud) · 🏠 <strong>2008 financial crisis</strong> (MBS ratings &mdash; with &ldquo;investments built from bundles of mortgage payments&rdquo; spelled out) · 🪙 <strong>FTX</strong> (customer funds).<br/>
+        <strong>Beat 7 (was 6, reworked v4.5.3):</strong> Navy closing panel: &ldquo;<strong>Crises are information problems first.</strong> Markets that have scaled past shared experience run on <strong>trust</strong>. When trust breaks down, the asymmetry comes back &mdash; and it&rsquo;s always the same kind of gap: between what one side knows and what the other side has to trust.&rdquo; (Threads the scale → trust → crisis arc from the `more` slide.)
+      </div>
+    </div>
+    <div class="row script"><div class="lbl">What I say (one click per beat &mdash; can pace the crisis cards individually if you want to expand)</div>
+      <div class="body">
+        <p style="margin:0 0 6px"><strong>Beat 1:</strong> Investments are tougher.</p>
+        <p style="margin:0 0 6px"><strong>Beat 2:</strong> More abstract than cars or phones. And no matter how much you know, an investment <em>always</em> involves risk. Even with the best information you could possibly get, the future is unknown.</p>
+        <p style="margin:0 0 6px"><strong>Beat 3 (trust system appears):</strong> The fix here isn&rsquo;t a website or a battery icon. You can&rsquo;t fix this by collecting and reporting existing information like Carfax did, and you can&rsquo;t build a feature into the product like Apple did. With investments, the relevant information is the <em>future</em> &mdash; and no website knows that. The only fix is to build <strong>trust</strong> in what gets disclosed. Five layers, working together: the SEC mandates disclosure. Officers and auditors are personally liable. Independent CPAs verify the numbers. GAAP makes companies comparable. Enforcement (penalties, lawsuits) makes it bite.</p>
+        <p style="margin:0 0 6px"><strong>Beat 4 (same toolbox elsewhere):</strong> And the same toolbox shows up in the markets we just looked at. The <strong>ACA</strong> mandates everyone enroll &mdash; keeps the healthy from leaving the insurance pool. <strong>Building inspectors</strong> verify quality during new construction. <strong>Degrees and licenses</strong> signal worker quality. Different markets, same family of fixes.</p>
+        <p style="margin:0 0 6px"><strong>Beat 5:</strong> None of these &mdash; SEC, ACA, inspectors, licenses &mdash; <em>fix</em> the asymmetry. They <strong>ease</strong> it. Information you can <em>trust</em> is hard to manufacture &mdash; that&rsquo;s why these systems are elaborate, and why they cost what they cost.</p>
+        <p style="margin:0 0 8px"><strong>Beat 6 (crisis cards appear):</strong> This isn&rsquo;t constant. But every so often trust breaks down and the asymmetry comes roaring back. <em>(Walk through the four briefly &mdash; one or two sentences each. Spell out MBS as &ldquo;investments built from bundles of people&rsquo;s mortgage payments.&rdquo;)</em></p>
+        <p style="margin:0 0 4px" class="ml-3">&bull; <strong>Great Depression:</strong> Bank runs. Depositors couldn&rsquo;t tell which banks were solvent &mdash; once one failed, everyone worried someone else knew theirs was bad. The SEC and the trust system around it were built in response.</p>
+        <p style="margin:0 0 4px" class="ml-3">&bull; <strong>Enron (2001):</strong> Insiders knew the earnings were fabricated through hidden entities. Auditors and shareholders didn&rsquo;t. Sarbanes-Oxley tightened the trust system after.</p>
+        <p style="margin:0 0 4px" class="ml-3">&bull; <strong>2008:</strong> Banks bundled millions of mortgage payments into &ldquo;Mortgage-Backed Securities&rdquo; &mdash; basically slices of pooled monthly mortgage checks. Ratings stamped them AAA. Insiders knew the underlying mortgages were riskier. When buyers found out, the AAA market evaporated.</p>
+        <p style="margin:0 0 8px" class="ml-3">&bull; <strong>FTX (2022):</strong> Customers thought their crypto deposits were safely held. Insiders knew the deposits were being lent to a sister hedge fund and used as collateral for risky bets.</p>
+        <p style="margin:0"><strong>Beat 7 (closing, v4.5.3):</strong> Crises are information problems first. Markets that have scaled past shared experience run on <em>trust</em>. When trust breaks down, the asymmetry comes back &mdash; and it&rsquo;s always the same kind of gap: between what one side knows and what the other side has to trust.</p>
+      </div>
+    </div>
+    <div class="row point"><div class="lbl">Point to land</div>
+      <div class="body">This is where the pattern earns its keep. <strong>It&rsquo;s the same thing the Mint owner is dealing with</strong> &mdash; but with worse stakes and longer time horizons. The trust system is the human attempt to ease the asymmetry; crises are what happens when trust breaks down.</div>
+    </div>
+  </div>
+
+  <!-- ───────── ACT 8 — Capstone ───────── -->
+  <div class="act">Act 8 · Capstone Hand-Off</div>
+
+  <div class="slide closing">
+    <div class="slide-head">
+      <span class="stepnum">20</span><span class="stepid">z1 · capstone</span>
+      <span class="section-tag">💡 Capstone Connections</span>
+    </div>
+    <div class="headline">What&rsquo;s the information problem in your capstone?</div>
+    <div class="row visual"><div class="lbl">On screen</div>
+      <div class="body">CapstoneConnections panel — four topic cards: <strong>🏛 Recessions, Credit &amp; the Financial System</strong> · <strong>🏢 Investment Banks &amp; Capital Markets</strong> · <strong>📲 Fintech</strong> · <strong>🏠 Housing Finance &amp; Structured Credit</strong>. Each with a one-paragraph hook.</div>
+    </div>
+    <div class="row script"><div class="lbl">What I say</div>
+      <div class="body">Each of your four capstone topics is, at its core, an information problem. Look at them through this lens and you&rsquo;ll see new questions. New angles. Maybe new businesses. <em>(Read or paraphrase the per-topic hook for each &mdash; or invite a student to read one aloud.)</em></div>
+    </div>
+    <div class="row point"><div class="lbl">Per-topic hooks (printed on the screen)</div>
+      <div class="body">
+        <p style="margin:4px 0"><strong>🏛 Recessions / Credit:</strong> Lenders can&rsquo;t directly see which borrowers will repay. Credit scores, employment data, recession signals are the information infrastructure. In a downturn, that infrastructure gets noisier &mdash; good borrowers get worse rates. Allocational efficiency cracks under stress.</p>
+        <p style="margin:8px 0 4px"><strong>🏢 Investment Banks / Capital Markets:</strong> An IPO is an information event. Investment banks bridge what the company knows about itself and what investors can verify. Research desks, roadshows, audited financials, ratings &mdash; every piece is information infrastructure. Without it, only the most desperate companies could raise capital.</p>
+        <p style="margin:8px 0 4px"><strong>📲 Fintech:</strong> Fintech is largely the business of solving information problems at scale. Credit scoring on thin-file borrowers. Fraud detection. Robo-advisor disclosure. Mobile banking that brings underserved customers into a system that can verify them. <em>Every fintech company is an answer to &ldquo;what couldn&rsquo;t we measure before?&rdquo;</em></p>
+        <p style="margin:8px 0 4px"><strong>🏠 Housing Finance / Structured Credit:</strong> Lenders can&rsquo;t see borrower quality directly &mdash; credit scores, appraisals, MBS ratings exist to make hidden information shared. When that infrastructure misjudges (think 2008), allocational efficiency collapses dramatically. The trades that DO happen end up moving capital to the wrong borrowers.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── COMING OUT ───────── -->
+  <div class="placeholder">
+    <div class="label">⟶ Coming Out · TO BE WRITTEN</div>
+    <h3>How I close out of the interactive and land the talk</h3>
+    <p>Bridge from the capstone slide back into the broader closing &middot; where this lens fits in the rest of the Seeds of Fortune curriculum &middot; what I want them to take with them. We&rsquo;ll add this together.</p>
+  </div>
+
+</div>
+</body>
+</html>
